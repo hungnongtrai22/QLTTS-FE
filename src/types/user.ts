@@ -1,0 +1,178 @@
+import { CustomFile } from 'src/components/upload';
+
+// ----------------------------------------------------------------------
+
+export type IUserTableFilterValue = string | string[];
+
+export type IUserTableFilters = {
+  name: string;
+  role: string[];
+  status: string;
+};
+
+// ----------------------------------------------------------------------
+
+export type IUserSocialLink = {
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+  twitter: string;
+};
+
+export type IUserProfileCover = {
+  name: string;
+  role: string;
+  coverUrl: string;
+  avatarUrl: string;
+};
+
+export type IUserProfile = {
+  id: string;
+  role: string;
+  quote: string;
+  email: string;
+  school: string;
+  country: string;
+  company: string;
+  totalFollowers: number;
+  totalFollowing: number;
+  socialLinks: IUserSocialLink;
+};
+
+export type IUserProfileFollower = {
+  id: string;
+  name: string;
+  country: string;
+  avatarUrl: string;
+};
+
+export type IUserProfileGallery = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  postedAt: Date | string | number;
+};
+
+export type IUserProfileFriend = {
+  id: string;
+  name: string;
+  role: string;
+  avatarUrl: string;
+};
+
+export type IUserProfilePost = {
+  id: string;
+  media: string;
+  message: string;
+  createdAt: Date | string | number;
+  personLikes: {
+    name: string;
+    avatarUrl: string;
+  }[];
+  comments: {
+    id: string;
+    message: string;
+    createdAt: Date | string | number;
+    author: {
+      id: string;
+      name: string;
+      avatarUrl: string;
+    };
+  }[];
+};
+
+export type IUserCard = {
+  id: string;
+  name: string;
+  role: string;
+  coverUrl: string;
+  avatarUrl: string;
+  totalPosts: number;
+  totalFollowers: number;
+  totalFollowing: number;
+};
+
+export type IUserItem = {
+  id: string;
+  name: string;
+  city: string;
+  role: string;
+  email: string;
+  state: string;
+  status: string;
+  address: string;
+  country: string;
+  zipCode: string;
+  company: string;
+  avatarUrl: string;
+  phoneNumber: string;
+  isVerified: boolean;
+};
+
+export type IInternItem = {
+  _id: string;
+  name: string;
+  userId: number;
+  namejp: string;
+  gender: string;
+  blood: string;
+  birthday: string;
+  age: number;
+  height: number;
+  weight: number;
+  BMI: number;
+  blindColor: boolean;
+  leftEye: number;
+  rightEye: number;
+  avatar: string;
+  familyList: any;
+  family: any;
+  schoolList: any;
+  school: any;
+  companyList: any;
+  company: any;
+  smoke: boolean;
+  alcohol: boolean;
+  tattoo: boolean;
+  familyInJapan: boolean;
+  moveForeign: boolean;
+  city: string;
+  hand: string;
+  address: string;
+  married: string;
+  driverLicense: string;
+  interest: string;
+  strong: string;
+  weak: string;
+  foreignLanguage: string;
+  aim: string;
+  money: string;
+  plan: string;
+};
+
+export type IUserAccount = {
+  email: string;
+  isPublic: boolean;
+  displayName: string;
+  city: string | null;
+  state: string | null;
+  about: string | null;
+  country: string | null;
+  address: string | null;
+  zipCode: string | null;
+  phoneNumber: string | null;
+  photoURL: CustomFile | string | null;
+};
+
+export type IUserAccountBillingHistory = {
+  id: string;
+  price: number;
+  invoiceNumber: string;
+  createdAt: Date | string | number;
+};
+
+export type IUserAccountChangePassword = {
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+};
