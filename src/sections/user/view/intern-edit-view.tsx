@@ -13,7 +13,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { IInternItem } from 'src/types/user';
 
 //
-import UserNewEditForm from '../user-new-edit-form';
 import InternNewEditForm from '../intern-new-edit-form';
 
 // ----------------------------------------------------------------------

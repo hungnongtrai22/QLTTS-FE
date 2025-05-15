@@ -13,14 +13,10 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 // utils
-import { fData } from 'src/utils/format-number';
-// routes
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // types
 import { IInternItem, IUserItem } from 'src/types/user';
 // assets
-import { countries } from 'src/assets/data';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -30,7 +26,6 @@ import FormProvider, {
   RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
-  RHFAutocomplete,
   RHFSelect,
 } from 'src/components/hook-form';
 import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui/material';
@@ -39,8 +34,6 @@ import axios from 'axios';
 import { useLocales } from 'src/locales';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 
-import InternSchool from '../invoice/intern-school';
-import InvoicePDF from '../invoice/invoice-pdf';
 import InternPDF from '../invoice/intern-pdf';
 // import { current } from '@reduxjs/toolkit';
 

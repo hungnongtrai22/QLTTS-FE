@@ -1,12 +1,8 @@
 import { useMemo } from 'react';
 import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 // utils
-import { fDate } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
-// types
-import { IInvoice } from 'src/types/invoice';
+
 import { IInternItem } from 'src/types/user';
-import { bi } from '@fullcalendar/core/internal-common';
 
 // ----------------------------------------------------------------------
 
@@ -232,7 +228,7 @@ export default function InternPDF({ invoice }: Props) {
                   <Text style={styles.subtitle2}>身長(cm)</Text>
                 </View>
                 <View style={[styles.tableCell_4]}>
-                  <Text>165</Text>
+                  <Text>{height}</Text>
                 </View>
               </View>
               <View style={styles.tableRow}>

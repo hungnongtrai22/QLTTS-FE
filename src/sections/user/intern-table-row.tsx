@@ -11,14 +11,12 @@ import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
-import { IInternItem, IUserItem } from 'src/types/user';
+import { IInternItem } from 'src/types/user';
 // components
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
-import UserQuickEditForm from './user-quick-edit-form';
 
 // ----------------------------------------------------------------------
 

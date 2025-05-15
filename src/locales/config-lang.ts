@@ -1,5 +1,5 @@
 // @mui
-import { enUS, frFR, zhCN, viVN, arSA, jaJP } from '@mui/material/locale';
+import {viVN, jaJP } from '@mui/material/locale';
 
 // PLEASE REMOVE `LOCAL STORAGE` WHEN YOU CHANGE SETTINGS.
 // ----------------------------------------------------------------------
