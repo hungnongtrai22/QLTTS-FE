@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import Box, { BoxProps } from '@mui/material/Box';
 // routes
@@ -15,7 +15,7 @@ export interface LogoProps extends BoxProps {
 
 const Logo = forwardRef<HTMLDivElement, LogoProps>(
   ({ disabledLink = false, sx, ...other }, ref) => {
-    const theme = useTheme();
+    // const theme = useTheme();
 
     // const PRIMARY_LIGHT = theme.palette.primary.light;
 

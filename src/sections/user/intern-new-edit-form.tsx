@@ -148,7 +148,7 @@ const initFamily = [
 ];
 
 export default function InternNewEditForm({ currentIntern }: Props) {
-  const router = useRouter();
+  // const router = useRouter();
   console.log('TEST', currentIntern);
   const { t } = useLocales();
 
@@ -158,7 +158,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
   const [height, setHeight] = useState(currentIntern?.height || 0);
   const [weight, setWeight] = useState(currentIntern?.weight || 0);
   const [BMI, setBMI] = useState(currentIntern?.BMI || 0);
-  const [city, setCity] = useState('');
+  // const [city, setCity] = useState('');
   const [schools, setSchools] = useState<
     {
       timeFrom: Date | null;
@@ -383,7 +383,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
   });
 
   const {
-    reset,
+    // reset,
     watch,
     control,
     setValue,

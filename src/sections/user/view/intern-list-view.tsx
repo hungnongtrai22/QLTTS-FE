@@ -17,7 +17,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // types
-import { IInternItem, IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { IInternItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
 // _mock
 import { _userList, _roles, USER_STATUS_OPTIONS } from 'src/_mock';
 // hooks
@@ -42,7 +42,6 @@ import {
 import axios from 'axios';
 
 //
-import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
 import UserTableFiltersResult from '../user-table-filters-result';
 import InternTableRow from '../intern-table-row';
@@ -67,10 +66,7 @@ const defaultFilters = {
   status: 'all',
 };
 
-type RowType = {
-  _id: string;
-  // các trường khác nếu cần
-};
+
 
 // ----------------------------------------------------------------------
 
@@ -369,7 +365,7 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IUserTableFilters;
 }) {
-  const { name, status, role } = filters;
+  const { name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
