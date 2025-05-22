@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -13,7 +13,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 // utils
-import { useRouter } from 'src/routes/hook';
 // types
 import { IInternItem, IUserItem } from 'src/types/user';
 // assets
@@ -27,12 +26,23 @@ import FormProvider, {
   RHFTextField,
   RHFUploadAvatar,
   RHFSelect,
+  RHFAutocomplete,
 } from 'src/components/hook-form';
 import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { viVN } from '@mui/x-date-pickers/locales';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
 import axios from 'axios';
 import { useLocales } from 'src/locales';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { convertToKatakana } from 'src/utils/vietnameseToKatakana';
+import { generateStrongJP, strongJPs, strongVNs } from 'src/utils/strong';
+import { generateWeakJP, weakJPs, weakVNs } from 'src/utils/weak';
+
 
 import InternPDF from '../invoice/intern-pdf';
 // import { current } from '@reduxjs/toolkit';
@@ -147,10 +157,12 @@ const initFamily = [
   },
 ];
 
+dayjs.locale('vi');
+
 export default function InternNewEditForm({ currentIntern }: Props) {
   // const router = useRouter();
-  console.log('TEST', currentIntern);
-  const { t } = useLocales();
+  // console.log('TEST', currentIntern);
+  const { t,currentLang } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -158,6 +170,10 @@ export default function InternNewEditForm({ currentIntern }: Props) {
   const [height, setHeight] = useState(currentIntern?.height || 0);
   const [weight, setWeight] = useState(currentIntern?.weight || 0);
   const [BMI, setBMI] = useState(currentIntern?.BMI || 0);
+  const [nameJapan, setNameJapan] = useState(currentIntern?.namejp || 0);
+
+  // const values = watch();
+
   // const [city, setCity] = useState('');
   const [schools, setSchools] = useState<
     {
@@ -181,8 +197,6 @@ export default function InternNewEditForm({ currentIntern }: Props) {
       timeTo: new Date(item.timeTo),
     })) || initCompany
   );
-  console.log('Company', company);
-  console.log('Company', currentIntern?.company);
 
   const [family, setFamily] = useState(
     currentIntern?.family?.map((item: any) => ({ ...item, year: new Date(item.year) })) ||
@@ -201,8 +215,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     }
   }
 
-  function calculateAge(birthDate: any): number {
-    // const birthDate = new Date(birthday);
+  function calculateAge(date: any): number {
+    const birthDate = new Date(date);
     const today = new Date();
     let result = today.getFullYear() - birthDate.getFullYear();
     const hasHadBirthdayThisYear =
@@ -252,73 +266,78 @@ export default function InternNewEditForm({ currentIntern }: Props) {
 
   const NewUserSchema = Yup.object().shape({
     // userId: Yup.number().required('UserId is required').min(1),
-    name: Yup.string().required('Name is required'),
-    namejp: Yup.string().required('Name JP is required'),
-    gender: Yup.string().required('Gender is required'),
-    blood: Yup.string().required('Blood is required'),
-    birthday: Yup.date().required('Date of birth is required'),
+    name: Yup.string().required('Họ và tên không được để trống'),
+    namejp: Yup.string().required('Phiên âm tên không được để trống'),
+    gender: Yup.string().required('Giới tính không được để trống'),
+    blood: Yup.string().required('Nhóm máu không được để trống'),
+    birthday: Yup.date()
+      .required('Ngày sinh không được để trống')
+      .typeError('Ngày sinh không hợp lệ'),
     // age: Yup.number().required('Age is required').min(16),
-    height: Yup.number().required('Height is required').min(140).max(190),
-    weight: Yup.number().required('Weight is required').min(1),
+    height: Yup.number()
+      .required('Chiều cao không được để trống')
+      .min(140, 'Chiều cao phải lớn hơn 140cm')
+      .max(190, 'Chiều cao phải thấp hơn 190cm'),
+    weight: Yup.number().required('Cân nặng không được để trống').min(1),
     // BMI: Yup.number().required('BMI is required').min(1),
-    avatar: Yup.mixed().required('Avatar is required'),
-    hand: Yup.string().required('Hand is required'),
-    leftEye: Yup.number().required('Left Eye is required'),
-    rightEye: Yup.number().required('Right Eye is required'),
-    address: Yup.string().required('Address is required'),
-    city: Yup.string().required('City is required'),
-    married: Yup.string().required('Married is required'),
-    driverLicense: Yup.string().required('Driver License is required'),
+    avatar: Yup.mixed().required('Ảnh không được để trống'),
+    hand: Yup.string().required('Tay thuận không được để trống'),
+    leftEye: Yup.number().required('Mắt trái không được để trống'),
+    rightEye: Yup.number().required('Mắt phải không được để trống'),
+    address: Yup.string().required('Địa chỉ không được để trống'),
+    city: Yup.string().required('Thành phố không được để trống'),
+    married: Yup.string().required('Tình trạng hôn nhân không được để trống'),
+    driverLicense: Yup.string().required('Bằng lái xe không được để trống'),
     schoolList: Yup.array()
       .of(
         Yup.object().shape({
-          timeFrom: Yup.date().nullable().required('Start Date is required'),
+          timeFrom: Yup.date().nullable().required('Ngày bắt đầu không được để trống'),
           timeTo: Yup.date()
             .nullable()
-            .required('End Date is required')
-            .min(Yup.ref('timeFrom'), 'End Date must be after Start Date'),
+            .required('Ngày kết thúc không được để trống')
+            .min(Yup.ref('timeFrom'), 'Ngày kết thúc phải sau ngày bắt đầu'),
           name: Yup.string()
-            .required('School Name is required')
-            .max(255, 'School Name is too long'),
-          content: Yup.string().required('Content is required'),
-          current: Yup.string().required('Current is required'),
+            .required('Tên trường học không được để trống')
+            .max(255, 'Tên trường học quá dài'),
+          content: Yup.string().required('Nội dung không được để trống'),
+          current: Yup.string().required('Tình trạng không được để trống'),
         })
       )
-      .min(1, 'At least one school record is required'),
+      .min(1, 'Phải có ít nhất 1 học vấn'),
 
     companyList: Yup.array().of(
       Yup.object().shape({
-        timeFrom: Yup.date().nullable().required('Start Date is required'),
+        timeFrom: Yup.date().nullable().required('Ngày bắt đầu không được để trống'),
         timeTo: Yup.date()
           .nullable()
-          .required('End Date is required')
-          .min(Yup.ref('timeFrom'), 'End Date must be after Start Date'),
+          .required('Ngày kết thúc không được để trống')
+          .min(Yup.ref('timeFrom'), 'Ngày kết thúc phải sau ngày bắt đầu'),
         name: Yup.string()
-          .required('Company Name is required')
-          .max(255, 'Company Name is too long')
-          .min(1, 'At least one company record is required'),
-        content: Yup.string().required('Content is required'),
+          .required('Tên công ty không được để trống')
+          .max(255, 'Tên công ty quá dài')
+          .min(1, 'Phải có ít nhất một lịch sử công việc'),
+        content: Yup.string().required('Nội dung công việc không được để trống'),
       })
     ),
     familyList: Yup.array().of(
       Yup.object().shape({
-        relationship: Yup.string().required('Relationship is required'),
+        relationship: Yup.string().required('Mối quan hệ không được để trống'),
         name: Yup.string()
-          .required('Name is required')
-          .max(255, 'Name is too long')
-          .min(1, 'At least one name record is required'),
-        year: Yup.date().required('Year is required'),
-        location: Yup.string().required('Location is required'),
-        occupation: Yup.string().required('Occupation is required'),
+          .required('Tên không được để trống')
+          .max(255, 'Tên quá dài')
+          .min(1, 'Phải có ít nhất 1 thành viên trong gia đình'),
+        year: Yup.date().required('Năm sinh không được để trống'),
+        location: Yup.string().required('Địa chỉ không được để trống'),
+        occupation: Yup.string().required('Nghề nghiệp không được để trống'),
       })
     ),
-    interest: Yup.string().required('Interest is required'),
-    foreignLanguage: Yup.string().required('Foreign Language is required'),
-    strong: Yup.string().required('Strong is required'),
-    weak: Yup.string().required('Weak is required'),
-    aim: Yup.string().required('Aim is required'),
-    plan: Yup.string().required('Plan is required'),
-    money: Yup.string().required('Money is required'),
+    interest: Yup.string().required('Sở thích không được để trống'),
+    foreignLanguage: Yup.string().required('Ngoại ngữ không được để trống'),
+    strong: Yup.string().required('Điểm mạnh không được để trống'),
+    weak: Yup.string().required('Điểm yếu không được để trống'),
+    aim: Yup.string().required('Mục tiêu không được để trống'),
+    plan: Yup.string().required('Kế hoạch không được để trống'),
+    money: Yup.string().required('Số tiền mong muốn không được để trống'),
     // familyInJapan: Yup.boolean().required('familyInJapan is required'),
     // moveForeign: Yup.boolean().required('Move Foreign is required'),
   });
@@ -393,6 +412,29 @@ export default function InternNewEditForm({ currentIntern }: Props) {
 
   const values = watch();
 
+  const generateNameJP = useCallback(
+    (name: string) => {
+      const katakana = convertToKatakana(name);
+      if (katakana !== nameJapan) {
+        setNameJapan(katakana);
+        setValue('namejp', katakana);
+      }
+    },
+    [nameJapan, setValue]
+  );
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (values.name) {
+        generateNameJP(values.name);
+      }
+    }, 500); // đợi 500ms sau khi người dùng dừng gõ
+
+    return () => {
+      clearTimeout(handler); // huỷ timeout nếu người dùng tiếp tục gõ
+    };
+  }, [values.name, generateNameJP]);
+
   const uploadImageToCloud = useCallback(async (img: any) => {
     const temp = img;
     const path = 'dashboard';
@@ -404,11 +446,15 @@ export default function InternNewEditForm({ currentIntern }: Props) {
   }, []);
 
   const uploadImages = async (formData: any) => {
-    const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/cloudinary`, formData, {
-      headers: {
-        'content-type': 'multipart/form-data',
-      },
-    });
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/cloudinary`,
+      formData,
+      {
+        headers: {
+          'content-type': 'multipart/form-data',
+        },
+      }
+    );
     return data;
   };
 
@@ -420,7 +466,6 @@ export default function InternNewEditForm({ currentIntern }: Props) {
       family: [...intern.familyList],
       avatar: intern.avatarURL,
     });
-    console.log(data);
     return data;
   }, []);
 
@@ -434,7 +479,6 @@ export default function InternNewEditForm({ currentIntern }: Props) {
         family: [...intern.familyList],
         avatar: intern.avatarURL,
       });
-      console.log(data);
       return data;
     },
     [currentIntern]
@@ -444,10 +488,11 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     async (data: FormValuesProps) => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
+        data.strong = generateStrongJP(data.strong);
+        data.weak = generateWeakJP(data.weak);
         // reset();
         // router.push(paths.dashboard.user.list);
         if (currentIntern) {
-          console.log('TESTTTTTT', data);
           if (data.avatar === currentIntern.avatar) {
             data.avatarURL = currentIntern.avatar;
             await editIntern(data);
@@ -613,11 +658,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               name="blindColor"
               labelPlacement="start"
               label={
-                <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                     {t('blind_color')}
                   </Typography>
-                </>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -627,11 +670,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               labelPlacement="start"
               defaultChecked={false}
               label={
-                <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                     {t('smoke')}
                   </Typography>
-                </>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -641,11 +682,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               labelPlacement="start"
               defaultChecked={false}
               label={
-                <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                     {t('alcohol')}
                   </Typography>
-                </>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -655,11 +694,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               defaultChecked={false}
               labelPlacement="start"
               label={
-                <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                     {t('tattoo')}
                   </Typography>
-                </>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -669,11 +706,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               defaultChecked={false}
               labelPlacement="start"
               label={
-                <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                     {t('family_in_japan')}
                   </Typography>
-                </>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -683,11 +718,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               defaultChecked={false}
               labelPlacement="start"
               label={
-                <>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                     {t('move_foreign')}
                   </Typography>
-                </>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -714,7 +747,48 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               }}
             >
               <RHFTextField name="name" label={t('full_name')} />
+              {/* <Controller
+                name="name"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="text"
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                      // generateNameJP(event.target.value);
+                    }}
+                    error={!!error}
+                    helperText={error ? error?.message : ''}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('full_name')}
+                    // {...other}
+                  />
+                )}
+              /> */}
               <RHFTextField name="namejp" label={t('name_jp')} />
+              {/* <Controller
+                name="namejp"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="text"
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                    }}
+                    error={!!error}
+                    helperText={error ? error?.message : ''}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('name_jp')}
+                    // {...other}
+                  />
+                )}
+              /> */}
               <RHFSelect
                 fullWidth
                 name="gender"
@@ -744,22 +818,27 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 name="birthday"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label={t('birthday')}
-                    value={field.value}
-                    onChange={(newValue) => {
-                      field.onChange(newValue);
-                      console.log(newValue);
-                      setAge(calculateAge(newValue));
-                    }}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                      },
-                    }}
-                  />
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="vi"
+                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                  >
+                    <DatePicker
+                      label={t('birthday')}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => {
+                        field.onChange(newValue);
+                        setAge(calculateAge(dayjs(newValue)));
+                      }}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
                 )}
               />
 
@@ -1026,30 +1105,35 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     name={`schoolList.${index}.timeFrom`}
                     control={control}
                     render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        label={t('start_date')}
-                        value={field.value}
-                        onChange={(newValue) => {
-                          field.onChange(newValue);
-                          console.log(newValue);
-                          if (index === 0) {
-                            if (newValue) {
-                              const autoSchools = autoGenerateTime(newValue);
-                              console.log(autoSchools);
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="vi"
+                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                      >
+                        <DatePicker
+                          label={t('start_date')}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(newValue) => {
+                            const dateValue = newValue ? newValue.toDate() : null;
+
+                            field.onChange(dateValue);
+
+                            if (index === 0 && dateValue) {
+                              const autoSchools = autoGenerateTime(dateValue);
                               setValue('schoolList', autoSchools);
                               setSchools(autoSchools);
                             }
-                          }
-                        }}
-                        views={['month', 'year']}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
+                          }}
+                          views={['month', 'year']}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              error: !!error,
+                              helperText: error?.message,
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
                     )}
                   />
 
@@ -1057,22 +1141,27 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     name={`schoolList.${index}.timeTo`}
                     control={control}
                     render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        label={t('end_date')}
-                        views={['month', 'year']}
-                        value={field.value}
-                        onChange={(newValue) => {
-                          field.onChange(newValue);
-                          console.log(newValue);
-                        }}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="vi"
+                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                      >
+                        <DatePicker
+                          label={t('end_date')}
+                          views={['month', 'year']}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(newValue) => {
+                            field.onChange(newValue);
+                          }}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              error: !!error,
+                              helperText: error?.message,
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
                     )}
                   />
                   <RHFTextField name={`schoolList.${index}.name`} label={t('school_name')} />
@@ -1141,21 +1230,27 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     name={`companyList.${index}.timeFrom`}
                     control={control}
                     render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        label={t('start_date')}
-                        value={field.value}
-                        onChange={(newValue) => {
-                          field.onChange(newValue);
-                        }}
-                        views={['month', 'year']}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="vi"
+                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                      >
+                        <DatePicker
+                          label={t('start_date')}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(newValue) => {
+                            field.onChange(newValue);
+                          }}
+                          views={['month', 'year']}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              error: !!error,
+                              helperText: error?.message,
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
                     )}
                   />
 
@@ -1163,22 +1258,27 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     name={`companyList.${index}.timeTo`}
                     control={control}
                     render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        label={t('end_date')}
-                        views={['month', 'year']}
-                        value={field.value}
-                        onChange={(newValue) => {
-                          field.onChange(newValue);
-                          console.log(newValue);
-                        }}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="vi"
+                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                      >
+                        <DatePicker
+                          label={t('end_date')}
+                          views={['month', 'year']}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(newValue) => {
+                            field.onChange(newValue);
+                          }}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              error: !!error,
+                              helperText: error?.message,
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
                     )}
                   />
                   <RHFTextField name={`companyList.${index}.name`} label={t('company_name')} />
@@ -1242,21 +1342,27 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     name={`familyList.${index}.year`}
                     control={control}
                     render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        label={t('year')}
-                        value={field.value}
-                        onChange={(newValue) => {
-                          field.onChange(newValue);
-                        }}
-                        views={['year']}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="vi"
+                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                      >
+                        <DatePicker
+                          label={t('year')}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(newValue) => {
+                            field.onChange(newValue);
+                          }}
+                          views={['year']}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              error: !!error,
+                              helperText: error?.message,
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
                     )}
                   />
 
@@ -1324,8 +1430,46 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               }}
             >
               <RHFTextField name="interest" label={t('interest')} />
-              <RHFTextField name="strong" label={t('strong')} />
-              <RHFTextField name="weak" label={t('weak')} />
+              {/* <RHFTextField name="strong" label={t('strong')} /> */}
+              <RHFAutocomplete
+                name="strong"
+                label={t('strong') || ""}
+                disablePortal
+                options={currentLang.value === "vi" ? strongVNs.map(item=>item.value) : strongJPs.map(item=>item.value)}
+                // sx={{ width: 300 }}
+                // renderOption={(props, option) => {
+                //   const { index, value } = strongVNs.filter(
+                //     (item) => item.value === option.value
+                //   )[0];
+
+                //   if (!value) {
+                //     return null;
+                //   }
+
+                //   return (
+                //     <li {...props} key={index}>
+                //       {value}
+                //     </li>
+                //   );
+                // }}
+                 renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
+              {/* <RHFTextField name="weak" label={t('weak')} /> */}
+               <RHFAutocomplete
+                name="weak"
+                label={t('weak') || ""}
+                disablePortal
+                options={currentLang.value === "vi" ? weakVNs.map(item=>item.value) : weakJPs.map(item=>item.value)}     
+                 renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
               <RHFSelect
                 fullWidth
                 name="foreignLanguage"

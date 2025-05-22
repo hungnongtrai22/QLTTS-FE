@@ -27,8 +27,8 @@ const useStyles = () =>
         body1: { fontSize: 10 },
         body2: { fontSize: 9 },
         subtitle1: { fontSize: 10, fontWeight: 700 },
-        subtitle2: { fontSize: 9, fontWeight: 700, textAlign: 'center'},
-        titleBackground: {backgroundColor: "#F6F0F0"},
+        subtitle2: { fontSize: 9, fontWeight: 700, textAlign: 'center' },
+        titleBackground: { backgroundColor: '#F6F0F0' },
         alignRight: { textAlign: 'right' },
         page: {
           fontSize: 9,
@@ -37,7 +37,7 @@ const useStyles = () =>
           backgroundColor: '#FFFFFF',
           textTransform: 'capitalize',
           // padding: '40px 24px 120px 24px',
-                    padding: '10px 24px 10px 24px',
+          padding: '10px 24px 10px 24px',
         },
         footer: {
           left: 0,
@@ -60,7 +60,7 @@ const useStyles = () =>
         },
         table: {
           display: 'flex',
-          width: '75%',
+          width: '80%',
         },
         table1: {
           display: 'flex',
@@ -87,10 +87,10 @@ const useStyles = () =>
           borderWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
-          padding: '8px 0',
+          padding: '3px 0',
         },
         tableCell_2: {
-          padding: '8px 0',
+          padding: '3px 0',
           width: '50%',
           height: '100%',
           // paddingRight: 16,
@@ -106,7 +106,7 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
-          padding: '8px 0',
+          padding: '3px 0',
         },
         tableCell_5: {
           width: '25%',
@@ -115,7 +115,7 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
-          padding: '8px 0',
+          padding: '3px 0',
         },
         tableCell_4: {
           width: '10%',
@@ -124,10 +124,10 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
-          padding: '8px 0',
+          padding: '3px 0',
         },
         tableCell_6: {
-          padding: '8px 0',
+          padding: '3px 0',
           width: '30%',
           height: '100%',
           // paddingRight: 16,
@@ -137,7 +137,7 @@ const useStyles = () =>
           borderColor: '#DFE3E8',
         },
         tableCell_7: {
-          padding: '8px 0',
+          padding: '3px 0',
           width: '40%',
           height: '100%',
           // paddingRight: 16,
@@ -147,7 +147,7 @@ const useStyles = () =>
           borderColor: '#DFE3E8',
         },
         tableCell_8: {
-          padding: '8px 0',
+          padding: '3px 0',
           width: '20%',
           height: '100%',
           // paddingRight: 16,
@@ -168,25 +168,58 @@ type Props = {
 
 const changDateJP = (date: any) => {
   const jsDate = new Date(date);
-  const formatted = jsDate.toLocaleDateString("ja-JP");
-  const parts = formatted.split("/");
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
   const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
   return customFormat;
 };
 
 const changMonthYearJP = (date: any) => {
   const jsDate = new Date(date);
-  if(date === null || date === ""){
-    return "";
+  if (date === null || date === '') {
+    return '';
   }
-  const formatted = jsDate.toLocaleDateString("ja-JP");
-  const parts = formatted.split("/");
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
   const customFormat = `${parts[0]}年${parts[1]}月`;
   return customFormat;
 };
 
 export default function InternPDF({ invoice }: Props) {
-  const { name, namejp, gender, height, weight, avatar, age, birthday, blood, married, BMI, leftEye, rightEye, blindColor, hand, driverLicense, address, smoke, alcohol, tattoo, school, company, family } = invoice;
+  const {
+    name,
+    namejp,
+    gender,
+    height,
+    weight,
+    avatar,
+    age,
+    birthday,
+    blood,
+    married,
+    BMI,
+    leftEye,
+    rightEye,
+    blindColor,
+    hand,
+    driverLicense,
+    address,
+    smoke,
+    alcohol,
+    tattoo,
+    school,
+    company,
+    family,
+    interest,
+    foreignLanguage,
+    strong,
+    weak,
+    aim,
+    plan,
+    money,
+    familyInJapan,
+    moveForeign,
+  } = invoice;
 
   const styles = useStyles();
 
@@ -276,7 +309,7 @@ export default function InternPDF({ invoice }: Props) {
                   <Text style={styles.subtitle2}>配偶者</Text>
                 </View>
                 <View style={[styles.tableCell_4]}>
-                  <Text >{married}</Text>
+                  <Text>{married}</Text>
                 </View>
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>BMI</Text>
@@ -300,14 +333,14 @@ export default function InternPDF({ invoice }: Props) {
                 </View>
 
                 <View style={styles.tableCell_4}>
-                  <Text>{blindColor === true ? "あり" : "なし"}</Text>
+                  <Text>{blindColor === true ? 'あり' : 'なし'}</Text>
                 </View>
 
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>利き手</Text>
                 </View>
                 <View style={[styles.tableCell_4]}>
-                  <Text >{hand}</Text>
+                  <Text>{hand}</Text>
                 </View>
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>運転免許</Text>
@@ -331,21 +364,21 @@ export default function InternPDF({ invoice }: Props) {
                 </View>
 
                 <View style={styles.tableCell_4}>
-                  <Text>{smoke === true ? "あり" : "なし"}</Text>
+                  <Text>{smoke === true ? 'あり' : 'なし'}</Text>
                 </View>
 
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>飲酒</Text>
                 </View>
                 <View style={[styles.tableCell_4]}>
-                  <Text>{alcohol === true ? "あり" : "なし"}</Text>
+                  <Text>{alcohol === true ? 'あり' : 'なし'}</Text>
                 </View>
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>入れ墨</Text>
                 </View>
 
                 <View style={styles.tableCell_4}>
-                  <Text>{tattoo === true ? "あり" : "なし"}</Text>
+                  <Text>{tattoo === true ? 'あり' : 'なし'}</Text>
                 </View>
               </View>
             </View>
@@ -378,9 +411,18 @@ export default function InternPDF({ invoice }: Props) {
             </View>
           </View>
           <View
-            style={{ width: '25%', borderWidth: 1, borderStyle: 'solid', borderColor: '#DFE3E8', display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}
+            style={{
+              width: '20%',
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: '#DFE3E8',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'flex-end',
+              overflow: "hidden"
+            }}
           >
-            <Image source={avatar} style={{ width: '100%', aspectRatio: '3/4' }} />
+            <Image source={avatar} style={{ width: '100%', height: '100' }}/>
           </View>
         </View>
 
@@ -405,23 +447,27 @@ export default function InternPDF({ invoice }: Props) {
                   <Text style={styles.subtitle2}>現在</Text>
                 </View>
               </View>
-              {school.map((item : any, index : any)=>(<View style={styles.tableRow}>
-                <View style={[styles.tableCell_6]}>
-                  <Text>{changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}</Text>
-                </View>
+              {school.map((item: any, index: any) => (
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_6]}>
+                    <Text>
+                      {changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}
+                    </Text>
+                  </View>
 
-                <View style={[styles.tableCell_7]}>
-                  <Text>{item.name}</Text>
-                </View>
+                  <View style={[styles.tableCell_7]}>
+                    <Text>{item.name}</Text>
+                  </View>
 
-                <View style={[styles.tableCell_8]}>
-                  <Text >{item.content}</Text>
-                </View>
+                  <View style={[styles.tableCell_8]}>
+                    <Text>{item.content}</Text>
+                  </View>
 
-                <View style={[styles.tableCell_4]}>
-                  <Text>{item.current}</Text>
+                  <View style={[styles.tableCell_4]}>
+                    <Text>{item.current}</Text>
+                  </View>
                 </View>
-              </View>))}
+              ))}
             </View>
 
             <View>
@@ -451,7 +497,6 @@ export default function InternPDF({ invoice }: Props) {
             ))} */}
             </View>
           </View>
-      
         </View>
 
         {/* <Text style={[styles.subtitle1, styles.mb8]}>職歴</Text> */}
@@ -470,26 +515,26 @@ export default function InternPDF({ invoice }: Props) {
                 <View style={[styles.tableCell_6, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>仕事の内容</Text>
                 </View>
-
               </View>
-              {company.map((item : any, index : any)=>(<View style={styles.tableRow}>
-                <View style={[styles.tableCell_6]}>
-                  <Text>{changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}</Text>
-                </View>
+              {company.map((item: any, index: any) => (
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_6]}>
+                    <Text>
+                      {changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}
+                    </Text>
+                  </View>
 
-                <View style={[styles.tableCell_7]}>
-                  <Text>{item.name}</Text>
-                </View>
+                  <View style={[styles.tableCell_7]}>
+                    <Text>{item.name}</Text>
+                  </View>
 
-                <View style={[styles.tableCell_6]}>
-                  <Text >{item.content}</Text>
+                  <View style={[styles.tableCell_6]}>
+                    <Text>{item.content}</Text>
+                  </View>
                 </View>
-              </View>))}
+              ))}
             </View>
-
-           
           </View>
-      
         </View>
         {/* <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text> */}
         <View style={[styles.gridContainer, styles.mb10]}>
@@ -513,34 +558,105 @@ export default function InternPDF({ invoice }: Props) {
                 <View style={[styles.tableCell_8, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>職業</Text>
                 </View>
-
               </View>
-              {family.map((item : any, index : any)=>( <View style={styles.tableRow}>
-                <View style={[styles.tableCell_4]}>
-                  <Text >{item.relationship}</Text>
-                </View>
+              {family.map((item: any, index: any) => (
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4]}>
+                    <Text>{item.relationship}</Text>
+                  </View>
 
-                <View style={[styles.tableCell_7]}>
-                  <Text >{item.name}</Text>
-                </View>
+                  <View style={[styles.tableCell_7]}>
+                    <Text>{item.name}</Text>
+                  </View>
 
-                <View style={[styles.tableCell_4]}>
-                  <Text >{new Date(item.year).getFullYear()}</Text>
+                  <View style={[styles.tableCell_4]}>
+                    <Text>{new Date(item.year).getFullYear()}</Text>
+                  </View>
+                  <View style={[styles.tableCell_8]}>
+                    <Text>{item.location}</Text>
+                  </View>
+                  <View style={[styles.tableCell_8]}>
+                    <Text>{item.occupation}</Text>
+                  </View>
                 </View>
-                <View style={[styles.tableCell_8]}>
-                  <Text >{item.location}</Text>
-                </View>
-                <View style={[styles.tableCell_8]}>
-                  <Text>{item.occupation}</Text>
-                </View>
-
-              </View>))}
+              ))}
             </View>
-
-         
           </View>
-      
         </View>
+
+        <View style={[styles.gridContainer, styles.mb10]}>
+          <View style={styles.table1}>
+            <View>
+              <View style={styles.tableRow}>
+                <View style={[styles.tableCell_3, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>趣味</Text>
+                </View>
+
+                <View style={[styles.tableCell_6]}>
+                  <Text>{interest}</Text>
+                </View>
+
+                <View style={[styles.tableCell_4, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>長所</Text>
+                </View>
+                <View style={[styles.tableCell_4]}>
+                  <Text>{strong}</Text>
+                </View>
+                <View style={[styles.tableCell_8, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>短所</Text>
+                </View>
+                <View style={[styles.tableCell_3]}>
+                  <Text>{weak}</Text>
+                </View>
+              </View>
+               <View style={styles.tableRow}>
+                <View style={[styles.tableCell_3, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>日本に行くの目的・志望動機</Text>
+                </View>
+
+                <View style={[styles.tableCell_6]}>
+                  <Text>{aim}</Text>
+                </View>
+
+                <View style={[styles.tableCell_4, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>外国語</Text>
+                </View>
+                <View style={[styles.tableCell_4]}>
+                  <Text>{foreignLanguage}</Text>
+                </View>
+                <View style={[styles.tableCell_8, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
+                </View>
+                <View style={[styles.tableCell_3]}>
+                  <Text>{money}</Text>
+                </View>
+              </View>
+               <View style={styles.tableRow}>
+                <View style={[styles.tableCell_3, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>実習期間が終了した後、どんな予定がありますか</Text>
+                </View>
+
+                <View style={[styles.tableCell_6]}>
+                  <Text>{plan}</Text>
+                </View>
+
+                <View style={[styles.tableCell_4, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>日本に親戚がいますか</Text>
+                </View>
+                <View style={[styles.tableCell_4]}>
+                  <Text>{familyInJapan ? "はい" : "なし"}</Text>
+                </View>
+                <View style={[styles.tableCell_8, styles.titleBackground]}>
+                  <Text style={styles.subtitle2}>外国へ行ったことがありますか</Text>
+                </View>
+                <View style={[styles.tableCell_3]}>
+                  <Text>{moveForeign ? "はい" : "なし"}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+        
         {/* <View style={[styles.gridContainer, styles.footer]} fixed>
           <View style={styles.col8}>
             <Text style={styles.subtitle2}>NOTES</Text>

@@ -119,6 +119,18 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/intern/${MOCK_ID}/edit`,
       },
     },
+    tradeUnion: {
+      root: `${ROOTS.DASHBOARD}/tradeUnion`,
+      new: `${ROOTS.DASHBOARD}/tradeUnion/new`,
+      list: `${ROOTS.DASHBOARD}/tradeUnion/list`,
+      cards: `${ROOTS.DASHBOARD}/tradeUnion/cards`,
+      profile: `${ROOTS.DASHBOARD}/tradeUnion/profile`,
+      account: `${ROOTS.DASHBOARD}/tradeUnion/account`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/tradeUnion/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/tradeUnion/${MOCK_ID}/edit`,
+      },
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

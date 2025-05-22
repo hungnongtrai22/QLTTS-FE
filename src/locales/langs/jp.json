@@ -103,6 +103,15 @@
   "allow_image_2": "最大サイズは3.1MBです",
   "val_name": "Họ và tên là bắt buộc",
   "list_intern": "管理画面：実習生一覧",
+  "trade_union": "労働組合",
+  "title_dashboard_create_trade_union": "ダッシュボード：新しい労働組合を作成",
+  "create_trade_union": "新しい労働組合を作成",
+  "new_trade_union": "新しい労働組合",
+  "name": "名前",
+  "phone": "電話番号",
+  "state": "都道府県",
+  "country": "国",
+  "edit_trade_union": "労働組合を編集する",
   "demo": {
     "title": "英語"
   }

@@ -36,6 +36,10 @@ const InternListPage = lazy(() => import('src/pages/dashboard/intern/list'));
 const InternAccountPage = lazy(() => import('src/pages/dashboard/intern/account'));
 const InternCreatePage = lazy(() => import('src/pages/dashboard/intern/new'));
 const InternEditPage = lazy(() => import('src/pages/dashboard/intern/edit'));
+// Trade Union
+const TradeUnionListPage = lazy(() => import('src/pages/dashboard/tradeUnion/list'));
+const TradeUnionCreatePage = lazy(() => import('src/pages/dashboard/tradeUnion/new'));
+
 // USER
 // const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 // const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
@@ -101,6 +105,18 @@ export const dashboardRoutes = [
           { path: 'new', element: <InternCreatePage /> },
           { path: ':id/edit', element: <InternEditPage /> },
           { path: 'account', element: <InternAccountPage /> },
+        ],
+      },
+        {
+        path: 'tradeUnion',
+        children: [
+          // { element: <InternProfilePage />, index: true },
+          // { path: 'profile', element: <InternProfilePage /> },
+          // { path: 'cards', element: <InternCardsPage /> },
+          { path: 'list', element: <TradeUnionListPage /> },
+          { path: 'new', element: <TradeUnionCreatePage /> },
+          // { path: ':id/edit', element: <InternEditPage /> },
+          // { path: 'account', element: <InternAccountPage /> },
         ],
       },
       // {

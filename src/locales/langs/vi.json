@@ -103,6 +103,15 @@
   "allow_image_2": "Kích thước tối đa 3.1 MB",
   "val_name": "Họ và tên là bắt buộc",
   "list_intern": "Danh sách thực tập sinh",
+  "trade_union": "Nghiệp đoàn",
+  "title_dashboard_create_trade_union": "Bảng điều khiển: Tạo nghiệp đoàn mới",
+  "create_trade_union": "Tạo nghiệp đoàn mới",
+  "new_trade_union": "Nghiệp đoàn mới", 
+  "name": "Tên",
+  "phone": "Số điện thoại",
+  "state": "Tỉnh",
+  "country": "Quốc gia",
+  "edit_trade_union": "Chỉnh sửa nghiệp đoàn",
   "demo": {
     "title": "Vietnamese"
   }

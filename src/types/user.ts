@@ -150,6 +150,18 @@ export type IInternItem = {
   plan: string;
 };
 
+export type ITradeUnionItem = {
+  _id: string;
+  name: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  phone: string;
+  createdAt: string;
+};
+
 export type IUserAccount = {
   email: string;
   isPublic: boolean;

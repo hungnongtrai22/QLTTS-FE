@@ -71,8 +71,8 @@ export function useNavData() {
       {
         subheader: t('management'),
         items: [
-           // Intern
-           {
+          // Intern
+          {
             title: t('intern'),
             path: paths.dashboard.intern.root,
             icon: ICONS.user,
@@ -83,6 +83,20 @@ export function useNavData() {
               { title: t('create'), path: paths.dashboard.intern.new },
               // { title: t('edit'), path: paths.dashboard.intern.demo.edit },
               // { title: t('account'), path: paths.dashboard.intern.account },
+            ],
+          },
+          // Trade Union
+          {
+            title: t('trade_union'),
+            path: paths.dashboard.tradeUnion.root,
+            icon: ICONS.user,
+            children: [
+              // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
+              // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
+              { title: t('list'), path: paths.dashboard.tradeUnion.list },
+              { title: t('create'), path: paths.dashboard.tradeUnion.new },
+              // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
+              // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
           // USER
