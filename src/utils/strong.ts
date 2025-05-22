@@ -250,7 +250,7 @@ export const strongJPs = [
     index: 17,
     value: '感受性が高い',
   },
-   {
+  {
     index: 18,
     value: '共同作業ができる',
   },
@@ -356,8 +356,12 @@ export const strongJPs = [
   },
 ];
 
-export const generateStrongJP = (value: any) => {
-    const match = strongVNs.find(item => item.value === value);
-    return match ? strongJPs[match.index].value : value;
+export const generateStrongJP = (arr: any) => {
+  const result = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    const value = arr[i];
+    const match = strongVNs.find((item) => item.value === value);
+    result.push(match ? strongJPs[match.index].value : value);
+  }
+  return result;
 };
-

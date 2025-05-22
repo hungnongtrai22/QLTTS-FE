@@ -284,7 +284,13 @@ export const weakJPs = [
   },
 ];
 
-export const generateWeakJP = (value: any) => {
-    const match = weakVNs.find(item => item.value === value);
-    return match ? weakJPs[match.index].value : value;
+
+export const generateWeakJP = (arr: any) => {
+  const result = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    const value = arr[i];
+    const match = weakVNs.find((item) => item.value === value);
+    result.push(match ? weakJPs[match.index].value : value);
+  }
+  return result;
 };

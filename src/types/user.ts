@@ -142,8 +142,8 @@ export type IInternItem = {
   married: string;
   driverLicense: string;
   interest: string;
-  strong: string;
-  weak: string;
+  strong: any;
+  weak: any;
   foreignLanguage: string;
   aim: string;
   money: string;

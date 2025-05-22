@@ -43,7 +43,6 @@ import { convertToKatakana } from 'src/utils/vietnameseToKatakana';
 import { generateStrongJP, strongJPs, strongVNs } from 'src/utils/strong';
 import { generateWeakJP, weakJPs, weakVNs } from 'src/utils/weak';
 
-
 import InternPDF from '../invoice/intern-pdf';
 // import { current } from '@reduxjs/toolkit';
 
@@ -93,8 +92,8 @@ interface FormValuesProps extends Omit<IUserItem, 'avatarUrl'> {
   }[];
   interest: string;
   foreignLanguage: string;
-  strong: string;
-  weak: string;
+  strong: string[];
+  weak: string[];
   aim: string;
   plan: string;
   money: string;
@@ -162,7 +161,8 @@ dayjs.locale('vi');
 export default function InternNewEditForm({ currentIntern }: Props) {
   // const router = useRouter();
   // console.log('TEST', currentIntern);
-  const { t,currentLang } = useLocales();
+  const { t, currentLang } = useLocales();
+  
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -333,8 +333,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     ),
     interest: Yup.string().required('Sở thích không được để trống'),
     foreignLanguage: Yup.string().required('Ngoại ngữ không được để trống'),
-    strong: Yup.string().required('Điểm mạnh không được để trống'),
-    weak: Yup.string().required('Điểm yếu không được để trống'),
+    strong: Yup.array().min(1, 'Điểm mạnh không được để trống'),
+    weak: Yup.array().min(1, 'Điểm yếu không được để trống'),
     aim: Yup.string().required('Mục tiêu không được để trống'),
     plan: Yup.string().required('Kế hoạch không được để trống'),
     money: Yup.string().required('Số tiền mong muốn không được để trống'),
@@ -384,8 +384,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
       driverLicense: currentIntern?.driverLicense || '',
       avatar: currentIntern?.avatar || '',
       interest: currentIntern?.interest || '',
-      strong: currentIntern?.strong || '',
-      weak: currentIntern?.weak || '',
+      strong: currentIntern?.strong || [],
+      weak: currentIntern?.weak || [],
       foreignLanguage: currentIntern?.foreignLanguage || '',
       aim: currentIntern?.aim || '',
       money: currentIntern?.money || '',
@@ -658,9 +658,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               name="blindColor"
               labelPlacement="start"
               label={
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    {t('blind_color')}
-                  </Typography>
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  {t('blind_color')}
+                </Typography>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -670,9 +670,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               labelPlacement="start"
               defaultChecked={false}
               label={
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    {t('smoke')}
-                  </Typography>
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  {t('smoke')}
+                </Typography>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -682,9 +682,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               labelPlacement="start"
               defaultChecked={false}
               label={
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    {t('alcohol')}
-                  </Typography>
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  {t('alcohol')}
+                </Typography>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -694,9 +694,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               defaultChecked={false}
               labelPlacement="start"
               label={
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    {t('tattoo')}
-                  </Typography>
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  {t('tattoo')}
+                </Typography>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -706,9 +706,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               defaultChecked={false}
               labelPlacement="start"
               label={
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    {t('family_in_japan')}
-                  </Typography>
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  {t('family_in_japan')}
+                </Typography>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -718,9 +718,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               defaultChecked={false}
               labelPlacement="start"
               label={
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    {t('move_foreign')}
-                  </Typography>
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  {t('move_foreign')}
+                </Typography>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
             />
@@ -1432,10 +1432,16 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               <RHFTextField name="interest" label={t('interest')} />
               {/* <RHFTextField name="strong" label={t('strong')} /> */}
               <RHFAutocomplete
+                multiple
+                limitTags={2}
                 name="strong"
-                label={t('strong') || ""}
+                label={t('strong') || ''}
                 disablePortal
-                options={currentLang.value === "vi" ? strongVNs.map(item=>item.value) : strongJPs.map(item=>item.value)}
+                options={
+                  currentLang.value === 'vi'
+                    ? strongVNs.map((item) => item.value)
+                    : strongJPs.map((item) => item.value)
+                }
                 // sx={{ width: 300 }}
                 // renderOption={(props, option) => {
                 //   const { index, value } = strongVNs.filter(
@@ -1452,19 +1458,25 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 //     </li>
                 //   );
                 // }}
-                 renderOption={(props, option) => (
+                renderOption={(props, option) => (
                   <li {...props} key={option}>
                     {option}
                   </li>
                 )}
               />
               {/* <RHFTextField name="weak" label={t('weak')} /> */}
-               <RHFAutocomplete
+              <RHFAutocomplete
+               multiple
+                limitTags={2}
                 name="weak"
-                label={t('weak') || ""}
+                label={t('weak') || ''}
                 disablePortal
-                options={currentLang.value === "vi" ? weakVNs.map(item=>item.value) : weakJPs.map(item=>item.value)}     
-                 renderOption={(props, option) => (
+                options={
+                  currentLang.value === 'vi'
+                    ? weakVNs.map((item) => item.value)
+                    : weakJPs.map((item) => item.value)
+                }
+                renderOption={(props, option) => (
                   <li {...props} key={option}>
                     {option}
                   </li>
