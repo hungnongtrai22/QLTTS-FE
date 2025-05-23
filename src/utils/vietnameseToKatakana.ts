@@ -87,6 +87,7 @@ const vietToKatakanaMap: Record<string, string> = {
   huan: 'フアン',
   hue: 'フェ',
   hung: 'フーン',
+  hưng: 'フン',
   huong: 'フーン',
   huu: 'フウ',
   huy: 'フイ',
@@ -223,6 +224,7 @@ const vietToKatakanaMap: Record<string, string> = {
   thom: 'トム',
   thong: 'トン',
   thu: 'トゥー',
+  thư: 'トゥ',
   thuat: 'トゥアット',
   thuan: 'トゥアン',
   thuc: 'トゥック',
@@ -282,27 +284,34 @@ const vietToKatakanaMap: Record<string, string> = {
   yen: 'イエン',
 };
 
+
 const removeVietnameseTones = (str: string): string => {
-  if(str.toLocaleLowerCase() === "hưng" ){
-      return "フン";
-  } 
-  if(str.toLocaleLowerCase() === "thư" ){
-      return "トゥ";
-  }
-  // Bước 1: Tạm thời thay đ/Đ bằng ký hiệu tạm để không bị mất khi normalize
+  const exceptions = ['hưng', 'thư'];
+
+  // Tách chuỗi thành từ
+  const words = str.trim().split(/\s+/);
+
   const placeholder = '__D_PLACEHOLDER__';
-  str = str.replace(/đ/g, placeholder).replace(/Đ/g, placeholder.toUpperCase());
 
-  // Bước 2: Loại bỏ các dấu thanh bằng Unicode normalize
-  str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const processWord = (word: string): string => {
+    const lowerWord = word.toLowerCase();
 
-  // Bước 3: Khôi phục lại đ/Đ
-  str = str
-    .replace(new RegExp(placeholder, 'g'), 'đ')
-    .replace(new RegExp(placeholder.toUpperCase(), 'g'), 'Đ');
+    // Nếu là từ ngoại lệ thì giữ nguyên
+    if (exceptions.includes(lowerWord)) {
+      return word;
+    }
 
-  return str;
+    // Bỏ dấu từ
+    let processed = word.replace(/đ/g, placeholder).replace(/Đ/g, placeholder.toUpperCase());
+    processed = processed.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    processed = processed.replace(new RegExp(placeholder, 'g'), 'đ').replace(new RegExp(placeholder.toUpperCase(), 'g'), 'Đ');
+    return processed;
+  };
+
+  // Xử lý từng từ
+  return words.map(processWord).join(' ');
 };
+
 
 export const convertToKatakana = (vietnameseName: string): string => {
   
