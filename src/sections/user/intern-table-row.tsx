@@ -26,12 +26,13 @@ type Props = {
   row: IInternItem;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
+  onViewRow: VoidFunction;
 };
 
 const changDateJP = (date: any) => {
   const jsDate = new Date(date);
-  const formatted = jsDate.toLocaleDateString("ja-JP");
-  const parts = formatted.split("/");
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
   const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
   return customFormat;
 };
@@ -42,8 +43,9 @@ export default function InternTableRow({
   onEditRow,
   onSelectRow,
   onDeleteRow,
+  onViewRow,
 }: Props) {
-  const { name, namejp, avatar, city, birthday,age, height, weight } = row;
+  const { name, namejp, avatar, city, birthday, age, height, weight } = row;
 
   const confirm = useBoolean();
 
@@ -73,11 +75,11 @@ export default function InternTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(birthday)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{age}</TableCell> 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{age}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{height}</TableCell> 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{height}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{weight}</TableCell> 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{weight}</TableCell>
 
         {/* <TableCell>
           <Label
@@ -94,9 +96,20 @@ export default function InternTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
+          {/* <Tooltip title="Quick Edit" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
               <Iconify icon="solar:pen-bold" />
+            </IconButton>
+          </Tooltip> */}
+
+          <Tooltip title="Xem Thông Tin" placement="top" arrow>
+            <IconButton
+              color={quickEdit.value ? 'inherit' : 'default'}
+              onClick={() => {
+                onViewRow();
+              }}
+            >
+              <Iconify icon="solar:eye-bold" />
             </IconButton>
           </Tooltip>
 

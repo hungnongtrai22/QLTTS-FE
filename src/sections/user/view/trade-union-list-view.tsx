@@ -135,7 +135,7 @@ export default function TradeUnionListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.intern.edit(id));
+      router.push(paths.dashboard.tradeUnion.edit(id));
     },
     [router]
   );

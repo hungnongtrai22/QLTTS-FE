@@ -63,45 +63,96 @@ export default function ProfileHome({ info, posts }: Props) {
 
   const renderAbout = (
     <Card>
-      <CardHeader title="About" />
+      <CardHeader title="Thông tin liên lạc" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Box sx={{ typography: 'body2' }}>{info.quote}</Box>
+        <Box sx={{ typography: 'body2' }}>Thông tin cá nhân</Box>
 
         <Stack direction="row" spacing={2}>
           <Iconify icon="mingcute:location-fill" width={24} />
 
           <Box sx={{ typography: 'body2' }}>
-            {`Live at `}
             <Link variant="subtitle2" color="inherit">
-              {info.country}
+              Số 8 TX01, phường Thạnh Xuân, Quận 12, Hồ Chí Minh
             </Link>
           </Box>
         </Stack>
 
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="fluent:mail-24-filled" width={24} sx={{ mr: 2 }} />
-          {info.email}
+          <Link variant="subtitle2" color="inherit">
+            nhattan@gmail.com
+          </Link>
         </Stack>
 
         <Stack direction="row" spacing={2}>
-          <Iconify icon="ic:round-business-center" width={24} />
+          <Iconify icon="tabler:phone-filled" width={24} />
 
           <Box sx={{ typography: 'body2' }}>
-            {info.role} {`at `}
             <Link variant="subtitle2" color="inherit">
-              {info.company}
+              0908817632
+            </Link>
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack spacing={2} sx={{ p: 3 }}>
+        <Box sx={{ typography: 'body2' }}>Thông tin bố</Box>
+
+        <Stack direction="row" sx={{ typography: 'body2' }}>
+          <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
+          <Link variant="subtitle2" color="inherit">
+            Nguyễn Văn A
+          </Link>
+        </Stack>
+
+        <Stack direction="row" spacing={2}>
+          <Iconify icon="mingcute:location-fill" width={24} />
+
+          <Box sx={{ typography: 'body2' }}>
+            <Link variant="subtitle2" color="inherit">
+              Số 8 TX01, phường Thạnh Xuân, Quận 12, Hồ Chí Minh
             </Link>
           </Box>
         </Stack>
 
         <Stack direction="row" spacing={2}>
-          <Iconify icon="ic:round-business-center" width={24} />
+          <Iconify icon="tabler:phone-filled" width={24} />
 
           <Box sx={{ typography: 'body2' }}>
-            {`Studied at `}
             <Link variant="subtitle2" color="inherit">
-              {info.school}
+              0908817632
+            </Link>
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack spacing={2} sx={{ p: 3 }}>
+        <Box sx={{ typography: 'body2' }}>Thông tin mẹ</Box>
+
+        <Stack direction="row" sx={{ typography: 'body2' }}>
+          <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
+          <Link variant="subtitle2" color="inherit">
+            Lê Thị B
+          </Link>
+        </Stack>
+
+        <Stack direction="row" spacing={2}>
+          <Iconify icon="mingcute:location-fill" width={24} />
+
+          <Box sx={{ typography: 'body2' }}>
+            <Link variant="subtitle2" color="inherit">
+              Số 8 TX01, phường Thạnh Xuân, Quận 12, Hồ Chí Minh
+            </Link>
+          </Box>
+        </Stack>
+
+        <Stack direction="row" spacing={2}>
+          <Iconify icon="tabler:phone-filled" width={24} />
+
+          <Box sx={{ typography: 'body2' }}>
+            <Link variant="subtitle2" color="inherit">
+              0908817632
             </Link>
           </Box>
         </Stack>
@@ -146,7 +197,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
   const renderSocials = (
     <Card>
-      <CardHeader title="Social" />
+      <CardHeader title="Mạng Xã hội" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
         {_socials.map((link) => (

@@ -112,7 +112,7 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/intern/new`,
       list: `${ROOTS.DASHBOARD}/intern/list`,
       cards: `${ROOTS.DASHBOARD}/intern/cards`,
-      profile: `${ROOTS.DASHBOARD}/intern/profile`,
+      profile: (id: string) => `${ROOTS.DASHBOARD}/intern/${id}/profile`,
       account: `${ROOTS.DASHBOARD}/intern/account`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/intern/${id}/edit`,
       demo: {
@@ -129,6 +129,18 @@ export const paths = {
       edit: (id: string) => `${ROOTS.DASHBOARD}/tradeUnion/${id}/edit`,
       demo: {
         edit: `${ROOTS.DASHBOARD}/tradeUnion/${MOCK_ID}/edit`,
+      },
+    },
+     company: {
+      root: `${ROOTS.DASHBOARD}/company`,
+      new: `${ROOTS.DASHBOARD}/company/new`,
+      list: `${ROOTS.DASHBOARD}/company/list`,
+      cards: `${ROOTS.DASHBOARD}/company/cards`,
+      profile: `${ROOTS.DASHBOARD}/company/profile`,
+      account: `${ROOTS.DASHBOARD}/company/account`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/company/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/company/${MOCK_ID}/edit`,
       },
     },
     user: {

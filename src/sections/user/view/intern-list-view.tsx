@@ -140,6 +140,13 @@ export default function InternListView() {
     [router]
   );
 
+  const handleViewRow = useCallback(
+    (id: string) => {
+      router.push(paths.dashboard.intern.profile(id));
+    },
+    [router]
+  );
+
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
       handleFilters('status', newValue);
@@ -301,6 +308,7 @@ export default function InternListView() {
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
                         onEditRow={() => handleEditRow(row._id)}
+                        onViewRow={() => handleViewRow(row._id)}
                       />
                     ))}
 

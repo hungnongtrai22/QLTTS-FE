@@ -56,7 +56,7 @@ export const _userGallery = [...Array(12)].map((_, index) => ({
 export const _userFeeds = [...Array(3)].map((_, index) => ({
   id: _mock.id(index),
   createdAt: _mock.time(index),
-  media: _mock.image.travel(index + 1),
+  media: "https://cdn.thuvienphapluat.vn/uploads/phapluat/2022-2/NTTY/de-thi-tieng-nhat-thpt-tham-khao.jpg",
   message: _mock.sentence(index),
   personLikes: [...Array(20)].map((__, personIndex) => ({
     name: _mock.fullName(personIndex),
@@ -67,22 +67,22 @@ export const _userFeeds = [...Array(3)].map((_, index) => ({
       id: _mock.id(7),
       author: {
         id: _mock.id(8),
-        avatarUrl: _mock.image.avatar(index + 5),
-        name: _mock.fullName(index + 5),
+        avatarUrl: "https://res.cloudinary.com/dj4gvts4q/image/upload/v1747902653/dashboard/tvgclmxzavkxhoo9sjy7.jpg",
+        name: "Nguyễn Thanh Phúc",
       },
       createdAt: _mock.time(2),
-      message: 'Praesent venenatis metus at',
+      message: '今回の日本語試験の結果はとても立派でした。これからもその調子で頑張ってください！',
     },
     {
       id: _mock.id(9),
       author: {
         id: _mock.id(10),
-        avatarUrl: _mock.image.avatar(index + 6),
-        name: _mock.fullName(index + 6),
+        avatarUrl: "https://res.cloudinary.com/dj4gvts4q/image/upload/v1747902651/dashboard/k37jyufpzcakwgukzxrl.jpg",
+        name: "Nguyễn Thanh Phúc",
       },
       createdAt: _mock.time(3),
       message:
-        'Etiam rhoncus. Nullam vel sem. Pellentesque libero tortor, tincidunt et, tincidunt eget, semper nec, quam. Sed lectus.',
+        '真面目に取り組んできた姿勢が、今回の高得点に表れていますね。とても感心しました。',
     },
   ],
 }));

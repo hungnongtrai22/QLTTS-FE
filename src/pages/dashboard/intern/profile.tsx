@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { UserProfileView } from 'src/sections/user/view';
+import InternProfileView from 'src/sections/user/view/intern-profile-view';
 
 // ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ export default function InternProfilePage() {
         <title> Dashboard: User Profile</title>
       </Helmet>
 
-      <UserProfileView />
+      <InternProfileView />
     </>
   );
 }

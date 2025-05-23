@@ -39,7 +39,10 @@ const InternEditPage = lazy(() => import('src/pages/dashboard/intern/edit'));
 // Trade Union
 const TradeUnionListPage = lazy(() => import('src/pages/dashboard/tradeUnion/list'));
 const TradeUnionCreatePage = lazy(() => import('src/pages/dashboard/tradeUnion/new'));
-
+const TradeUnionEditPage = lazy(() => import('src/pages/dashboard/tradeUnion/edit'));
+// Company
+const CompanyListPage = lazy(() => import('src/pages/dashboard/company/list'));
+const CompanyCreatePage = lazy(() => import('src/pages/dashboard/company/new'));
 // USER
 // const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 // const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
@@ -99,7 +102,7 @@ export const dashboardRoutes = [
         path: 'intern',
         children: [
           { element: <InternProfilePage />, index: true },
-          { path: 'profile', element: <InternProfilePage /> },
+          { path: ':id/profile', element: <InternProfilePage /> },
           { path: 'cards', element: <InternCardsPage /> },
           { path: 'list', element: <InternListPage /> },
           { path: 'new', element: <InternCreatePage /> },
@@ -115,6 +118,19 @@ export const dashboardRoutes = [
           // { path: 'cards', element: <InternCardsPage /> },
           { path: 'list', element: <TradeUnionListPage /> },
           { path: 'new', element: <TradeUnionCreatePage /> },
+          { path: ':id/edit', element: <TradeUnionEditPage /> },
+          // { path: 'account', element: <InternAccountPage /> },
+        ],
+      },
+
+           {
+        path: 'company',
+        children: [
+          // { element: <InternProfilePage />, index: true },
+          // { path: 'profile', element: <InternProfilePage /> },
+          // { path: 'cards', element: <InternCardsPage /> },
+          { path: 'list', element: <CompanyListPage /> },
+          { path: 'new', element: <CompanyCreatePage /> },
           // { path: ':id/edit', element: <InternEditPage /> },
           // { path: 'account', element: <InternAccountPage /> },
         ],

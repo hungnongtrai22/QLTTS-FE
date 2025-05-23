@@ -156,6 +156,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
+        textLeft: {
+          textAlign: 'left',
+        },
       }),
     []
   );
@@ -184,6 +187,18 @@ const changMonthYearJP = (date: any) => {
   const customFormat = `${parts[0]}年${parts[1]}月`;
   return customFormat;
 };
+
+function normalizeName(name: string): string {
+  return name
+    .normalize('NFD') // Tách dấu
+    .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+    .replace(/đ/g, 'd') // đ -> d
+    .replace(/Đ/g, 'D') // Đ -> D
+    .replace(/[^A-Za-z\s]/g, '') // Loại bỏ ký tự không phải chữ cái hoặc khoảng trắng
+    .toUpperCase() // In hoa
+    .trim() // Bỏ khoảng trắng đầu cuối
+    .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
+}
 
 export default function InternPDF({ invoice }: Props) {
   const {
@@ -246,7 +261,7 @@ export default function InternPDF({ invoice }: Props) {
                 </View>
 
                 <View style={styles.tableCell_2}>
-                  <Text>{name}</Text>
+                  <Text>{normalizeName(name)}</Text>
                 </View>
 
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
@@ -419,10 +434,10 @@ export default function InternPDF({ invoice }: Props) {
               display: 'flex',
               justifyContent: 'flex-end',
               alignItems: 'flex-end',
-              overflow: "hidden"
+              overflow: 'hidden',
             }}
           >
-            <Image source={avatar} style={{ width: '100%', height: '100' }}/>
+            <Image source={avatar} style={{ width: '100%', height: '100' }} />
           </View>
         </View>
 
@@ -592,29 +607,41 @@ export default function InternPDF({ invoice }: Props) {
                   <Text style={styles.subtitle2}>趣味</Text>
                 </View>
 
-                <View style={[styles.tableCell_6]}>
+                <View style={[styles.tableCell_6, styles.textLeft]}>
                   <Text>{interest}</Text>
                 </View>
 
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>長所</Text>
                 </View>
-                <View style={[styles.tableCell_4]}>
-                  <Text>{strong}</Text>
+                <View style={[styles.tableCell_4, styles.textLeft]}>
+                  <ul>
+                    {strong.map((item: any) => (
+                      <li key={item}>
+                        <Text>•{item}</Text>
+                      </li>
+                    ))}
+                  </ul>
                 </View>
                 <View style={[styles.tableCell_8, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>短所</Text>
                 </View>
-                <View style={[styles.tableCell_3]}>
-                  <Text>{weak}</Text>
+                <View style={[styles.tableCell_3, styles.textLeft]}>
+                  <ul>
+                    {weak.map((item: any) => (
+                      <li key={item}>
+                        <Text>•{item}</Text>
+                      </li>
+                    ))}
+                  </ul>
                 </View>
               </View>
-               <View style={styles.tableRow}>
+              <View style={styles.tableRow}>
                 <View style={[styles.tableCell_3, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>日本に行くの目的・志望動機</Text>
                 </View>
 
-                <View style={[styles.tableCell_6]}>
+                <View style={[styles.tableCell_6, styles.textLeft]}>
                   <Text>{aim}</Text>
                 </View>
 
@@ -631,7 +658,7 @@ export default function InternPDF({ invoice }: Props) {
                   <Text>{money}</Text>
                 </View>
               </View>
-               <View style={styles.tableRow}>
+              <View style={styles.tableRow}>
                 <View style={[styles.tableCell_3, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>実習期間が終了した後、どんな予定がありますか</Text>
                 </View>
@@ -644,19 +671,19 @@ export default function InternPDF({ invoice }: Props) {
                   <Text style={styles.subtitle2}>日本に親戚がいますか</Text>
                 </View>
                 <View style={[styles.tableCell_4]}>
-                  <Text>{familyInJapan ? "はい" : "なし"}</Text>
+                  <Text>{familyInJapan ? 'はい' : 'なし'}</Text>
                 </View>
                 <View style={[styles.tableCell_8, styles.titleBackground]}>
                   <Text style={styles.subtitle2}>外国へ行ったことがありますか</Text>
                 </View>
                 <View style={[styles.tableCell_3]}>
-                  <Text>{moveForeign ? "はい" : "なし"}</Text>
+                  <Text>{moveForeign ? 'はい' : 'なし'}</Text>
                 </View>
               </View>
             </View>
           </View>
         </View>
-        
+
         {/* <View style={[styles.gridContainer, styles.footer]} fixed>
           <View style={styles.col8}>
             <Text style={styles.subtitle2}>NOTES</Text>
