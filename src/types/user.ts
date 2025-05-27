@@ -10,6 +10,18 @@ export type IUserTableFilters = {
   status: string;
 };
 
+export type ICompanyTableFilters = {
+  name: string;
+  tradeUnion: string[];
+  status: string;
+};
+
+export type IInternTableFilters = {
+  name: string;
+  tradeUnion: string[];
+  status: string;
+};
+
 // ----------------------------------------------------------------------
 
 export type IUserSocialLink = {
@@ -148,6 +160,8 @@ export type IInternItem = {
   aim: string;
   money: string;
   plan: string;
+  tradeUnion: any;
+  companySelect: any;
 };
 
 export type ITradeUnionItem = {
@@ -159,6 +173,21 @@ export type ITradeUnionItem = {
   state: string;
   country: string;
   phone: string;
+  createdAt: string;
+};
+
+export type ICompanyItem = {
+  _id: string;
+  name: string;
+  email: string;
+  web: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  description: string;
+  tradeUnion: any;
   createdAt: string;
 };
 

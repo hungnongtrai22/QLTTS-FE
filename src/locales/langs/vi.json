@@ -106,13 +106,16 @@
   "trade_union": "Nghiệp đoàn",
   "title_dashboard_create_trade_union": "Bảng điều khiển: Tạo nghiệp đoàn mới",
   "create_trade_union": "Tạo nghiệp đoàn mới",
-  "new_trade_union": "Nghiệp đoàn mới", 
+  "new_trade_union": "Nghiệp đoàn mới",
   "name": "Tên",
   "phone": "Số điện thoại",
   "state": "Tỉnh",
   "country": "Quốc gia",
   "edit_trade_union": "Chỉnh sửa nghiệp đoàn",
   "company_title": "Công ty",
+  "title_dashboard_create_company": "Bảng điều khiển: Tạo công ty mới",
+  "create_company": "Tạo công ty mới",
+  "new_company": "Công ty mới",
   "demo": {
     "title": "Vietnamese"
   }

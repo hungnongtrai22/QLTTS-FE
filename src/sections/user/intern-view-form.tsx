@@ -1,17 +1,14 @@
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
+
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 // utils
 // types
 import { IInternItem, IUserItem } from 'src/types/user';
@@ -36,12 +33,10 @@ import { viVN } from '@mui/x-date-pickers/locales';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
-import axios from 'axios';
 import { useLocales } from 'src/locales';
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { convertToKatakana } from 'src/utils/vietnameseToKatakana';
-import { generateStrongJP, strongJPs, strongVNs } from 'src/utils/strong';
-import { generateWeakJP, weakJPs, weakVNs } from 'src/utils/weak';
+import {  strongJPs, strongVNs } from 'src/utils/strong';
+import {  weakJPs, weakVNs } from 'src/utils/weak';
 
 import InternPDF from '../invoice/intern-pdf';
 // import { current } from '@reduxjs/toolkit';
@@ -163,88 +158,14 @@ export default function InternViewForm({ currentIntern }: Props) {
   // console.log('TEST', currentIntern);
   const { t, currentLang } = useLocales();
 
-  const { enqueueSnackbar } = useSnackbar();
 
   // const values = watch();
 
   // const [city, setCity] = useState('');
 
   const NewUserSchema = Yup.object().shape({
-    // userId: Yup.number().required('UserId is required').min(1),
     name: Yup.string().required('Họ và tên không được để trống'),
-    namejp: Yup.string().required('Phiên âm tên không được để trống'),
-    gender: Yup.string().required('Giới tính không được để trống'),
-    blood: Yup.string().required('Nhóm máu không được để trống'),
-    birthday: Yup.date()
-      .required('Ngày sinh không được để trống')
-      .typeError('Ngày sinh không hợp lệ'),
-    // age: Yup.number().required('Age is required').min(16),
-    height: Yup.number()
-      .required('Chiều cao không được để trống')
-      .min(140, 'Chiều cao phải lớn hơn 140cm')
-      .max(190, 'Chiều cao phải thấp hơn 190cm'),
-    weight: Yup.number().required('Cân nặng không được để trống').min(1),
-    // BMI: Yup.number().required('BMI is required').min(1),
-    avatar: Yup.mixed().required('Ảnh không được để trống'),
-    hand: Yup.string().required('Tay thuận không được để trống'),
-    leftEye: Yup.number().required('Mắt trái không được để trống'),
-    rightEye: Yup.number().required('Mắt phải không được để trống'),
-    address: Yup.string().required('Địa chỉ không được để trống'),
-    city: Yup.string().required('Thành phố không được để trống'),
-    married: Yup.string().required('Tình trạng hôn nhân không được để trống'),
-    driverLicense: Yup.string().required('Bằng lái xe không được để trống'),
-    schoolList: Yup.array()
-      .of(
-        Yup.object().shape({
-          timeFrom: Yup.date().nullable().required('Ngày bắt đầu không được để trống'),
-          timeTo: Yup.date()
-            .nullable()
-            .required('Ngày kết thúc không được để trống')
-            .min(Yup.ref('timeFrom'), 'Ngày kết thúc phải sau ngày bắt đầu'),
-          name: Yup.string()
-            .required('Tên trường học không được để trống')
-            .max(255, 'Tên trường học quá dài'),
-          content: Yup.string().required('Nội dung không được để trống'),
-          current: Yup.string().required('Tình trạng không được để trống'),
-        })
-      )
-      .min(1, 'Phải có ít nhất 1 học vấn'),
-
-    companyList: Yup.array().of(
-      Yup.object().shape({
-        timeFrom: Yup.date().nullable().required('Ngày bắt đầu không được để trống'),
-        timeTo: Yup.date()
-          .nullable()
-          .required('Ngày kết thúc không được để trống')
-          .min(Yup.ref('timeFrom'), 'Ngày kết thúc phải sau ngày bắt đầu'),
-        name: Yup.string()
-          .required('Tên công ty không được để trống')
-          .max(255, 'Tên công ty quá dài')
-          .min(1, 'Phải có ít nhất một lịch sử công việc'),
-        content: Yup.string().required('Nội dung công việc không được để trống'),
-      })
-    ),
-    familyList: Yup.array().of(
-      Yup.object().shape({
-        relationship: Yup.string().required('Mối quan hệ không được để trống'),
-        name: Yup.string()
-          .required('Tên không được để trống')
-          .max(255, 'Tên quá dài')
-          .min(1, 'Phải có ít nhất 1 thành viên trong gia đình'),
-        year: Yup.date().required('Năm sinh không được để trống'),
-        location: Yup.string().required('Địa chỉ không được để trống'),
-        occupation: Yup.string().required('Nghề nghiệp không được để trống'),
-      })
-    ),
-    interest: Yup.string().required('Sở thích không được để trống'),
-    foreignLanguage: Yup.string().required('Ngoại ngữ không được để trống'),
-    strong: Yup.array().min(1, 'Điểm mạnh không được để trống'),
-    weak: Yup.array().min(1, 'Điểm yếu không được để trống'),
-    aim: Yup.string().required('Mục tiêu không được để trống'),
-    plan: Yup.string().required('Kế hoạch không được để trống'),
-    money: Yup.string().required('Số tiền mong muốn không được để trống'),
-    // familyInJapan: Yup.boolean().required('familyInJapan is required'),
-    // moveForeign: Yup.boolean().required('Move Foreign is required'),
+  
   });
 
   const defaultValues = useMemo(

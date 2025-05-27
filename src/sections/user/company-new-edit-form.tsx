@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -10,14 +10,15 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 // utils
 // types
-import { ITradeUnionItem, IUserItem } from 'src/types/user';
+import { ICompanyItem, IUserItem } from 'src/types/user';
 // assets
 // components
 import { CustomFile } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFEditor, RHFSelect, RHFTextField } from 'src/components/hook-form';
 import axios from 'axios';
 import { useLocales } from 'src/locales';
+import { MenuItem } from '@mui/material';
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -78,15 +79,18 @@ interface FormValuesProps extends Omit<IUserItem, 'avatarUrl'> {
 
 type Props = {
   // currentUser?: IUserItem;
-  currentTradeUnion?: ITradeUnionItem;
+  // currentTradeUnion?: ITradeUnionItem;
+  currentCompany?: ICompanyItem;
 };
 
-export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
+export default function CompanyNewEditForm({ currentCompany }: Props) {
   // const router = useRouter();
-  // console.log('TEST', currentIntern);
+  console.log('TEST', currentCompany);
   const { t } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const [tradeUnion, setTradeUnion] = useState([]);
 
   // const [city, setCity] = useState('');
 
@@ -99,17 +103,19 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      name: currentTradeUnion?.name || '',
-      email: currentTradeUnion?.email || '',
-      phone: currentTradeUnion?.phone || '',
-      city: currentTradeUnion?.city || '',
-      state: currentTradeUnion?.state || '',
-      country: currentTradeUnion?.country || '',
-      address: currentTradeUnion?.address || '',
+      name: currentCompany?.name || '',
+      email: currentCompany?.email || '',
+      phone: currentCompany?.phone || '',
+      city: currentCompany?.city || '',
+      state: currentCompany?.state || '',
+      country: currentCompany?.country || '',
+      address: currentCompany?.address || '',
+      tradeUnion: currentCompany?.tradeUnion || '',
+      description: currentCompany?.description || '',
       // school: currentIntern?.school || [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentTradeUnion]
+    [currentCompany]
   );
 
   const methods = useForm<FormValuesProps>({
@@ -126,22 +132,22 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
 
   // const values = watch();
 
-  const createNewTradeUnion = useCallback(async (tradeUnion: any) => {
-    const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/create`, {
-      ...tradeUnion,
+  const createNewCompany = useCallback(async (company: any) => {
+    const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/company/create`, {
+      ...company,
     });
     return data;
   }, []);
 
-  const editTradeUnion = useCallback(
+  const editCompany = useCallback(
     async (intern: any) => {
-      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/edit`, {
+      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/company/edit`, {
         ...intern,
-        _id: currentTradeUnion?._id,
+        _id: currentCompany?._id,
       });
       return data;
     },
-    [currentTradeUnion]
+    [currentCompany]
   );
 
   const onSubmit = useCallback(
@@ -150,20 +156,30 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         // reset();
         // router.push(paths.dashboard.user.list);
-        if (currentTradeUnion) {
-          await editTradeUnion(data);
-          enqueueSnackbar(currentTradeUnion ? 'Update success!' : 'Create success!');
+        if (currentCompany) {
+          await editCompany(data);
+          enqueueSnackbar(currentCompany ? 'Update success!' : 'Create success!');
         } else {
-          await createNewTradeUnion(data);
-          enqueueSnackbar(currentTradeUnion ? 'Update success!' : 'Create success!');
+          await createNewCompany(data);
+          enqueueSnackbar(currentCompany ? 'Update success!' : 'Create success!');
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [createNewTradeUnion, editTradeUnion, enqueueSnackbar, currentTradeUnion]
+    [createNewCompany, editCompany, enqueueSnackbar, currentCompany]
     // [currentIntern, enqueueSnackbar, reset, router]
   );
+
+  const handleGetTradeUnion = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
+    setTradeUnion(data.tradeUnions);
+    // console.log(data.tradeUnions);
+  }, []);
+
+  useEffect(() => {
+    handleGetTradeUnion();
+  }, [handleGetTradeUnion]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -184,24 +200,30 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
             >
               <RHFTextField name="name" label={t('name')} />
               <RHFTextField name="email" label="Email" />
+              <RHFTextField name="web" label="Web" />
+
               <RHFTextField name="phone" label={t('phone')} />
               <RHFTextField name="city" label={t('city')} />
               <RHFTextField name="state" label={t('state')} />
 
-              {/* <RHFSelect
-                fullWidth
-                name="foreignLanguage"
-                label={t('foreign_language')}
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-              >
-                {['日本語：簡単な自己紹介ができます', 'なし'].map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </RHFSelect> */}
               <RHFTextField name="country" label={t('country')} />
               <RHFTextField name="address" label={t('address')} />
+
+              <RHFSelect
+                fullWidth
+                name="tradeUnion"
+                label={t('trade_union')}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {tradeUnion.map((option: any) => (
+                  <MenuItem key={option._id} value={option._id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            </Box>
+            <Box sx={{ pt: 3 }}>
+              <RHFEditor simple name="description" />
             </Box>
             <Stack alignItems="flex-end" spacing={1.5}>
               {/* <Button
@@ -216,7 +238,7 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
             </Stack>
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentTradeUnion ? t('create_trade_union') : t('edit_trade_union')}
+                {!currentCompany ? t('create_trade_union') : t('edit_trade_union')}
               </LoadingButton>
             </Stack>
           </Card>

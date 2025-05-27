@@ -17,7 +17,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // types
-import { IInternItem, IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { ICompanyItem, ICompanyTableFilters, IUserTableFilterValue } from 'src/types/user';
 // _mock
 import { _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 // hooks
@@ -42,34 +42,34 @@ import {
 import axios from 'axios';
 
 //
-import InternTableRow from '../intern-table-row';
-import InternTableToolbar from '../intern-table-toolbar';
-import InternTableFiltersResult from '../intern-table-filters-result';
+import CompanyTableRow from '../company-table-row';
+import CompanyTableToolbar from '../company-table-toolbar';
+import CompanyTableFiltersResult from '../company-table-filters-result';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', width: 310 },
-  { id: 'phoneNumber', label: 'City', width: 100 },
-  { id: 'birthday', label: 'Date of Birth', width: 120 },
-  { id: 'age', label: 'Age', width: 80 },
-  { id: 'height', label: 'Height', width: 80 },
-  { id: 'weight', label: 'weight', width: 80 },
+  { id: 'name', label: 'Tên', width: 310 },
+  { id: 'tradeUnion', label: 'Nghiệp đoàn', width: 100 },
+  { id: 'phoneNumber', label: 'Số điện thoại', width: 100 },
+  { id: 'birthday', label: 'Thành phố', width: 120 },
+  { id: 'age', label: 'Tỉnh', width: 80 },
+  { id: 'height', label: 'Quốc gia', width: 80 },
+  { id: 'weight', label: 'Ngày tạo', width: 80 },
   { id: '', width: 88 },
 ];
 
 const defaultFilters = {
   name: '',
-  // role: [],
   tradeUnion: [],
   status: 'all',
 };
 
 // ----------------------------------------------------------------------
 
-export default function InternListView() {
+export default function CompanyListView() {
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -78,8 +78,8 @@ export default function InternListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IInternItem[]>([]);
-  const [tradeUnion, setTradeUnion] = useState([]);
+  const [tableData, setTableData] = useState<ICompanyItem[]>([]);
+  const [tradeUnion, setTradeUnion]= useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -134,14 +134,7 @@ export default function InternListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.intern.edit(id));
-    },
-    [router]
-  );
-
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.intern.profile(id));
+      router.push(paths.dashboard.company.edit(id));
     },
     [router]
   );
@@ -157,22 +150,30 @@ export default function InternListView() {
     setFilters(defaultFilters);
   }, []);
 
-  const handleGetAllIntern = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`);
-    console.log(data.interns);
-    setTableData(data.interns);
-  }, []);
+  // const handleGetAllIntern = useCallback(async () => {
+  //   const {data} = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`);
+  //   console.log(data.interns);
+  //   setTableData(data.interns);
+  // }, []);
 
   const handleGetTradeUnion = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
-    setTradeUnion(data.tradeUnions.map((item: any) => item.name));
+    setTradeUnion(data.tradeUnions.map((item : any)=>item.name));
     // console.log(data.tradeUnions);
   }, []);
 
+  const handleGetCompany = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/company/list`);
+    setTableData(data.companies.map((item : any) => ({
+      ...item,
+      tradeUnion: item.tradeUnion.name
+    })));
+  }, []);
+
   useEffect(() => {
-    handleGetAllIntern();
     handleGetTradeUnion();
-  }, [handleGetAllIntern, handleGetTradeUnion]);
+    handleGetCompany();
+  }, [handleGetTradeUnion, handleGetCompany]);
 
   return (
     <>
@@ -242,7 +243,7 @@ export default function InternListView() {
             ))}
           </Tabs>
 
-          <InternTableToolbar
+          <CompanyTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
@@ -250,7 +251,7 @@ export default function InternListView() {
           />
 
           {canReset && (
-            <InternTableFiltersResult
+            <CompanyTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -305,14 +306,13 @@ export default function InternListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <InternTableRow
+                      <CompanyTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
                         onEditRow={() => handleEditRow(row._id)}
-                        onViewRow={() => handleViewRow(row._id)}
                       />
                     ))}
 
@@ -373,9 +373,9 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: IInternItem[];
+  inputData: ICompanyItem[];
   comparator: (a: any, b: any) => number;
-  filters: IInternTableFilters;
+  filters: ICompanyTableFilters;
 }) {
   const { name, tradeUnion } = filters;
 
@@ -400,7 +400,7 @@ function applyFilter({
   // }
 
   if (tradeUnion.length) {
-    inputData = inputData.filter((user) => tradeUnion.includes(user?.tradeUnion?.name));
+    inputData = inputData.filter((user) => tradeUnion.includes(user.tradeUnion));
   }
 
   return inputData;

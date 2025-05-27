@@ -7,10 +7,9 @@ import Tabs, { tabsClasses } from '@mui/material/Tabs';
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 import { useParams } from 'src/routes/hook';
 // _mock
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
+import { _userAbout, _userFeeds, _userFriends, _userGallery } from 'src/_mock';
 // components
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -60,7 +59,6 @@ export default function InternProfileView() {
   
     const { id } = params;
 
-  const { user } = useMockedUser();
     const [intern, setIntern] = useState<IInternItem>();
 
 

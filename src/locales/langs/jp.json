@@ -113,6 +113,9 @@
   "country": "国",
   "edit_trade_union": "労働組合を編集する",
   "company_title": "会社",
+  "title_dashboard_create_company": "ダッシュボード：新しい会社を作成",
+  "create_company": "新しい会社を作成",
+  "new_company": "新しい会社",
   "demo": {
     "title": "英語"
   }

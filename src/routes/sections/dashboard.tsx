@@ -43,6 +43,8 @@ const TradeUnionEditPage = lazy(() => import('src/pages/dashboard/tradeUnion/edi
 // Company
 const CompanyListPage = lazy(() => import('src/pages/dashboard/company/list'));
 const CompanyCreatePage = lazy(() => import('src/pages/dashboard/company/new'));
+const CompanyEditPage = lazy(() => import('src/pages/dashboard/company/edit'));
+
 // USER
 // const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 // const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
@@ -131,7 +133,7 @@ export const dashboardRoutes = [
           // { path: 'cards', element: <InternCardsPage /> },
           { path: 'list', element: <CompanyListPage /> },
           { path: 'new', element: <CompanyCreatePage /> },
-          // { path: ':id/edit', element: <InternEditPage /> },
+          { path: ':id/edit', element: <CompanyEditPage /> },
           // { path: 'account', element: <InternAccountPage /> },
         ],
       },

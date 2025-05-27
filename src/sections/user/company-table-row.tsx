@@ -1,22 +1,21 @@
 // @mui
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
+// import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
+// import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
-import { IInternItem } from 'src/types/user';
+import { ICompanyItem } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import InternQuickEditForm from './intern-quick-edit-form';
 //
 
 // ----------------------------------------------------------------------
@@ -24,10 +23,9 @@ import InternQuickEditForm from './intern-quick-edit-form';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: IInternItem;
+  row: ICompanyItem;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
-  onViewRow: VoidFunction;
 };
 
 const changDateJP = (date: any) => {
@@ -38,15 +36,14 @@ const changDateJP = (date: any) => {
   return customFormat;
 };
 
-export default function InternTableRow({
+export default function CompanyTableRow({
   row,
   selected,
   onEditRow,
   onSelectRow,
   onDeleteRow,
-  onViewRow,
 }: Props) {
-  const { name, namejp, avatar, city, birthday, age, height, weight } = row;
+  const { name, city, state, phone, country, createdAt, tradeUnion } = row;
 
   const confirm = useBoolean();
 
@@ -61,26 +58,29 @@ export default function InternTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatar} sx={{ mr: 2 }} />
+        {/* <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar alt={name} src={avatar} sx={{ mr: 2 }} /> 
 
           <ListItemText
             primary={name}
-            secondary={namejp}
+            // secondary={namejp}
             primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
+            // secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
-        </TableCell>
+        </TableCell> */}
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{tradeUnion}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phone}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{city}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(birthday)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{state}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{age}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{country}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{height}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{weight}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(createdAt)}</TableCell>
 
         {/* <TableCell>
           <Label
@@ -97,20 +97,9 @@ export default function InternTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Thêm nghiệp đoàn và công ty" placement="top" arrow>
+          <Tooltip title="Quick Edit" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
-              <Iconify icon="healthicons:job-status-level" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Xem Thông Tin" placement="top" arrow>
-            <IconButton
-              color={quickEdit.value ? 'inherit' : 'default'}
-              onClick={() => {
-                onViewRow();
-              }}
-            >
-              <Iconify icon="solar:eye-bold" />
+              <Iconify icon="solar:pen-bold" />
             </IconButton>
           </Tooltip>
 
@@ -120,7 +109,7 @@ export default function InternTableRow({
         </TableCell>
       </TableRow>
 
-      <InternQuickEditForm currentIntern={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}
@@ -147,16 +136,6 @@ export default function InternTableRow({
         >
           <Iconify icon="solar:pen-bold" />
           Edit
-        </MenuItem>
-
-         <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Nghiệp đoàn
         </MenuItem>
       </CustomPopover>
 
