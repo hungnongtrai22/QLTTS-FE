@@ -43,7 +43,7 @@ export default function InternTableFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          công ty được tìm thấy
+          {" "}thực tập sinh được tìm thấy
         </Box>
       </Box>
 

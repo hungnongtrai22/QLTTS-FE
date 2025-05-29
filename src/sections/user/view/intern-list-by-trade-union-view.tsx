@@ -16,7 +16,6 @@ import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
-import { useLocales } from 'src/locales';
 // types
 import { IInternItem, IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
 // _mock
@@ -40,16 +39,27 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { useAuthContext } from 'src/auth/hooks';
 import axios from 'axios';
 
 //
-import InternTableRow from '../intern-table-row';
-import InternTableToolbar from '../intern-table-toolbar';
 import InternTableFiltersResult from '../intern-table-filters-result';
+import InternByTradeUnionTableToolbar from '../intern-by-trade-union-table-toolbar';
+import InternByTradeUnionTableRow from '../intern-by-trade-union-table-row';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+
+const TABLE_HEAD = [
+  { id: 'name', label: 'Name', width: 310 },
+  { id: 'phoneNumber', label: 'City', width: 100 },
+  { id: 'birthday', label: 'Date of Birth', width: 120 },
+  { id: 'age', label: 'Age', width: 80 },
+  { id: 'height', label: 'Height', width: 80 },
+  { id: 'weight', label: 'weight', width: 80 },
+  { id: '', width: 88 },
+];
 
 const defaultFilters = {
   name: '',
@@ -60,22 +70,12 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function InternListView() {
-  const { t } = useLocales();
-
-  const TABLE_HEAD = [
-    { id: 'name', label: t('full_name'), width: 310 },
-    { id: 'phoneNumber', label: t('city'), width: 100 },
-    { id: 'birthday', label: t('birthday'), width: 120 },
-    { id: 'age', label: t('age'), width: 80 },
-    { id: 'height', label: t('height'), width: 100 },
-    { id: 'weight', label: t('weight'), width: 100 },
-    { id: '', width: 88 },
-  ];
-
+export default function InternListByTradeUnionView() {
   const table = useTable();
 
   const settings = useSettingsContext();
+
+  const { user } = useAuthContext();
 
   const router = useRouter();
 
@@ -161,10 +161,14 @@ export default function InternListView() {
   }, []);
 
   const handleGetAllIntern = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`);
-    console.log(data.interns);
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/user/listByTradeUnion`,
+      {
+        tradeUnion: user?.tradeUnion,
+      }
+    );
     setTableData(data.interns);
-  }, []);
+  }, [user]);
 
   const handleGetTradeUnion = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
@@ -180,27 +184,27 @@ export default function InternListView() {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <CustomBreadcrumbs
-          heading={t('list') || ''}
+        {/* <CustomBreadcrumbs
+          heading="List"
           links={[
-            { name: t('dashboard') || '', href: paths.dashboard.root },
-            { name: t('intern') || '', href: paths.dashboard.intern.root },
-            { name: t('list') || '' },
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'User', href: paths.dashboard.user.root },
+            { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.intern.new}
+              href={paths.dashboard.user.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              {t('new_intern')}
+              New User
             </Button>
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
-        />
+        /> */}
 
         <Card>
           <Tabs
@@ -231,24 +235,23 @@ export default function InternListView() {
                   >
                     {tab.value === 'all' && _userList.length}
                     {tab.value === 'active' &&
-                      _userList.filter((user) => user.status === 'active').length}
+                      _userList.filter((item) => item.status === 'active').length}
 
                     {tab.value === 'pending' &&
-                      _userList.filter((user) => user.status === 'pending').length}
+                      _userList.filter((item) => item.status === 'pending').length}
                     {tab.value === 'banned' &&
-                      _userList.filter((user) => user.status === 'banned').length}
+                      _userList.filter((item) => item.status === 'banned').length}
                     {tab.value === 'rejected' &&
-                      _userList.filter((user) => user.status === 'rejected').length}
+                      _userList.filter((item) => item.status === 'rejected').length}
                   </Label>
                 }
               />
             ))}
           </Tabs>
 
-          <InternTableToolbar
+          <InternByTradeUnionTableToolbar
             filters={filters}
             onFilters={handleFilters}
-            //
             roleOptions={tradeUnion}
           />
 
@@ -308,7 +311,7 @@ export default function InternListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <InternTableRow
+                      <InternByTradeUnionTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}

@@ -121,6 +121,16 @@ export type IUserItem = {
   isVerified: boolean;
 };
 
+export type IAccountItem = {
+  _id: string;
+  name: string;
+  username: string;
+  password: string;
+  email: string;
+  role: string;
+  tradeUnion: any;
+};
+
 export type IInternItem = {
   _id: string;
   name: string;

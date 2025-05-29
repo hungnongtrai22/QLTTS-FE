@@ -136,7 +136,7 @@ export default function InternTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          Xóa
         </MenuItem>
 
         <MenuItem
@@ -146,10 +146,10 @@ export default function InternTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          Chỉnh Sửa
         </MenuItem>
 
-         <MenuItem
+         {/* <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
@@ -157,7 +157,7 @@ export default function InternTableRow({
         >
           <Iconify icon="solar:pen-bold" />
           Nghiệp đoàn
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
 
       <ConfirmDialog

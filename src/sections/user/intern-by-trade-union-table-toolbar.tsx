@@ -15,7 +15,6 @@ import { IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useLocales } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -26,15 +25,13 @@ type Props = {
   roleOptions: string[];
 };
 
-export default function InternTableToolbar({
+export default function InternByTradeUnionTableToolbar({
   filters,
   onFilters,
   //
   roleOptions,
 }: Props) {
   const popover = usePopover();
-
-  const { t } = useLocales();
 
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +64,7 @@ export default function InternTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <FormControl
+        {/* <FormControl
           sx={{
             flexShrink: 0,
             width: { xs: 1, md: 200 },
@@ -89,23 +86,19 @@ export default function InternTableToolbar({
           >
             {roleOptions.map((option) => (
               <MenuItem key={option} value={option}>
-                <Checkbox
-                  disableRipple
-                  size="small"
-                  checked={filters.tradeUnion.includes(option)}
-                />
+                <Checkbox disableRipple size="small" checked={filters.tradeUnion.includes(option)} />
                 {option}
               </MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </FormControl> */}
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder={t('search') || 'Search'}
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

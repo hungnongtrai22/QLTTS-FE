@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Outlet } from 'react-router-dom';
 // auth
-import { AuthGuard } from 'src/auth/guard';
+import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
 // layouts
 import DashboardLayout from 'src/layouts/dashboard';
 // components
@@ -33,6 +33,9 @@ const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const InternProfilePage = lazy(() => import('src/pages/dashboard/intern/profile'));
 const InternCardsPage = lazy(() => import('src/pages/dashboard/intern/cards'));
 const InternListPage = lazy(() => import('src/pages/dashboard/intern/list'));
+const InternListByTradeUnionPage = lazy(
+  () => import('src/pages/dashboard/intern/listByTradeUnion')
+);
 const InternAccountPage = lazy(() => import('src/pages/dashboard/intern/account'));
 const InternCreatePage = lazy(() => import('src/pages/dashboard/intern/new'));
 const InternEditPage = lazy(() => import('src/pages/dashboard/intern/edit'));
@@ -103,37 +106,115 @@ export const dashboardRoutes = [
       {
         path: 'intern',
         children: [
-          { element: <InternProfilePage />, index: true },
+          {
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternProfilePage />
+              </RoleBasedGuard>
+            ),
+            index: true,
+          },
           { path: ':id/profile', element: <InternProfilePage /> },
           { path: 'cards', element: <InternCardsPage /> },
-          { path: 'list', element: <InternListPage /> },
-          { path: 'new', element: <InternCreatePage /> },
-          { path: ':id/edit', element: <InternEditPage /> },
-          { path: 'account', element: <InternAccountPage /> },
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternListPage />
+              </RoleBasedGuard>
+            ),
+          },
+          { path: 'listByTradeUnion', element: <InternListByTradeUnionPage /> },
+          {
+            path: 'new',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternCreatePage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternEditPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: 'account',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternAccountPage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
         ],
       },
-        {
+      {
         path: 'tradeUnion',
         children: [
           // { element: <InternProfilePage />, index: true },
           // { path: 'profile', element: <InternProfilePage /> },
           // { path: 'cards', element: <InternCardsPage /> },
-          { path: 'list', element: <TradeUnionListPage /> },
-          { path: 'new', element: <TradeUnionCreatePage /> },
-          { path: ':id/edit', element: <TradeUnionEditPage /> },
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <TradeUnionListPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: 'new',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <TradeUnionCreatePage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <TradeUnionEditPage />
+              </RoleBasedGuard>
+            ),
+          },
           // { path: 'account', element: <InternAccountPage /> },
         ],
       },
 
-           {
+      {
         path: 'company',
         children: [
           // { element: <InternProfilePage />, index: true },
           // { path: 'profile', element: <InternProfilePage /> },
           // { path: 'cards', element: <InternCardsPage /> },
-          { path: 'list', element: <CompanyListPage /> },
-          { path: 'new', element: <CompanyCreatePage /> },
-          { path: ':id/edit', element: <CompanyEditPage /> },
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <CompanyListPage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: 'new',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <CompanyCreatePage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <CompanyEditPage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
           // { path: 'account', element: <InternAccountPage /> },
         ],
       },

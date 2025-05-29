@@ -111,6 +111,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/intern`,
       new: `${ROOTS.DASHBOARD}/intern/new`,
       list: `${ROOTS.DASHBOARD}/intern/list`,
+      listByTradeUnion: `${ROOTS.DASHBOARD}/intern/listByTradeUnion`,
       cards: `${ROOTS.DASHBOARD}/intern/cards`,
       profile: (id: string) => `${ROOTS.DASHBOARD}/intern/${id}/profile`,
       account: `${ROOTS.DASHBOARD}/intern/account`,

@@ -17,7 +17,6 @@ import { IInternItem, IUserItem } from 'src/types/user';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { CustomFile } from 'src/components/upload';
-import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSwitch,
   RHFTextField,

@@ -84,7 +84,8 @@ export function AuthProvider({ children }: Props) {
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      // const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      const accessToken = localStorage.getItem(STORAGE_KEY);
 
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
@@ -92,6 +93,7 @@ export function AuthProvider({ children }: Props) {
         const response = await axios.get(API_ENDPOINTS.auth.me);
 
         const { user } = response.data;
+        console.log("Test", user);
 
         dispatch({
           type: Types.INITIAL,
@@ -123,9 +125,9 @@ export function AuthProvider({ children }: Props) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (username: string, password: string) => {
     const data = {
-      email,
+      username,
       password,
     };
 
@@ -145,9 +147,9 @@ export function AuthProvider({ children }: Props) {
 
   // REGISTER
   const register = useCallback(
-    async (email: string, password: string, firstName: string, lastName: string) => {
+    async (username: string, password: string, firstName: string, lastName: string) => {
       const data = {
-        email,
+        username,
         password,
         firstName,
         lastName,
@@ -157,7 +159,8 @@ export function AuthProvider({ children }: Props) {
 
       const { accessToken, user } = response.data;
 
-      sessionStorage.setItem(STORAGE_KEY, accessToken);
+      // sessionStorage.setItem(STORAGE_KEY, accessToken);
+      localStorage.setItem(STORAGE_KEY, accessToken);
 
       dispatch({
         type: Types.REGISTER,
@@ -180,6 +183,7 @@ export function AuthProvider({ children }: Props) {
   // ----------------------------------------------------------------------
 
   const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
+
 
   const status = state.loading ? 'loading' : checkAuthenticated;
 

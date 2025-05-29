@@ -49,6 +49,7 @@
   "only_admin_can_see_this_item": "この項目は管理者のみ表示可能",
   "upgrade_to_pro": "Proにアップグレード",
   "intern": "技能実習生",
+  "intern_by_trade_union": "組合経由の実習生",
   "title_dashboard_create_intern": "ダッシュボード：新しい技能実習生を作成",
   "create_intern": "新しい技能実習生を作成",
   "edit_intern": "実習生を更新",
@@ -116,6 +117,7 @@
   "title_dashboard_create_company": "ダッシュボード：新しい会社を作成",
   "create_company": "新しい会社を作成",
   "new_company": "新しい会社",
+  "search": "検索",
   "demo": {
     "title": "英語"
   }

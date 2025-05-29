@@ -79,8 +79,10 @@ export function useNavData() {
             children: [
               // { title: t('profile'), path: paths.dashboard.intern.root },
               // { title: t('cards'), path: paths.dashboard.intern.cards },
-              { title: t('list'), path: paths.dashboard.intern.list },
-              { title: t('create'), path: paths.dashboard.intern.new },
+              
+              { title: t('list'), path: paths.dashboard.intern.list, roles: ['admin'] },
+              { title: t('intern_by_trade_union'), path: paths.dashboard.intern.listByTradeUnion, roles: ['tradeunion'] },
+              { title: t('create'), path: paths.dashboard.intern.new, roles: ['admin'] },
               // { title: t('edit'), path: paths.dashboard.intern.demo.edit },
               // { title: t('account'), path: paths.dashboard.intern.account },
             ],
@@ -93,8 +95,8 @@ export function useNavData() {
             children: [
               // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
               // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
-              { title: t('list'), path: paths.dashboard.tradeUnion.list },
-              { title: t('create'), path: paths.dashboard.tradeUnion.new },
+              { title: t('list'), path: paths.dashboard.tradeUnion.list, roles: ['admin'] },
+              { title: t('create'), path: paths.dashboard.tradeUnion.new, roles: ['admin'] },
               // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
@@ -107,8 +109,8 @@ export function useNavData() {
             children: [
               // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
               // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
-              { title: t('list'), path: paths.dashboard.company.list },
-              { title: t('create'), path: paths.dashboard.company.new },
+              { title: t('list'), path: paths.dashboard.company.list, roles: ['admin'] },
+              { title: t('create'), path: paths.dashboard.company.new, roles: ['admin'] },
               // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],

@@ -1,22 +1,22 @@
 // @mui
 import Button from '@mui/material/Button';
-// import Avatar from '@mui/material/Avatar';
+import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-// import ListItemText from '@mui/material/ListItemText';
+import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
-import { ITradeUnionItem } from 'src/types/user';
+import { IInternItem } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import TradeUnionCreateAccountForm from './trade-union-create-account-form';
+import InternQuickEditForm from './intern-quick-edit-form';
 //
 
 // ----------------------------------------------------------------------
@@ -24,9 +24,10 @@ import TradeUnionCreateAccountForm from './trade-union-create-account-form';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: ITradeUnionItem;
+  row: IInternItem;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
+  onViewRow: VoidFunction;
 };
 
 const changDateJP = (date: any) => {
@@ -37,14 +38,15 @@ const changDateJP = (date: any) => {
   return customFormat;
 };
 
-export default function TradeUnionTableRow({
+export default function InternByTradeUnionTableRow({
   row,
   selected,
   onEditRow,
   onSelectRow,
   onDeleteRow,
+  onViewRow,
 }: Props) {
-  const { name, city, state, phone, country, createdAt } = row;
+  const { name, namejp, avatar, city, birthday, age, height, weight } = row;
 
   const confirm = useBoolean();
 
@@ -59,28 +61,26 @@ export default function TradeUnionTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        {/* <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatar} sx={{ mr: 2 }} /> 
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar alt={name} src={avatar} sx={{ mr: 2 }} />
 
           <ListItemText
             primary={name}
-            // secondary={namejp}
+            secondary={namejp}
             primaryTypographyProps={{ typography: 'body2' }}
-            // secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
+            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
-        </TableCell> */}
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phone}</TableCell>
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{city}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{state}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(birthday)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{country}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{age}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(createdAt)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{height}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{weight}</TableCell>
 
         {/* <TableCell>
           <Label
@@ -97,19 +97,30 @@ export default function TradeUnionTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
+          {/* <Tooltip title="Thêm nghiệp đoàn và công ty" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
-              <Iconify icon="solar:pen-bold" />
+              <Iconify icon="healthicons:job-status-level" />
+            </IconButton>
+          </Tooltip> */}
+
+          <Tooltip title="Xem Thông Tin" placement="top" arrow>
+            <IconButton
+              color={quickEdit.value ? 'inherit' : 'default'}
+              onClick={() => {
+                onViewRow();
+              }}
+            >
+              <Iconify icon="solar:eye-bold" />
             </IconButton>
           </Tooltip>
 
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+          {/* <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          </IconButton> */}
         </TableCell>
       </TableRow>
 
-      <TradeUnionCreateAccountForm  tradeUnion={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <InternQuickEditForm currentIntern={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
 
       <CustomPopover
         open={popover.open}
@@ -136,6 +147,16 @@ export default function TradeUnionTableRow({
         >
           <Iconify icon="solar:pen-bold" />
           Edit
+        </MenuItem>
+
+         <MenuItem
+          onClick={() => {
+            onEditRow();
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="solar:pen-bold" />
+          Nghiệp đoàn
         </MenuItem>
       </CustomPopover>
 

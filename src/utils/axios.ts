@@ -18,9 +18,9 @@ export const API_ENDPOINTS = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-    me: '/api/auth/me',
-    login: '/api/auth/login',
-    register: '/api/auth/register',
+    me: '/api/account/me',
+    login: '/api/account/login',
+    register: '/api/account/register',
   },
   mail: {
     list: '/api/mail/list',

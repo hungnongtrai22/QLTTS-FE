@@ -2,7 +2,7 @@
   "app": "ứng dụng",
   "job": "công việc",
   "user": "người dùng",
-  "list": "danh sách",
+  "list": "Danh sách",
   "edit": "chỉnh sửa",
   "shop": "cửa hàng",
   "blog": "blog",
@@ -49,6 +49,7 @@
   "only_admin_can_see_this_item": "Chỉ admin mới có thể thấy mục này",
   "upgrade_to_pro": "Nâng cấp lên phiên bản Pro",
   "intern": "Thực tập sinh",
+  "intern_by_trade_union": "Thực tập sinh theo nghiệp đoàn",
   "create_intern": "Tạo thực tập sinh mới",
   "edit_intern": "Cập nhật thực tập sinh",
   "title_dashboard_create_intern": "Bảng điều khiển: Tạo thực tập sinh mới",
@@ -116,6 +117,7 @@
   "title_dashboard_create_company": "Bảng điều khiển: Tạo công ty mới",
   "create_company": "Tạo công ty mới",
   "new_company": "Công ty mới",
+  "search": "Tìm kiếm",
   "demo": {
     "title": "Vietnamese"
   }
