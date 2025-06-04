@@ -17,6 +17,7 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import InternQuickEditForm from './intern-quick-edit-form';
+import ContactQuickEditForm from './contact-quick-edit-form';
 //
 
 // ----------------------------------------------------------------------
@@ -51,6 +52,8 @@ export default function InternTableRow({
   const confirm = useBoolean();
 
   const quickEdit = useBoolean();
+
+  const quickContact = useBoolean();
 
   const popover = usePopover();
 
@@ -97,6 +100,15 @@ export default function InternTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          <Tooltip title="Thêm thông tin liên lạc" placement="top" arrow>
+            <IconButton
+              color={quickContact.value ? 'inherit' : 'default'}
+              onClick={quickContact.onTrue}
+            >
+              <Iconify icon="mdi:contact" />
+            </IconButton>
+          </Tooltip>
+
           <Tooltip title="Thêm nghiệp đoàn và công ty" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
               <Iconify icon="healthicons:job-status-level" />
@@ -121,6 +133,11 @@ export default function InternTableRow({
       </TableRow>
 
       <InternQuickEditForm currentIntern={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <ContactQuickEditForm
+        currentIntern={row}
+        open={quickContact.value}
+        onClose={quickContact.onFalse}
+      />
 
       <CustomPopover
         open={popover.open}
@@ -149,7 +166,7 @@ export default function InternTableRow({
           Chỉnh Sửa
         </MenuItem>
 
-         {/* <MenuItem
+        {/* <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();

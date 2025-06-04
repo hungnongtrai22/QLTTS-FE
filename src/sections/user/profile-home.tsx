@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Fab from '@mui/material/Fab';
@@ -12,13 +12,17 @@ import InputBase from '@mui/material/InputBase';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 // _mock
+import axios from 'axios';
+
 import { _socials } from 'src/_mock';
 // utils
 import { fNumber } from 'src/utils/format-number';
 // types
-import { IUserProfile, IUserProfilePost } from 'src/types/user';
+import { IContactItem, IInternItem, IUserProfile, IUserProfilePost } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
+import { useAuthContext } from 'src/auth/hooks';
+
 //
 import ProfilePostItem from './profile-post-item';
 
@@ -27,16 +31,35 @@ import ProfilePostItem from './profile-post-item';
 type Props = {
   info: IUserProfile;
   posts: IUserProfilePost[];
+  currentIntern?: IInternItem;
 };
 
-export default function ProfileHome({ info, posts }: Props) {
+export default function ProfileHome({ info, posts, currentIntern }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const [contact, setContact] = useState<IContactItem>();
+  const {user} = useAuthContext();
+
+  console.log(contact);
 
   const handleAttach = () => {
     if (fileRef.current) {
       fileRef.current.click();
     }
   };
+
+  const handleGetContactByInternId = useCallback(async () => {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/contact/getByInternId`,
+      { internId: currentIntern?._id }
+    );
+    console.log(data.contact);
+    setContact(data.contact);
+  }, [currentIntern]);
+
+  useEffect(() => {
+    handleGetContactByInternId();
+  }, [handleGetContactByInternId]);
 
   const renderFollows = (
     <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
@@ -73,7 +96,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
           <Box sx={{ typography: 'body2' }}>
             <Link variant="subtitle2" color="inherit">
-              Số 8 TX01, phường Thạnh Xuân, Quận 12, Hồ Chí Minh
+              {contact?.address}
             </Link>
           </Box>
         </Stack>
@@ -81,7 +104,7 @@ export default function ProfileHome({ info, posts }: Props) {
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="fluent:mail-24-filled" width={24} sx={{ mr: 2 }} />
           <Link variant="subtitle2" color="inherit">
-            nhattan@gmail.com
+            {contact?.email}
           </Link>
         </Stack>
 
@@ -90,7 +113,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
           <Box sx={{ typography: 'body2' }}>
             <Link variant="subtitle2" color="inherit">
-              0908817632
+              {contact?.phone}
             </Link>
           </Box>
         </Stack>
@@ -102,7 +125,7 @@ export default function ProfileHome({ info, posts }: Props) {
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
           <Link variant="subtitle2" color="inherit">
-            Nguyễn Văn A
+            {currentIntern?.family?.find((item: any) => item.relationship === '姉')?.name}
           </Link>
         </Stack>
 
@@ -111,7 +134,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
           <Box sx={{ typography: 'body2' }}>
             <Link variant="subtitle2" color="inherit">
-              Số 8 TX01, phường Thạnh Xuân, Quận 12, Hồ Chí Minh
+              {contact?.addressDadAndMom}
             </Link>
           </Box>
         </Stack>
@@ -121,7 +144,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
           <Box sx={{ typography: 'body2' }}>
             <Link variant="subtitle2" color="inherit">
-              0908817632
+              {contact?.phoneDad}
             </Link>
           </Box>
         </Stack>
@@ -133,7 +156,7 @@ export default function ProfileHome({ info, posts }: Props) {
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
           <Link variant="subtitle2" color="inherit">
-            Lê Thị B
+            {currentIntern?.family?.find((item: any) => item.relationship === '兄')?.name}
           </Link>
         </Stack>
 
@@ -142,7 +165,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
           <Box sx={{ typography: 'body2' }}>
             <Link variant="subtitle2" color="inherit">
-              Số 8 TX01, phường Thạnh Xuân, Quận 12, Hồ Chí Minh
+              {contact?.addressDadAndMom}
             </Link>
           </Box>
         </Stack>
@@ -152,7 +175,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
           <Box sx={{ typography: 'body2' }}>
             <Link variant="subtitle2" color="inherit">
-              0908817632
+              {contact?.phoneMom}
             </Link>
           </Box>
         </Stack>
@@ -229,7 +252,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
   return (
     <Grid container spacing={3}>
-      <Grid xs={12} md={4}>
+      {user?.role === "admin" && <Grid xs={12} md={4}>
         <Stack spacing={3}>
           {renderFollows}
 
@@ -237,9 +260,9 @@ export default function ProfileHome({ info, posts }: Props) {
 
           {renderSocials}
         </Stack>
-      </Grid>
+      </Grid>}
 
-      <Grid xs={12} md={8}>
+      <Grid xs={user?.role === "admin" ? 12 : 24} md={user?.role === "admin" ? 8 : 24}>
         <Stack spacing={3}>
           {renderPostInput}
 

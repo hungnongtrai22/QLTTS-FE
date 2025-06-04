@@ -16,6 +16,8 @@ import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
+import { useLocales } from 'src/locales';
+
 // types
 import { ITradeUnionItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
 // _mock
@@ -71,6 +73,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function TradeUnionListView() {
+  const { t } = useLocales();
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -173,11 +176,11 @@ export default function TradeUnionListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t('list') || ''}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
-            { name: 'List' },
+            { name: t('dashboard') || '', href: paths.dashboard.root },
+            { name: t('trade_union') || '', href: paths.dashboard.user.root },
+            { name: t('list') || '' },
           ]}
           action={
             <Button
@@ -186,7 +189,7 @@ export default function TradeUnionListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New User
+              {t('new_trade_union')}
             </Button>
           }
           sx={{

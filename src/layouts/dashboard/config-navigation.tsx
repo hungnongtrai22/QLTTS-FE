@@ -90,6 +90,7 @@ export function useNavData() {
           // Trade Union
           {
             title: t('trade_union'),
+            roles: ['admin'],
             path: paths.dashboard.tradeUnion.root,
             icon: ICONS.user,
             children: [
@@ -104,6 +105,7 @@ export function useNavData() {
             // Company
           {
             title: t('company_title'),
+            roles: ['admin'],
             path: paths.dashboard.company.root,
             icon: ICONS.user,
             children: [
@@ -111,6 +113,21 @@ export function useNavData() {
               // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
               { title: t('list'), path: paths.dashboard.company.list, roles: ['admin'] },
               { title: t('create'), path: paths.dashboard.company.new, roles: ['admin'] },
+              // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
+              // { title: t('account'), path: paths.dashboard.tradeUnion.account },
+            ],
+          },
+            // Order
+          {
+            title: t('order'),
+            roles: ['admin'],
+            path: paths.dashboard.order.root,
+            icon: ICONS.user,
+            children: [
+              // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
+              // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
+              { title: t('list'), path: paths.dashboard.order.list, roles: ['admin'] },
+              { title: t('create'), path: paths.dashboard.order.new, roles: ['admin'] },
               // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],

@@ -6,6 +6,7 @@ import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
+import CreateOrder from 'src/pages/dashboard/order/new';
 
 // ----------------------------------------------------------------------
 
@@ -188,9 +189,6 @@ export const dashboardRoutes = [
       {
         path: 'company',
         children: [
-          // { element: <InternProfilePage />, index: true },
-          // { path: 'profile', element: <InternProfilePage /> },
-          // { path: 'cards', element: <InternCardsPage /> },
           {
             path: 'list',
             element: (
@@ -215,7 +213,35 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
-          // { path: 'account', element: <InternAccountPage /> },
+        ],
+      },
+      {
+        path: 'order',
+        children: [
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <CompanyListPage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: 'new',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <CreateOrder />{' '}
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <CompanyEditPage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
         ],
       },
       // {

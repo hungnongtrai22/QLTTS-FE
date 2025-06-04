@@ -131,6 +131,17 @@ export type IAccountItem = {
   tradeUnion: any;
 };
 
+export type IContactItem = {
+  _id: string;
+  internId: any;
+  address: string;
+  email: string;
+  phone: string;
+  addressDadAndMom: string;
+  phoneDad: string;
+  phoneMom: string;
+};
+
 export type IInternItem = {
   _id: string;
   name: string;

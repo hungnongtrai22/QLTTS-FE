@@ -132,7 +132,7 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/tradeUnion/${MOCK_ID}/edit`,
       },
     },
-     company: {
+    company: {
       root: `${ROOTS.DASHBOARD}/company`,
       new: `${ROOTS.DASHBOARD}/company/new`,
       list: `${ROOTS.DASHBOARD}/company/list`,
@@ -142,6 +142,19 @@ export const paths = {
       edit: (id: string) => `${ROOTS.DASHBOARD}/company/${id}/edit`,
       demo: {
         edit: `${ROOTS.DASHBOARD}/company/${MOCK_ID}/edit`,
+      },
+    },
+    order: {
+      root: `${ROOTS.DASHBOARD}/order`,
+      new: `${ROOTS.DASHBOARD}/order/new`,
+      list: `${ROOTS.DASHBOARD}/order/list`,
+      cards: `${ROOTS.DASHBOARD}/order/cards`,
+      profile: `${ROOTS.DASHBOARD}/order/profile`,
+      account: `${ROOTS.DASHBOARD}/order/account`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/order/${id}/edit`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/order/${MOCK_ID}/edit`,
       },
     },
     user: {
@@ -186,13 +199,13 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/post/${paramCase(MOCK_TITLE)}/edit`,
       },
     },
-    order: {
-      root: `${ROOTS.DASHBOARD}/order`,
-      details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
-      demo: {
-        details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
-      },
-    },
+    // order: {
+    //   root: `${ROOTS.DASHBOARD}/order`,
+    //   details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
+    //   demo: {
+    //     details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
+    //   },
+    // },
     job: {
       root: `${ROOTS.DASHBOARD}/job`,
       new: `${ROOTS.DASHBOARD}/job/new`,

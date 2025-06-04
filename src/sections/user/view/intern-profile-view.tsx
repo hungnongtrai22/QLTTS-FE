@@ -134,7 +134,7 @@ export default function InternProfileView() {
         </Tabs>
       </Card>
 
-      {currentTab === 'profile' && <ProfileHome info={_userAbout} posts={_userFeeds} />}
+      {currentTab === 'profile' && <ProfileHome currentIntern={intern} info={_userAbout} posts={_userFeeds} />}
 
       {currentTab === 'followers' && <InternViewForm currentIntern={intern} />}
 
