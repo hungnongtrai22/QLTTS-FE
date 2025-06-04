@@ -175,6 +175,10 @@ export const strongVNs = [
     index: 43,
     value: 'Quan tâm, chú ý đến xung quanh',
   },
+  {
+    index: 44,
+    value: 'Biết lắng nghe',
+  },
 ];
 
 export const strongJPs = [
@@ -353,6 +357,10 @@ export const strongJPs = [
   {
     index: 43,
     value: '気配りができる',
+  },
+  {
+    index: 44,
+    value: '聞き上手',
   },
 ];
 
