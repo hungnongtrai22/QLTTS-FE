@@ -305,20 +305,20 @@ export default function InternNewEditForm({ currentIntern }: Props) {
       )
       .min(1, 'Phải có ít nhất 1 học vấn'),
 
-    companyList: Yup.array().of(
-      Yup.object().shape({
-        timeFrom: Yup.date().nullable().required('Ngày bắt đầu không được để trống'),
-        timeTo: Yup.date()
-          .nullable()
-          .required('Ngày kết thúc không được để trống')
-          .min(Yup.ref('timeFrom'), 'Ngày kết thúc phải sau ngày bắt đầu'),
-        name: Yup.string()
-          .required('Tên công ty không được để trống')
-          .max(255, 'Tên công ty quá dài')
-          .min(1, 'Phải có ít nhất một lịch sử công việc'),
-        content: Yup.string().required('Nội dung công việc không được để trống'),
-      })
-    ),
+    // companyList: Yup.array().of(
+    //   Yup.object().shape({
+    //     timeFrom: Yup.date().nullable().required('Ngày bắt đầu không được để trống'),
+    //     timeTo: Yup.date()
+    //       .nullable()
+    //       .required('Ngày kết thúc không được để trống')
+    //       .min(Yup.ref('timeFrom'), 'Ngày kết thúc phải sau ngày bắt đầu'),
+    //     name: Yup.string()
+    //       .required('Tên công ty không được để trống')
+    //       .max(255, 'Tên công ty quá dài')
+    //       .min(1, 'Phải có ít nhất một lịch sử công việc'),
+    //     content: Yup.string().required('Nội dung công việc không được để trống'),
+    //   })
+    // ),
     familyList: Yup.array().of(
       Yup.object().shape({
         relationship: Yup.string().required('Mối quan hệ không được để trống'),
@@ -362,8 +362,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
       companyList:
         currentIntern?.company?.map((item: any) => ({
           ...item,
-          timeFrom: new Date(item.timeFrom),
-          timeTo: new Date(item.timeTo),
+          timeFrom: item.timeFrom ? new Date(item.timeFrom) : null,
+          timeTo: item.timeTo ? new Date(item.timeTo) : null,
         })) || initCompany,
       blindColor: currentIntern?.blindColor || false,
       smoke: currentIntern?.smoke || false,
@@ -400,6 +400,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
+
 
   const {
     // reset,
@@ -1112,7 +1113,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                       >
                         <DatePicker
                           label={t('start_date')}
-                          value={field.value ? dayjs(field.value) : null}
+                          value={field.value && field.value !== null  ? dayjs(field.value) : null}
                           onChange={(newValue) => {
                             const dateValue = newValue ? newValue.toDate() : null;
 

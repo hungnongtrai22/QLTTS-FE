@@ -187,8 +187,8 @@ export default function InternViewForm({ currentIntern }: Props) {
       companyList:
         currentIntern?.company?.map((item: any) => ({
           ...item,
-          timeFrom: new Date(item.timeFrom),
-          timeTo: new Date(item.timeTo),
+          timeFrom: item.timeFrom ? new Date(item.timeFrom) : null,
+          timeTo: item.timeTo ? new Date(item.timeTo) : null,
         })) || initCompany,
       blindColor: currentIntern?.blindColor || false,
       smoke: currentIntern?.smoke || false,
