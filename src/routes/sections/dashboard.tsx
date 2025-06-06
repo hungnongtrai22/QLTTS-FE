@@ -7,6 +7,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
 import CreateOrder from 'src/pages/dashboard/order/new';
+import InternListByDongThapPage from 'src/pages/dashboard/intern/listByDongThap';
 
 // ----------------------------------------------------------------------
 
@@ -126,6 +127,8 @@ export const dashboardRoutes = [
             ),
           },
           { path: 'listByTradeUnion', element: <InternListByTradeUnionPage /> },
+          { path: 'listByDongThap', element: <InternListByDongThapPage /> },
+
           {
             path: 'new',
             element: (

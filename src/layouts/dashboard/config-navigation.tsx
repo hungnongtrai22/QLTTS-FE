@@ -79,9 +79,19 @@ export function useNavData() {
             children: [
               // { title: t('profile'), path: paths.dashboard.intern.root },
               // { title: t('cards'), path: paths.dashboard.intern.cards },
-              
+
               { title: t('list'), path: paths.dashboard.intern.list, roles: ['admin'] },
-              { title: t('intern_by_trade_union'), path: paths.dashboard.intern.listByTradeUnion, roles: ['tradeunion'] },
+              {
+                title: t('intern_by_trade_union'),
+                path: paths.dashboard.intern.listByTradeUnion,
+                roles: ['tradeunion'],
+              },
+              {
+                title: t('intern_by_dong_thap'),
+                path: paths.dashboard.intern.listByDongThap,
+                roles: ['dongthap'],
+              },
+
               { title: t('create'), path: paths.dashboard.intern.new, roles: ['admin'] },
               // { title: t('edit'), path: paths.dashboard.intern.demo.edit },
               // { title: t('account'), path: paths.dashboard.intern.account },
@@ -102,7 +112,7 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
-            // Company
+          // Company
           {
             title: t('company_title'),
             roles: ['admin'],
@@ -117,7 +127,7 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
-            // Order
+          // Order
           {
             title: t('order'),
             roles: ['admin'],
