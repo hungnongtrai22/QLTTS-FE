@@ -18,13 +18,20 @@ import { _socials } from 'src/_mock';
 // utils
 import { fNumber } from 'src/utils/format-number';
 // types
-import { IContactItem, IInternItem, IUserProfile, IUserProfilePost } from 'src/types/user';
+import {
+  IContactItem,
+  IInternItem,
+  IStudyItem,
+  IUserProfile,
+  IUserProfilePost,
+} from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 
 //
 import ProfilePostItem from './profile-post-item';
+import StudyPostItem from './study-post-item';
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +45,8 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [contact, setContact] = useState<IContactItem>();
-  const {user} = useAuthContext();
+  const [study, setStudy] = useState<IStudyItem[]>([]);
+  const { user } = useAuthContext();
 
   console.log(contact);
 
@@ -53,13 +61,21 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
       `${process.env.REACT_APP_HOST_API}/api/contact/getByInternId`,
       { internId: currentIntern?._id }
     );
-    console.log(data.contact);
     setContact(data.contact);
+  }, [currentIntern]);
+
+  const handleGetByInternId = useCallback(async () => {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
+      { internId: currentIntern?._id }
+    );
+    setStudy(data.studies);
   }, [currentIntern]);
 
   useEffect(() => {
     handleGetContactByInternId();
-  }, [handleGetContactByInternId]);
+    handleGetByInternId();
+  }, [handleGetContactByInternId, handleGetByInternId]);
 
   const renderFollows = (
     <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
@@ -252,22 +268,24 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
 
   return (
     <Grid container spacing={3}>
-      {user?.role === "admin" && <Grid xs={12} md={4}>
+      {user?.role === 'admin' && (
+        <Grid xs={12} md={4}>
+          <Stack spacing={3}>
+            {renderFollows}
+
+            {renderAbout}
+
+            {renderSocials}
+          </Stack>
+        </Grid>
+      )}
+
+      <Grid xs={user?.role === 'admin' ? 12 : 24} md={user?.role === 'admin' ? 8 : 24}>
         <Stack spacing={3}>
-          {renderFollows}
+          {/* {renderPostInput} */}
 
-          {renderAbout}
-
-          {renderSocials}
-        </Stack>
-      </Grid>}
-
-      <Grid xs={user?.role === "admin" ? 12 : 24} md={user?.role === "admin" ? 8 : 24}>
-        <Stack spacing={3}>
-          {renderPostInput}
-
-          {posts.map((post) => (
-            <ProfilePostItem key={post.id} post={post} />
+          {study.map((item) => (
+            <StudyPostItem  study={item} intern={currentIntern || null}/>
           ))}
         </Stack>
       </Grid>

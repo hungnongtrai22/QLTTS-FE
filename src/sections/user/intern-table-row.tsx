@@ -18,6 +18,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import InternQuickEditForm from './intern-quick-edit-form';
 import ContactQuickEditForm from './contact-quick-edit-form';
+import StudyQuickEditForm from './study-quick-edit-form';
 //
 
 // ----------------------------------------------------------------------
@@ -54,6 +55,8 @@ export default function InternTableRow({
   const quickEdit = useBoolean();
 
   const quickContact = useBoolean();
+
+  const quickStudy = useBoolean();
 
   const popover = usePopover();
 
@@ -100,6 +103,14 @@ export default function InternTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          <Tooltip title="Nhập điểm" placement="top" arrow>
+            <IconButton
+              color={quickStudy.value ? 'inherit' : 'default'}
+              onClick={quickStudy.onTrue}
+            >
+              <Iconify icon="material-symbols:school" />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Thêm thông tin liên lạc" placement="top" arrow>
             <IconButton
               color={quickContact.value ? 'inherit' : 'default'}
@@ -133,6 +144,13 @@ export default function InternTableRow({
       </TableRow>
 
       <InternQuickEditForm currentIntern={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+
+      <StudyQuickEditForm
+        currentIntern={row}
+        open={quickStudy.value}
+        onClose={quickStudy.onFalse}
+      />
+
       <ContactQuickEditForm
         currentIntern={row}
         open={quickContact.value}

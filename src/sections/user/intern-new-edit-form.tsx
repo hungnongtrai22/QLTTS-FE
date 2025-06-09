@@ -1443,22 +1443,6 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     ? strongVNs.map((item) => item.value)
                     : strongJPs.map((item) => item.value)
                 }
-                // sx={{ width: 300 }}
-                // renderOption={(props, option) => {
-                //   const { index, value } = strongVNs.filter(
-                //     (item) => item.value === option.value
-                //   )[0];
-
-                //   if (!value) {
-                //     return null;
-                //   }
-
-                //   return (
-                //     <li {...props} key={index}>
-                //       {value}
-                //     </li>
-                //   );
-                // }}
                 renderOption={(props, option) => (
                   <li {...props} key={option}>
                     {option}
@@ -1483,7 +1467,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                   </li>
                 )}
               />
-              <RHFSelect
+              {/* <RHFSelect
                 fullWidth
                 name="foreignLanguage"
                 label={t('foreign_language')}
@@ -1494,7 +1478,19 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     {option}
                   </MenuItem>
                 ))}
-              </RHFSelect>
+              </RHFSelect> */}
+              <RHFAutocomplete
+                name="foreignLanguage"
+                label={t('foreign_language') || ''}
+                disablePortal
+                freeSolo
+                options={['日本語：簡単な自己紹介ができます', 'なし']}
+                renderOption={(props, option) => (
+                  <li {...props} key={option} value={option}>
+                    {option}
+                  </li>
+                )}
+              />
               <RHFTextField name="aim" label={t('aim')} />
               <RHFTextField name="money" label={t('money')} />
               <RHFTextField name="plan" label={t('plan')} />

@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -22,6 +22,7 @@ import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { useLocales } from 'src/locales';
 import { MenuItem, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -35,55 +36,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 interface FormValuesProps extends Omit<IUserItem, 'avatarUrl'> {
   avatar: CustomFile | string;
-  avatarURL: string | null;
-  namejp: string;
-  gender: string;
-  blood: string;
-  birthday: Date | string | null;
-  age: number;
-  height: number;
-  weight: number;
-  BMI: number;
-  blindColor: boolean;
-  hand: string;
-  leftEye: number;
-  rightEye: number;
-  address: string;
-  city: string;
-  married: string;
-  driverLicense: string;
-  smoke: boolean;
-  alcohol: boolean;
-  tattoo: boolean;
-  schoolList: {
-    timeFrom: Date | null;
-    timeTo: Date | null;
-    name: string;
-    content: string;
-    current: string;
-  }[];
-  companyList: {
-    timeFrom: Date | null;
-    timeTo: Date | null;
-    name: string;
-    content: string;
-  }[];
-  familyList: {
-    relationship: string;
-    name: string;
-    year: Date;
-    location: String;
-    occupation: String;
-  }[];
-  interest: string;
-  foreignLanguage: string;
-  strong: string;
-  weak: string;
-  aim: string;
-  plan: string;
-  money: string;
-  familyInJapan: boolean;
-  moveForeign: boolean;
+  recruitmentDate: any;
 }
 
 type Props = {
@@ -96,18 +49,16 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
   // console.log('TEST', currentIntern);
   const { t } = useLocales();
 
+  dayjs.locale('vi');
+
   const [interns, setInterns] = useState([]);
-  console.log(interns);
 
   const { enqueueSnackbar } = useSnackbar();
 
   // const [city, setCity] = useState('');
 
   const NewUserSchema = Yup.object().shape({
-    // userId: Yup.number().required('UserId is required').min(1),
     name: Yup.string().required('Name is required'),
-    // familyInJapan: Yup.boolean().required('familyInJapan is required'),
-    // moveForeign: Yup.boolean().required('Move Foreign is required'),
   });
 
   const defaultValues = useMemo(
@@ -131,8 +82,9 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
   });
 
   const {
-    // reset,
+    reset,
     // watch,
+    control,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -151,9 +103,12 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
     setInterns(data.interns);
   }, []);
 
-  const createOrder = useCallback(async (tradeUnion: any) => {
+  const createOrder = useCallback(async (order: any) => {
+    console.log('TESTT', order);
     const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/order/create`, {
-      ...tradeUnion,
+      ...order,
+      listWorker: [],
+      listIntern: [],
     });
     return data;
   }, []);
@@ -173,20 +128,21 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
     async (data: FormValuesProps) => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        // reset();
         // router.push(paths.dashboard.user.list);
         if (currentTradeUnion) {
-          await editTradeUnion(data);
+          // await editTradeUnion(data);
           enqueueSnackbar(currentTradeUnion ? 'Update success!' : 'Create success!');
         } else {
           await createOrder(data);
           enqueueSnackbar(currentTradeUnion ? 'Update success!' : 'Create success!');
         }
+                reset();
+
       } catch (error) {
         console.error(error);
       }
     },
-    [createOrder, editTradeUnion, enqueueSnackbar, currentTradeUnion]
+    [createOrder, enqueueSnackbar, currentTradeUnion, reset]
     // [currentIntern, enqueueSnackbar, reset, router]
   );
 
@@ -240,20 +196,31 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
                 )}
               </RHFSelect>
               {/* <RHFTextField name="recruitmentDate" label={t('recruitmentDate')} /> */}
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="vi"
-                localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-              >
-                <DatePicker
-                  label={t('recruitmentDate')}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
+
+              <Controller
+                name="recruitmentDate"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="vi"
+                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                  >
+                    <DatePicker
+                      label={t('recruitmentDate')}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => {
+                        field.onChange(newValue);
+                      }}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
               <RHFTextField name="work" label={t('work')} />
 
               {/* <RHFTextField name="description" label={t('description')} /> */}
@@ -393,7 +360,7 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
                 disablePortal
                 options={interns.map((item: any) => ({ _id: item._id, name: item.name }))}
                 getOptionLabel={(item: any) => item.name}
-                isOptionEqualToValue={(option : any, value: any) => option._id === value._id}
+                isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
                 renderOption={(props, option: any) => (
                   <li {...props} key={option._id} value={option._id}>
                     {option.name}

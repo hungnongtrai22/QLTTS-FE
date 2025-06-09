@@ -142,6 +142,33 @@ export type IContactItem = {
   phoneMom: string;
 };
 
+export type IStudyItem = {
+  _id: string;
+  internId: any;
+  health: number;
+  cooperation: number;
+  attend: number;
+  discipline: number;
+  attitude: number;
+  acquiringKnowledge: number;
+  write: number;
+  read: number;
+  listen: number;
+  speak: number;
+  total: number;
+  average: number;
+  level: string;
+  time: number;
+  kanji: number;
+  grammarAndReading: number;
+  listeningComprehension: number;
+  totalReadingAndListening: number;
+  learningProcess: string;
+  characteristic: string;
+  comment: string;
+  createdAt: any;
+};
+
 export type IInternItem = {
   _id: string;
   name: string;
