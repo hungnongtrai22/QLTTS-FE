@@ -29,6 +29,7 @@ const useStyles = () =>
         subtitle1: { fontSize: 10, fontWeight: 700 },
         subtitle2: { fontSize: 6, fontWeight: 700, textAlign: 'center' },
         subtitle3: { fontSize: 6, textAlign: 'center' },
+        subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
           backgroundColor: '#F6F0F0',
           display: 'flex',
@@ -212,7 +213,7 @@ export default function InternPDFHome({ invoice }: Props) {
         <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
           {/* <Text style={styles.h3}>{currentStatus}</Text> */}
           <Text>NHAT TAN MANPOWER</Text>
-          <Text>8 TX01, Thạnh Xuân, Quận 12, Hồ Chí Minh</Text>
+          <Text style={styles.subtitle4}>8 TX01, Thanh Xuan Ward, District 12, Ho Chi Minh City, Vietnam</Text>
         </View>
       </View>
 

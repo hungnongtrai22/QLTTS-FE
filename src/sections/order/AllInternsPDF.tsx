@@ -18,11 +18,11 @@ const styles = StyleSheet.create({
 export default function AllInternsPDF({ interns }: { interns: any[] }) {
   return (
     <Document>
-        <Page size="A4" style={styles.page}>
+        <Page size="A4" orientation='landscape' style={styles.page}>
             <InternPDFHome invoice={interns}/>
         </Page>
       {interns.map((intern, index) => (
-        <Page key={index} size="A4" style={styles.page}>
+        <Page key={index} size="A4"  style={styles.page}>
           {/* Render lại InternPDF cho mỗi trang */}
           <InternPDFAll invoice={intern} stt={index+1}/>
         </Page>

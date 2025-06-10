@@ -28,6 +28,7 @@ const useStyles = () =>
         body2: { fontSize: 9 },
         subtitle1: { fontSize: 10, fontWeight: 700 },
         subtitle2: { fontSize: 9, fontWeight: 700, textAlign: 'center' },
+        subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: { backgroundColor: '#F6F0F0' },
         alignRight: { textAlign: 'right' },
         page: {
@@ -156,6 +157,16 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
+        tableCell_9: {
+          padding: '3px 0',
+          width: '35%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+        },
         textLeft: {
           textAlign: 'left',
         },
@@ -247,7 +258,7 @@ export default function InternPDF({ invoice }: Props) {
           <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
             {/* <Text style={styles.h3}>{currentStatus}</Text> */}
             <Text>NHAT TAN MANPOWER</Text>
-            <Text>8 TX01, Thạnh Xuân, Quận 12, Hồ Chí Minh</Text>
+            <Text style={styles.subtitle4}>8 TX01, Thanh Xuan Ward, District 12, Ho Chi Minh City, Vietnam</Text>
           </View>
         </View>
 
@@ -608,90 +619,102 @@ export default function InternPDF({ invoice }: Props) {
           </View>
         </View>
 
-        <View style={[styles.gridContainer, styles.mb10]}>
-          <View style={styles.table1}>
-            <View>
-              <View style={styles.tableRow}>
-                <View style={[styles.tableCell_3, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>趣味</Text>
-                </View>
-
-                <View style={[styles.tableCell_6, styles.textLeft]}>
-                  <Text>{interest}</Text>
-                </View>
-
-                <View style={[styles.tableCell_4, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>長所</Text>
-                </View>
-                <View style={[styles.tableCell_4, styles.textLeft]}>
-                  <ul>
-                    {strong.map((item: any) => (
-                      <li key={item}>
-                        <Text>•{item}</Text>
-                      </li>
-                    ))}
-                  </ul>
-                </View>
-                <View style={[styles.tableCell_8, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>短所</Text>
-                </View>
-                <View style={[styles.tableCell_3, styles.textLeft]}>
-                  <ul>
-                    {weak.map((item: any) => (
-                      <li key={item}>
-                        <Text>•{item}</Text>
-                      </li>
-                    ))}
-                  </ul>
-                </View>
+       <View style={[styles.gridContainer, styles.mb10]}>
+        <View style={styles.table1}>
+          <View>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCell_3, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>長所</Text>
               </View>
-              <View style={styles.tableRow}>
-                <View style={[styles.tableCell_3, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>日本に行くの目的・志望動機</Text>
-                </View>
 
-                <View style={[styles.tableCell_6, styles.textLeft]}>
-                  <Text>{aim}</Text>
-                </View>
-
-                <View style={[styles.tableCell_4, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>外国語</Text>
-                </View>
-                <View style={[styles.tableCell_4]}>
-                  <Text>{foreignLanguage}</Text>
-                </View>
-                <View style={[styles.tableCell_8, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
-                </View>
-                <View style={[styles.tableCell_3]}>
-                  <Text>{money}</Text>
-                </View>
+              <View style={[styles.tableCell_9, styles.textLeft]}>
+                {/* <Text>{interest}</Text> */}
+                <ul>
+                  {strong.map((item: any) => (
+                    <li key={item}>
+                      <Text>•{item}</Text>
+                    </li>
+                  ))}
+                </ul>
               </View>
-              <View style={styles.tableRow}>
-                <View style={[styles.tableCell_3, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>実習期間が終了した後、どんな予定がありますか</Text>
-                </View>
 
-                <View style={[styles.tableCell_6]}>
-                  <Text>{plan}</Text>
-                </View>
+              <View style={[styles.tableCell_3, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>日本に行くの目的・志望動機</Text>
+              </View>
+              <View style={[styles.tableCell_9, styles.textLeft]}>
+                <Text>{aim}</Text>
 
-                <View style={[styles.tableCell_4, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>日本に親戚がいますか</Text>
-                </View>
-                <View style={[styles.tableCell_4]}>
-                  <Text>{familyInJapan ? 'はい' : 'なし'}</Text>
-                </View>
-                <View style={[styles.tableCell_8, styles.titleBackground]}>
-                  <Text style={styles.subtitle2}>外国へ行ったことがありますか</Text>
-                </View>
-                <View style={[styles.tableCell_3]}>
-                  <Text>{moveForeign ? 'はい' : 'なし'}</Text>
-                </View>
+              </View>
+            </View>
+             <View style={styles.tableRow}>
+              <View style={[styles.tableCell_3, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>短所</Text>
+              </View>
+
+              <View style={[styles.tableCell_9, styles.textLeft]}>
+                {/* <Text>{interest}</Text> */}
+                <ul>
+                  {weak.map((item: any) => (
+                    <li key={item}>
+                      <Text>•{item}</Text>
+                    </li>
+                  ))}
+                </ul>
+              </View>
+
+              <View style={[styles.tableCell_3, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>外国語</Text>
+              </View>
+              <View style={[styles.tableCell_9, styles.textLeft]}>
+                <Text>{foreignLanguage}</Text>
+
+              </View>
+            </View>
+             <View style={styles.tableRow}>
+              <View style={[styles.tableCell_3, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>趣味</Text>
+              </View>
+
+              <View style={[styles.tableCell_9, styles.textLeft]}>
+                <Text>{interest}</Text>
+              </View>
+
+              <View style={[styles.tableCell_3, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>実習期間が終了した後、どんな予定がありますか</Text>
+              </View>
+              <View style={[styles.tableCell_9, styles.textLeft]}>
+                <Text>{plan}</Text>
+
+              </View>
+            </View>
+             <View style={styles.tableRow}>
+              <View style={[styles.tableCell_5, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
+              </View>
+
+              <View style={[styles.tableCell_4, styles.textLeft]}>
+                <Text>{money}</Text>
+              </View>
+
+              <View style={[styles.tableCell_5, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>外国へ行ったことがありますか</Text>
+              </View>
+              <View style={[styles.tableCell_4, styles.textLeft]}>
+                <Text>{moveForeign ? 'はい' : 'なし'}</Text>
+
+              </View>
+
+              <View style={[styles.tableCell_8, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>日本に親戚がいますか</Text>
+              </View>
+              <View style={[styles.tableCell_4, styles.textLeft]}>
+                <Text>{familyInJapan ? 'はい' : 'なし'}</Text>
+
               </View>
             </View>
           </View>
         </View>
+      </View>
 
         {/* <View style={[styles.gridContainer, styles.footer]} fixed>
           <View style={styles.col8}>
