@@ -428,6 +428,8 @@ export default function InternPDF({ invoice }: Props) {
           <View
             style={{
               width: '20%',
+              // height: '111.5px',
+              // height: '80%',
               borderWidth: 1,
               borderStyle: 'solid',
               borderColor: '#DFE3E8',
@@ -441,7 +443,7 @@ export default function InternPDF({ invoice }: Props) {
               src={avatar}
               style={{
                 width: '100%',
-                height: '100',
+                height: '111px',
                 objectFit: 'contain',
               }}
             />

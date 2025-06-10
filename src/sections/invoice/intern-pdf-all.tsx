@@ -167,6 +167,7 @@ const useStyles = () =>
 
 type Props = {
   invoice: IInternItem;
+  stt: any;
 };
 
 const changDateJP = (date: any) => {
@@ -200,7 +201,7 @@ function normalizeName(name: string): string {
     .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
 }
 
-export default function InternPDFAll({ invoice }: Props) {
+export default function InternPDFAll({ invoice, stt }: Props) {
   const {
     name,
     namejp,
@@ -251,6 +252,25 @@ export default function InternPDFAll({ invoice }: Props) {
       </View>
 
       {/* <Text style={[styles.subtitle1, styles.mb8]}>技能実習生履歴書</Text> */}
+       <View style={[styles.gridContainer]}>
+        <View style={styles.table1}>
+          <View>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCell_7, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>技能実習生履歴書</Text>
+              </View>
+
+              <View style={[styles.tableCell_7, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>履歴書日 {changDateJP(new Date().toISOString())}</Text>
+              </View>
+
+              <View style={[styles.tableCell_8, styles.titleBackground]}>
+                <Text style={styles.subtitle2}>面接番号:{stt}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
       <View style={[styles.gridContainer, styles.mb10]}>
         <View style={styles.table}>
           <View>
@@ -427,6 +447,8 @@ export default function InternPDFAll({ invoice }: Props) {
         <View
           style={{
             width: '20%',
+            // height: '111.5px',
+            // height: '80%',
             borderWidth: 1,
             borderStyle: 'solid',
             borderColor: '#DFE3E8',
@@ -440,7 +462,7 @@ export default function InternPDFAll({ invoice }: Props) {
             src={avatar}
             style={{
               width: '100%',
-              height: '100',
+              height: '111px',
               objectFit: 'contain',
             }}
           />

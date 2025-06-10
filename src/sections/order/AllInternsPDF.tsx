@@ -1,6 +1,7 @@
 // src/invoice/all-interns-pdf.tsx
 import { Document, Page, View, StyleSheet } from '@react-pdf/renderer';
 import InternPDFAll from '../invoice/intern-pdf-all';
+import InternPDFHome from '../invoice/intern-pdf-home';
 
 const styles = StyleSheet.create({
   page: {
@@ -17,10 +18,13 @@ const styles = StyleSheet.create({
 export default function AllInternsPDF({ interns }: { interns: any[] }) {
   return (
     <Document>
+        <Page size="A4" style={styles.page}>
+            <InternPDFHome invoice={interns}/>
+        </Page>
       {interns.map((intern, index) => (
         <Page key={index} size="A4" style={styles.page}>
           {/* Render lại InternPDF cho mỗi trang */}
-          <InternPDFAll invoice={intern} />
+          <InternPDFAll invoice={intern} stt={index+1}/>
         </Page>
       ))}
     </Document>
