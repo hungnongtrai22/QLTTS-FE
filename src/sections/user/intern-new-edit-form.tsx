@@ -1328,7 +1328,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     PaperPropsSx={{ textTransform: 'capitalize' }}
                     defaultValue={family[index].relationship}
                   >
-                    {['父', '母', '兄', '姉', '弟', '妹', '妻', '夫', '息子', '娘', '甥', '姪'].map(
+                    {['父', '母', '兄', '姉', '弟', '妹', '妻', '夫', '息子', '娘', '甥', '姪', '祖母'].map(
                       (option) => (
                         <MenuItem key={option} value={option}>
                           {option}
