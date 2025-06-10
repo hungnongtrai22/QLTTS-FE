@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import axios from 'axios';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -30,6 +31,8 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { isDateError } from 'src/components/custom-date-range-picker';
+import { useSnackbar } from 'src/components/snackbar';
+
 import {
   useTable,
   getComparator,
@@ -40,6 +43,7 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+
 //
 import OrderTableRow from '../order-table-row';
 import OrderTableToolbar from '../order-table-toolbar';
@@ -50,12 +54,12 @@ import OrderTableFiltersResult from '../order-table-filters-result';
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'orderNumber', label: 'Order', width: 116 },
-  { id: 'name', label: 'Customer' },
-  { id: 'createdAt', label: 'Date', width: 140 },
-  { id: 'totalQuantity', label: 'Items', width: 120, align: 'center' },
-  { id: 'totalAmount', label: 'Price', width: 140 },
-  { id: 'status', label: 'Status', width: 110 },
+  { id: 'orderNumber', label: 'Tên' },
+  { id: 'name', label: 'Ưu tiên', width: 116 },
+  { id: 'createdAt', label: 'Ngày Phỏng Vấn', width: 160 },
+  { id: 'totalQuantity', label: 'Phỏng Vấn', width: 120, align: 'center' },
+  { id: 'totalAmount', label: 'Số Lượng', width: 120 },
+  { id: 'status', label: 'Trạng Thái', width: 110 },
   { id: '', width: 88 },
 ];
 
@@ -72,12 +76,13 @@ export default function OrderListView() {
   const table = useTable({ defaultOrderBy: 'orderNumber' });
 
   const settings = useSettingsContext();
+  const { enqueueSnackbar } = useSnackbar();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_orders);
+  const [tableData, setTableData] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -115,7 +120,7 @@ export default function OrderListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      const deleteRow = tableData.filter((row: any) => row.id !== id);
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
@@ -124,7 +129,7 @@ export default function OrderListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+    const deleteRows = tableData.filter((row: any) => !table.selected.includes(row.id));
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -145,12 +150,40 @@ export default function OrderListView() {
     [router]
   );
 
+  const handleViewInternRow = useCallback(
+    (id: string) => {
+      router.push(paths.dashboard.intern.profile(id));
+    },
+    [router]
+  );
+
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
       handleFilters('status', newValue);
     },
     [handleFilters]
   );
+
+  const handleGetAllOrder = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/order/list`);
+    setTableData(data.orders);
+  }, []);
+
+  const handleRemoveInternInOrder = useCallback(
+    async (orderId: any, internId: any) => {
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/removeIntern`, {
+        orderId,
+        internId,
+      });
+      await handleGetAllOrder();
+      enqueueSnackbar('Xoá thực tập sinh thành công!');
+    },
+    [handleGetAllOrder, enqueueSnackbar]
+  );
+
+  useEffect(() => {
+    handleGetAllOrder();
+  }, [handleGetAllOrder]);
 
   return (
     <>
@@ -244,7 +277,7 @@ export default function OrderListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  tableData.map((row) => row.id)
+                  tableData.map((row: any) => row.id)
                 )
               }
               action={
@@ -268,7 +301,7 @@ export default function OrderListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      tableData.map((row: any) => row.id)
                     )
                   }
                 />
@@ -287,6 +320,8 @@ export default function OrderListView() {
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         onViewRow={() => handleViewRow(row.id)}
+                        onViewInternRow={handleViewInternRow}
+                        onRemoveIntern={handleRemoveInternInOrder}
                       />
                     ))}
 

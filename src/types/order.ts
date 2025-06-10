@@ -57,6 +57,14 @@ export type IOrderProductItem = {
 
 export type IOrderItem = {
   id: string;
+  _id: string;
+  name: string;
+  work: string;
+  priority: string;
+  recruitmentDate: Date | string;
+  interviewFormat: string;
+  quantity: string;
+  listIntern: any;
   taxes: number;
   status: string;
   shipping: number;

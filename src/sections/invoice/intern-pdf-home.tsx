@@ -200,7 +200,7 @@ function normalizeName(name: string): string {
     .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
 }
 
-export default function InternPDF({ invoice }: Props) {
+export default function InternPDFAll({ invoice }: Props) {
   const {
     name,
     namejp,
@@ -240,7 +240,6 @@ export default function InternPDF({ invoice }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
         <View style={[styles.gridContainer1, styles.mb10]}>
           <Image source="/assets/logo.png" style={{ width: 32, height: 32 }} />
 
@@ -432,19 +431,12 @@ export default function InternPDF({ invoice }: Props) {
               borderStyle: 'solid',
               borderColor: '#DFE3E8',
               display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: 'flex-end',
+              alignItems: 'flex-end',
               overflow: 'hidden',
             }}
           >
-            <Image
-              src={avatar}
-              style={{
-                width: '100%',
-                height: '100',
-                objectFit: 'contain',
-              }}
-            />
+            <Image source={avatar} style={{ width: '100%', height: '100' }} />
           </View>
         </View>
 
@@ -703,7 +695,6 @@ export default function InternPDF({ invoice }: Props) {
             <Text>nhattan@nhattangroup.vn</Text>
           </View>
         </View> */}
-      </Page>
     </Document>
   );
 }

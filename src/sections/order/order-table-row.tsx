@@ -1,4 +1,6 @@
 import { format } from 'date-fns';
+import { useState } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -12,6 +14,8 @@ import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
+import { CircularProgress, TextField, Tooltip } from '@mui/material';
+
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // utils
@@ -23,6 +27,11 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { PDFDownloadLink, pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+// import { pdf } from '@react-pdf/renderer';
+import InternPDF from '../invoice/intern-pdf';
+import AllInternsPDF from './AllInternsPDF';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +41,16 @@ type Props = {
   onViewRow: VoidFunction;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
+  onRemoveIntern: any;
+  onViewInternRow: any;
+};
+
+const changDateJP = (date: any) => {
+  const jsDate = new Date(date);
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
+  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  return customFormat;
 };
 
 export default function OrderTableRow({
@@ -40,8 +59,29 @@ export default function OrderTableRow({
   onViewRow,
   onSelectRow,
   onDeleteRow,
+  onRemoveIntern,
+  onViewInternRow,
 }: Props) {
-  const { items, status, orderNumber, createdAt, customer, totalQuantity, subTotal } = row;
+  const {
+    items,
+    status,
+    orderNumber,
+    createdAt,
+    customer,
+    totalQuantity,
+    subTotal,
+    name,
+    work,
+    priority,
+    recruitmentDate,
+    interviewFormat,
+    quantity,
+    listIntern,
+    _id,
+  } = row;
+
+  const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
+
 
   const confirm = useBoolean();
 
@@ -55,7 +95,8 @@ export default function OrderTableRow({
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
-      <TableCell>
+      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+        {/* <Avatar alt={customer?.name} src={customer?.avatarUrl} sx={{ mr: 2 }} /> */}
         <Box
           onClick={onViewRow}
           sx={{
@@ -65,37 +106,22 @@ export default function OrderTableRow({
             },
           }}
         >
-          {orderNumber}
+          <ListItemText
+            primary={name}
+            secondary={work}
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
+          />
         </Box>
       </TableCell>
 
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={customer.name} src={customer.avatarUrl} sx={{ mr: 2 }} />
+      <TableCell>{priority}</TableCell>
 
-        <ListItemText
-          primary={customer.name}
-          secondary={customer.email}
-          primaryTypographyProps={{ typography: 'body2' }}
-          secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
-        />
-      </TableCell>
+      <TableCell>{changDateJP(recruitmentDate)}</TableCell>
 
-      <TableCell>
-        <ListItemText
-          primary={format(new Date(createdAt), 'dd MMM yyyy')}
-          secondary={format(new Date(createdAt), 'p')}
-          primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-          secondaryTypographyProps={{
-            mt: 0.5,
-            component: 'span',
-            typography: 'caption',
-          }}
-        />
-      </TableCell>
+      <TableCell align="center">{interviewFormat}</TableCell>
 
-      <TableCell align="center"> {totalQuantity} </TableCell>
-
-      <TableCell> {fCurrency(subTotal)} </TableCell>
+      <TableCell>{quantity}</TableCell>
 
       <TableCell>
         <Label
@@ -141,9 +167,9 @@ export default function OrderTableRow({
           sx={{ bgcolor: 'background.neutral' }}
         >
           <Stack component={Paper} sx={{ m: 1.5 }}>
-            {items.map((item) => (
+            {listIntern?.map((item: any) => (
               <Stack
-                key={item.id}
+                key={item._id}
                 direction="row"
                 alignItems="center"
                 sx={{
@@ -153,15 +179,21 @@ export default function OrderTableRow({
                   },
                 }}
               >
-                <Avatar
-                  src={item.coverUrl}
-                  variant="rounded"
-                  sx={{ width: 48, height: 48, mr: 2 }}
-                />
+                <Avatar src={item.avatar} variant="rounded" sx={{ width: 48, height: 48, mr: 2 }} />
 
+                {/* <Box
+                 
+                > */}
                 <ListItemText
+                  onClick={() => onViewInternRow(item._id)}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
                   primary={item.name}
-                  secondary={item.sku}
+                  secondary={item.namejp}
                   primaryTypographyProps={{
                     typography: 'body2',
                   }}
@@ -171,10 +203,40 @@ export default function OrderTableRow({
                     mt: 0.5,
                   }}
                 />
+                {/* </Box> */}
 
-                <Box>x{item.quantity}</Box>
+                {item && (
+                  <PDFDownloadLink
+                    document={<InternPDF invoice={item} />}
+                    fileName={item.name}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    {({ loading }) => (
+                      <Tooltip title="Download">
+                        <IconButton>
+                          {loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                          ) : (
+                            <Iconify icon="material-symbols:download" />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </PDFDownloadLink>
+                )}
 
-                <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box>
+                {/* <Box>
+                  <IconButton onClick={collapse.onToggle}>
+                    <Iconify icon="material-symbols:download" />
+                  </IconButton>
+                </Box> */}
+
+                <Box sx={{ textAlign: 'right' }}>
+                  {' '}
+                  <IconButton color="error" onClick={() => onRemoveIntern(_id, item._id)}>
+                    <Iconify icon="mdi:trash" />
+                  </IconButton>
+                </Box>
               </Stack>
             ))}
           </Stack>
@@ -195,6 +257,24 @@ export default function OrderTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
+        <MenuItem
+          onClick={async () => {
+            try {
+              setLoadingDownloadAll(true);
+              const blob = await pdf(<AllInternsPDF interns={listIntern} />).toBlob();
+              saveAs(blob, `All_CVs_${name}.pdf`);
+            } catch (error) {
+              console.error('Lỗi khi tạo PDF:', error);
+            } finally {
+              setLoadingDownloadAll(false);
+              popover.onClose();
+            }
+          }}
+        >
+          <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'}
+        </MenuItem>
+
         <MenuItem
           onClick={() => {
             confirm.onTrue();

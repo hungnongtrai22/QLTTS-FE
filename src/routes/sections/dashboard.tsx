@@ -8,6 +8,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import CreateOrder from 'src/pages/dashboard/order/new';
 import InternListByDongThapPage from 'src/pages/dashboard/intern/listByDongThap';
+import OrderListPage from 'src/pages/dashboard/order/list';
 
 // ----------------------------------------------------------------------
 
@@ -225,7 +226,7 @@ export const dashboardRoutes = [
             path: 'list',
             element: (
               <RoleBasedGuard hasContent roles={['admin']}>
-                <CompanyListPage />{' '}
+                <OrderListPage />{' '}
               </RoleBasedGuard>
             ),
           },

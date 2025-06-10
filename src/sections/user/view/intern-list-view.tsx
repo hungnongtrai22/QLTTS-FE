@@ -30,6 +30,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import { useSnackbar } from 'src/components/snackbar';
 import {
   useTable,
   getComparator,
@@ -40,6 +41,9 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import Autocomplete from '@mui/material/Autocomplete';
+import { Box, TextField } from '@mui/material';
+
 import axios from 'axios';
 
 //
@@ -58,10 +62,17 @@ const defaultFilters = {
   status: 'all',
 };
 
+interface Order {
+  value: string;
+  text: string;
+}
+
 // ----------------------------------------------------------------------
 
 export default function InternListView() {
   const { t } = useLocales();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const TABLE_HEAD = [
     { id: 'name', label: t('full_name'), width: 310 },
@@ -83,6 +94,8 @@ export default function InternListView() {
 
   const [tableData, setTableData] = useState<IInternItem[]>([]);
   const [tradeUnion, setTradeUnion] = useState([]);
+  const [orderSelect, setOrderSelect] = useState<Order | null>(null);
+  const [orders, setOrders] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -135,6 +148,17 @@ export default function InternListView() {
     });
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
+  const handleAddInternIntoOrder = useCallback(async () => {
+    const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
+    
+    const listIntern = seletedRows.map((item: any) => item._id);
+    await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/updateListIntern`, {
+      _id: orderSelect?.value,
+      listIntern,
+    });
+    enqueueSnackbar('Thêm thực tập sinh vào đơn hàng thành công!');
+  }, [table, tableData, orderSelect, enqueueSnackbar]);
+
   const handleEditRow = useCallback(
     (id: string) => {
       router.push(paths.dashboard.intern.edit(id));
@@ -172,10 +196,16 @@ export default function InternListView() {
     // console.log(data.tradeUnions);
   }, []);
 
+  const handleGetOrder = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/order/list`);
+    setOrders(data.orders.map((item: any) => ({ text: item.name, value: item._id })));
+  }, []);
+
   useEffect(() => {
     handleGetAllIntern();
     handleGetTradeUnion();
-  }, [handleGetAllIntern, handleGetTradeUnion]);
+    handleGetOrder();
+  }, [handleGetAllIntern, handleGetTradeUnion, handleGetOrder]);
 
   return (
     <>
@@ -276,9 +306,9 @@ export default function InternListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title="Thêm vào đơn hàng">
                   <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                    <Iconify icon="streamline-ultimate:job-responsibility-bag-hand-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -346,22 +376,36 @@ export default function InternListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title="Thêm thực tập sinh vào đơn hàng"
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+            <Autocomplete
+              disablePortal
+              options={orders}
+              getOptionLabel={(option) => option?.text || ''}
+              fullWidth
+              value={orderSelect}
+              onChange={(event, newValue) => setOrderSelect(newValue)}
+              renderInput={(params) => <TextField {...params} label="Đơn hàng" />}
+              renderOption={(props, option) => (
+                <li {...props} key={option.value}>
+                  {option.text}
+                </li>
+              )}
+            />
           </>
         }
         action={
           <Button
             variant="contained"
-            color="error"
+            color="success"
             onClick={() => {
-              handleDeleteRows();
+              // handleDeleteRows();
+              handleAddInternIntoOrder();
               confirm.onFalse();
             }}
           >
-            Delete
+            Thêm
           </Button>
         }
       />
