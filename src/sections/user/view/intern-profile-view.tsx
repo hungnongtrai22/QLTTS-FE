@@ -24,6 +24,7 @@ import ProfileFriends from '../profile-friends';
 import ProfileGallery from '../profile-gallery';
 // import ProfileFollowers from '../profile-followers';
 import InternViewForm from '../intern-view-form';
+import InternOtherForm from '../intern-other-form';
 
 // ----------------------------------------------------------------------
 
@@ -40,7 +41,7 @@ const TABS = [
   },
   {
     value: 'friends',
-    label: 'Friends',
+    label: 'Thông tin bổ sung',
     icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
   },
   {
@@ -56,11 +57,10 @@ export default function InternProfileView() {
   const settings = useSettingsContext();
 
   const params = useParams();
-  
-    const { id } = params;
 
-    const [intern, setIntern] = useState<IInternItem>();
+  const { id } = params;
 
+  const [intern, setIntern] = useState<IInternItem>();
 
   const [searchFriends, setSearchFriends] = useState('');
 
@@ -74,14 +74,14 @@ export default function InternProfileView() {
     setSearchFriends(event.target.value);
   }, []);
 
-   const handleGetInternById = useCallback(async () => {
-      const {data} = await axios(`${process.env.REACT_APP_HOST_API}/api/user/${id}`);
-      setIntern(data.intern);
-    },[id]);
-  
-    useEffect(()=>{
-      handleGetInternById();
-    },[handleGetInternById])
+  const handleGetInternById = useCallback(async () => {
+    const { data } = await axios(`${process.env.REACT_APP_HOST_API}/api/user/${id}`);
+    setIntern(data.intern);
+  }, [id]);
+
+  useEffect(() => {
+    handleGetInternById();
+  }, [handleGetInternById]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -104,9 +104,9 @@ export default function InternProfileView() {
         }}
       >
         <ProfileCover
-          role={intern?.namejp || ""}
-          name={intern?.name || ""}
-          avatarUrl={intern?.avatar || ""}
+          role={intern?.namejp || ''}
+          name={intern?.name || ''}
+          avatarUrl={intern?.avatar || ''}
           coverUrl={_userAbout.coverUrl}
         />
 
@@ -134,16 +134,19 @@ export default function InternProfileView() {
         </Tabs>
       </Card>
 
-      {currentTab === 'profile' && <ProfileHome currentIntern={intern} info={_userAbout} posts={_userFeeds} />}
+      {currentTab === 'profile' && (
+        <ProfileHome currentIntern={intern} info={_userAbout} posts={_userFeeds} />
+      )}
 
       {currentTab === 'followers' && <InternViewForm currentIntern={intern} />}
 
       {currentTab === 'friends' && (
-        <ProfileFriends
-          friends={_userFriends}
-          searchFriends={searchFriends}
-          onSearchFriends={handleSearchFriends}
-        />
+        // <ProfileFriends
+        //   friends={_userFriends}
+        //   searchFriends={searchFriends}
+        //   onSearchFriends={handleSearchFriends}
+        // />
+        <InternOtherForm currentIntern={intern} />
       )}
 
       {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}

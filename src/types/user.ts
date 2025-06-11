@@ -210,6 +210,11 @@ export type IInternItem = {
   plan: string;
   tradeUnion: any;
   companySelect: any;
+  iq: number | null;
+  math: number | null;
+  kraepelin1: number | null;
+  kraepelin2: number | null;
+  createdAt: any;
 };
 
 export type ITradeUnionItem = {

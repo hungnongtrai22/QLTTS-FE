@@ -162,7 +162,6 @@ export default function InternNewEditForm({ currentIntern }: Props) {
   // const router = useRouter();
   // console.log('TEST', currentIntern);
   const { t, currentLang } = useLocales();
-  
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -326,9 +325,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
           .required('Tên không được để trống')
           .max(255, 'Tên quá dài')
           .min(1, 'Phải có ít nhất 1 thành viên trong gia đình'),
-        year: Yup.date().required('Năm sinh không được để trống'),
-        location: Yup.string().required('Địa chỉ không được để trống'),
-        occupation: Yup.string().required('Nghề nghiệp không được để trống'),
+        // year: Yup.date().required('Năm sinh không được để trống'),
+        // location: Yup.string().required('Địa chỉ không được để trống'),
+        // occupation: Yup.string().required('Nghề nghiệp không được để trống'),
       })
     ),
     interest: Yup.string().required('Sở thích không được để trống'),
@@ -351,8 +350,10 @@ export default function InternNewEditForm({ currentIntern }: Props) {
       blood: currentIntern?.blood || '',
       birthday: currentIntern?.birthday ? new Date(currentIntern.birthday) : '',
       familyList:
-        currentIntern?.family?.map((item: any) => ({ ...item, year: new Date(item.year) })) ||
-        initFamily,
+        currentIntern?.family?.map((item: any) => ({
+          ...item,
+          year: item.year ? new Date(item.year) : null,
+        })) || initFamily,
       schoolList:
         currentIntern?.school?.map((item: any) => ({
           ...item,
@@ -400,7 +401,6 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
-
 
   const {
     // reset,
@@ -1113,7 +1113,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                       >
                         <DatePicker
                           label={t('start_date')}
-                          value={field.value && field.value !== null  ? dayjs(field.value) : null}
+                          value={field.value && field.value !== null ? dayjs(field.value) : null}
                           onChange={(newValue) => {
                             const dateValue = newValue ? newValue.toDate() : null;
 
@@ -1328,13 +1328,25 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                     PaperPropsSx={{ textTransform: 'capitalize' }}
                     defaultValue={family[index].relationship}
                   >
-                    {['父', '母', '兄', '姉', '弟', '妹', '妻', '夫', '息子', '娘', '甥', '姪', '祖母'].map(
-                      (option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      )
-                    )}
+                    {[
+                      '父',
+                      '母',
+                      '兄',
+                      '姉',
+                      '弟',
+                      '妹',
+                      '妻',
+                      '夫',
+                      '息子',
+                      '娘',
+                      '甥',
+                      '姪',
+                      '祖母',
+                    ].map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
                   </RHFSelect>
 
                   <RHFTextField name={`familyList.${index}.name`} label={t('full_name')} />
@@ -1451,7 +1463,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
               />
               {/* <RHFTextField name="weak" label={t('weak')} /> */}
               <RHFAutocomplete
-               multiple
+                multiple
                 limitTags={2}
                 name="weak"
                 label={t('weak') || ''}

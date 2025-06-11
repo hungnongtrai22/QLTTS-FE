@@ -300,14 +300,14 @@ export default function InternPDFHome({ invoice }: Props) {
                 <Text style={styles.subtitle3}>(Kg)</Text>
               </View>
               <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>43</Text>
+                <Text style={styles.subtitle3}>{intern?.iq || ""}</Text>
               </View>
               <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>90</Text>
+                <Text style={styles.subtitle3}>{intern?.math || ""}</Text>
               </View>
               <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>400</Text>
-                <Text style={styles.subtitle3}>300</Text>
+                <Text style={styles.subtitle3}>{intern?.kraepelin1 || ""}</Text>
+                <Text style={styles.subtitle3}>{intern?.kraepelin2 || ""}</Text>
               </View>
               <View style={[styles.tableCell_3, styles.titleNoBackground]}>
                 <Image

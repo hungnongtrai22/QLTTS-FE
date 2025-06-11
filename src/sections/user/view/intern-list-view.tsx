@@ -79,8 +79,12 @@ export default function InternListView() {
     { id: 'phoneNumber', label: t('city'), width: 100 },
     { id: 'birthday', label: t('birthday'), width: 120 },
     { id: 'age', label: t('age'), width: 80 },
+        
+
     { id: 'height', label: t('height'), width: 100 },
     { id: 'weight', label: t('weight'), width: 100 },
+    { id: 'createdAt', label: t('create_date'), width: 120 },
+    // { id: 'createDate', label: t('create_date'), width: 120 },
     { id: '', width: 88 },
   ];
 
@@ -104,6 +108,8 @@ export default function InternListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  console.log('TEST', table.order, table.orderBy);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -150,7 +156,7 @@ export default function InternListView() {
 
   const handleAddInternIntoOrder = useCallback(async () => {
     const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
-    
+
     const listIntern = seletedRows.map((item: any) => item._id);
     await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/updateListIntern`, {
       _id: orderSelect?.value,

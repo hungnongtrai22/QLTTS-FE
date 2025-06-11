@@ -61,6 +61,7 @@
   "gender": "Giới tính",
   "blood": "Nhóm máu",
   "birthday": "Ngày sinh",
+  "create_date": "Ngày tạo",
   "age": "Tuổi",
   "height": "Chiều cao",
   "weight": "Cân nặng",
@@ -162,6 +163,10 @@
   "learningProcess": "Tiến trình học tập",
   "characteristic": "Tính cách",
   "comment": "Lưu ý / Giải thích về điểm yếu",
+  "iq": "Bài kiểm tra IQ",
+  "math": "Bài kiểm tra Toán học",
+  "kraepelin1": "Bài kiểm tra Kraepelin lần 1",
+  "kraepelin2": "Bài kiểm tra Kraepelin lần 2",
   "demo": {
     "title": "Vietnamese"
   }

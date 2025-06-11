@@ -351,7 +351,7 @@ export default function InternPDF({ invoice }: Props) {
                 </View>
 
                 <View style={styles.tableCell_6}>
-                  <Text>{`左目:${leftEye}/1.2、右目${rightEye}/1.2`}</Text>
+                  <Text>{`左目:${leftEye}、右目${rightEye}`}</Text>
                 </View>
 
                 <View style={[styles.tableCell_4, styles.titleBackground]}>
@@ -605,13 +605,13 @@ export default function InternPDF({ invoice }: Props) {
                   </View>
 
                   <View style={[styles.tableCell_4]}>
-                    <Text>{new Date(item.year).getFullYear()}</Text>
+                    <Text>{item.year ? new Date(item.year).getFullYear() : "逝去"}</Text>
                   </View>
                   <View style={[styles.tableCell_8]}>
-                    <Text>{item.location}</Text>
+                    <Text>{item?.location}</Text>
                   </View>
                   <View style={[styles.tableCell_8]}>
-                    <Text>{item.occupation}</Text>
+                    <Text>{item?.occupation}</Text>
                   </View>
                 </View>
               ))}

@@ -61,6 +61,7 @@
   "gender": "性別",
   "blood": "血液型",
   "birthday": "生年月日",
+  "create_date": "作成日",
   "age": "年齢(歳)",
   "height": "身長(cm)",
   "weight": "体重(Kg)",
@@ -162,6 +163,10 @@
   "learningProcess": "学習進捗",
   "characteristic": "性格",
   "comment": "留意点/不良の説明",
+  "iq": "IQテスト",
+  "math": "数学テスト",
+  "kraepelin1": "クレペリン第1回",
+  "kraepelin2": "クレペリン第1回",
   "demo": {
     "title": "英語"
   }

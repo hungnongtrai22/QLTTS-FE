@@ -5,12 +5,17 @@ export function emptyRows(page: number, rowsPerPage: number, arrayLength: number
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+  const aValue = a[orderBy];
+  const bValue = b[orderBy];
+
+  // Nếu là kiểu ngày ISO string → convert sang timestamp để so sánh
+  const aTime =
+    typeof aValue === 'string' && Date.parse(aValue) ? new Date(aValue).getTime() : aValue;
+  const bTime =
+    typeof bValue === 'string' && Date.parse(bValue) ? new Date(bValue).getTime() : bValue;
+
+  if (bTime < aTime) return -1;
+  if (bTime > aTime) return 1;
   return 0;
 }
 

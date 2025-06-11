@@ -48,7 +48,7 @@ export default function InternTableRow({
   onDeleteRow,
   onViewRow,
 }: Props) {
-  const { name, namejp, avatar, city, birthday, age, height, weight } = row;
+  const { name, namejp, avatar, city, birthday, age, height, weight, createdAt } = row;
 
   const confirm = useBoolean();
 
@@ -80,6 +80,8 @@ export default function InternTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{city}</TableCell>
 
+        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(createdAt)}</TableCell> */}
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(birthday)}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{age}</TableCell>
@@ -87,6 +89,10 @@ export default function InternTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{height}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{weight}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(createdAt)}</TableCell>
+
+        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(birthday)}</TableCell> */}
 
         {/* <TableCell>
           <Label
@@ -103,7 +109,7 @@ export default function InternTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Nhập điểm" placement="top" arrow>
+          {/* <Tooltip title="Nhập điểm" placement="top" arrow>
             <IconButton
               color={quickStudy.value ? 'inherit' : 'default'}
               onClick={quickStudy.onTrue}
@@ -124,7 +130,7 @@ export default function InternTableRow({
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
               <Iconify icon="healthicons:job-status-level" />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
 
           <Tooltip title="Xem Thông Tin" placement="top" arrow>
             <IconButton
