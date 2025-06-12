@@ -31,7 +31,7 @@ const useStyles = () =>
         subtitle3: { fontSize: 6, textAlign: 'center' },
         subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
-          backgroundColor: '#F6F0F0',
+          backgroundColor: '#D8DEE9',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
