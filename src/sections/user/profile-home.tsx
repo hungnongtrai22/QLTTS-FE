@@ -285,7 +285,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
           {/* {renderPostInput} */}
 
           {study.map((item) => (
-            <StudyPostItem  study={item} intern={currentIntern || null}/>
+            <StudyPostItem key={item._id} study={item} intern={currentIntern || null}/>
           ))}
         </Stack>
       </Grid>

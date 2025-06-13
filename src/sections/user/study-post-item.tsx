@@ -34,6 +34,69 @@ interface Props {
   intern: any;
 }
 
+const changDateJP = (date: any) => {
+  const jsDate = new Date(date);
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
+  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  return customFormat;
+};
+const transPointToSharp = (point: number): string => {
+  if (point < 50) return '×';
+  if (point < 70) return '△';
+  if (point < 80) return '○';
+  if (point < 90) return '◎';
+  return '●';
+};
+
+const transPointToGrade = (point: number): string => {
+  if (point < 50) return 'C';
+  if (point < 60) return 'B-';
+  if (point < 70) return 'B';
+  if (point < 80) return 'B+';
+  if (point < 90) return 'A';
+  return 'A+';
+};
+
+const evaluateStudent = (
+  discipline: number,
+  attitude: number,
+  health: number,
+  cooperation: number,
+  attend: number,
+  total: number
+): string => {
+  const hasCriticalFail =
+    (discipline < 50 && attitude < 50) ||
+    health < 50 ||
+    cooperation < 50 ||
+    attend < 50 ||
+    total < 500;
+
+  if (hasCriticalFail) return '不可';
+  if (total < 700) return '可';
+  if (total < 800) return '良';
+  if (total < 900) return '優';
+  return '秀';
+};
+
+const judgeJLPTResult = (
+  level: string,
+  kanji: number,
+  grammarAndReading: number,
+  listeningComprehension: number
+): string => {
+  const total = kanji + grammarAndReading + listeningComprehension;
+
+  const isPass =
+    kanji >= 19 &&
+    grammarAndReading >= 19 &&
+    listeningComprehension >= 19 &&
+    ((level === 'N5' && total >= 80) || (level === 'N4' && total >= 90));
+
+  return isPass ? '合' : '不';
+};
+
 export default function StudyPostItem({ study, intern }: Props) {
   const { user } = useMockedUser();
 
@@ -67,12 +130,13 @@ export default function StudyPostItem({ study, intern }: Props) {
       avatar={<Avatar src={intern?.avatar} alt={intern?.name} />}
       title={
         <Link color="inherit" variant="subtitle1">
-          {`${intern?.name} (${intern?.namejp})`} 
+          {`${intern?.name} (${intern?.namejp})`}
         </Link>
       }
       subheader={
         <Box sx={{ color: 'text.disabled', typography: 'caption', mt: 0.5 }}>
-          {fDate(study.createdAt)}
+          {/* {fDate(study.createdAt)} */}
+          {changDateJP(study.createdAt)}
         </Box>
       }
       action={
@@ -107,7 +171,7 @@ export default function StudyPostItem({ study, intern }: Props) {
           </Stack>
 
           <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
-            ひらがなとカタカナは覚えていますが、読むスピードはまだ遅いです。挨拶の時、声はまだ小さくて、間違うこともあります。会話の時、習った言葉や文型を使おうとしていますが、ミスがあり、反応があまり速くないので、自習時間に教師や友達と会話練習をさせます。
+            {study.comment}
           </Box>
         </Paper>
       </Stack>
@@ -212,7 +276,7 @@ export default function StudyPostItem({ study, intern }: Props) {
           p: (theme) => theme.spacing(3, 3, 2, 3),
         }}
       >
-        学習期間: 1
+        学習期間: {study.time}
       </Typography>
 
       <Box sx={{ p: 1 }}>
@@ -275,14 +339,14 @@ export default function StudyPostItem({ study, intern }: Props) {
           </thead>
           <tbody className={styles.tbody}>
             <tr className={styles.tr}>
-              <td className={styles.td}>いつも笑顔で、熱心</td>
+              <td className={styles.td}>{study.characteristic}</td>
               <td
                 className={styles.td}
                 style={{
                   fontSize: '20px',
                 }}
               >
-                ●
+                {transPointToSharp(study.health)}
               </td>
               <td
                 className={styles.td}
@@ -290,7 +354,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                ●
+                {transPointToSharp(study.cooperation)}
               </td>
               <td
                 className={styles.td}
@@ -298,7 +362,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                ●
+                {transPointToSharp(study.attend)}
               </td>
               <td
                 className={styles.td}
@@ -306,7 +370,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                ◎
+                {transPointToSharp(study.discipline)}
               </td>
               <td
                 className={styles.td}
@@ -314,7 +378,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                ◎
+                {transPointToSharp(study.attitude)}
               </td>
               <td
                 className={styles.td}
@@ -322,7 +386,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                ◎
+                {transPointToSharp(study.acquiringKnowledge)}
               </td>
               <td
                 className={styles.td}
@@ -330,7 +394,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                △
+                {transPointToSharp(study.write)}
               </td>
               <td
                 className={styles.td}
@@ -338,7 +402,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                △
+                {transPointToSharp(study.read)}
               </td>
               <td
                 className={styles.td}
@@ -346,7 +410,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                △
+                {transPointToSharp(study.listen)}
               </td>
               <td
                 className={styles.td}
@@ -354,13 +418,29 @@ export default function StudyPostItem({ study, intern }: Props) {
                   fontSize: '20px',
                 }}
               >
-                △
+                {transPointToSharp(study.speak)}
               </td>
-              <td className={styles.td}>B-</td>
-              <td className={styles.td}>N5</td>
-              <td className={styles.td}>不</td>
-              <td className={styles.td}>良</td>
-              <td className={styles.td}>皆の日本語第3課</td>
+              <td className={styles.td}>{transPointToGrade(study.average)}</td>
+              <td className={styles.td}>{study.level}</td>
+              <td className={styles.td}>
+                {judgeJLPTResult(
+                  study.level,
+                  study.kanji,
+                  study.grammarAndReading,
+                  study.listeningComprehension
+                )}
+              </td>
+              <td className={styles.td}>
+                {evaluateStudent(
+                  study.discipline,
+                  study.attitude,
+                  study.health,
+                  study.cooperation,
+                  study.attend,
+                  study.total
+                )}
+              </td>
+              <td className={styles.td}>{study.learningProcess}</td>
             </tr>
           </tbody>
         </table>

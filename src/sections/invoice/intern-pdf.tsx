@@ -3,6 +3,7 @@ import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/
 // utils
 
 import { IInternItem } from 'src/types/user';
+import dayjs from 'dayjs';
 
 // ----------------------------------------------------------------------
 
@@ -288,461 +289,470 @@ export default function InternPDF({ invoice }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-         <View style={styles.outerBorder}>
-                <View style={[styles.gridContainer1, styles.mb10, styles.pImage]}>
-                  <Image source="/assets/logo.png" style={{ width: 32, height: 32 }} />
+        <View style={styles.outerBorder}>
+          <View style={[styles.gridContainer1, styles.mb10, styles.pImage]}>
+            <Image source="/assets/logo.png" style={{ width: 32, height: 32 }} />
+
+            <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
+              {/* <Text style={styles.h3}>{currentStatus}</Text> */}
+              <Text>NHAT TAN MANPOWER</Text>
+              <Text style={styles.subtitle4}>
+                8 TX01, Thanh Xuan Ward, District 12, Ho Chi Minh City, Vietnam
+              </Text>
+            </View>
+          </View>
+
+          <View style={[styles.gridContainer, styles.mb10]}>
+            <View style={styles.table}>
+              <View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>氏名</Text>
+                  </View>
+
+                  <View style={styles.tableCell_2}>
+                    <Text>{normalizeName(name)}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>性別</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{gender}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>身長(cm)</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{height}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>フリガナ</Text>
+                  </View>
+
+                  <View style={styles.tableCell_2}>
+                    <Text>{namejp}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>年齡(歳)</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{age}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>体重(Kg)</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{weight}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>生年月日</Text>
+                  </View>
+
+                  <View style={styles.tableCell_6}>
+                    <Text>{changDateJP(birthday)}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>血液型</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{blood}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>配偶者</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{married}</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>BMI</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{BMI}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>視力</Text>
+                  </View>
+
+                  <View style={styles.tableCell_6}>
+                    <Text>{`左目: ${leftEye} - 右目: ${rightEye}`}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>色弱</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{blindColor === true ? 'あり' : 'なし'}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>利き手</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{hand}</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>運転免許</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{driverLicense}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>現住所</Text>
+                  </View>
+
+                  <View style={styles.tableCell_6}>
+                    <Text>{address}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>喫煙</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{smoke === true ? 'あり' : 'なし'}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>飲酒</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{alcohol === true ? 'あり' : 'なし'}</Text>
+                  </View>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>入れ墨</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.textCenter]}>
+                    <Text>{tattoo === true ? 'あり' : 'なし'}</Text>
+                  </View>
+                </View>
+              </View>
+
+              <View>
+                {/* {items.map((item, index) => (
+                      <View style={styles.tableRow} key={item.id}>
+                        <View style={styles.tableCell_1}>
+                          <Text>{index + 1}</Text>
+                        </View>
         
-                  <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
-                    {/* <Text style={styles.h3}>{currentStatus}</Text> */}
-                    <Text>NHAT TAN MANPOWER</Text>
-                    <Text style={styles.subtitle4}>
-                      8 TX01, Thanh Xuan Ward, District 12, Ho Chi Minh City, Vietnam
+                        <View style={styles.tableCell_2}>
+                          <Text style={styles.subtitle2}>{item.title}</Text>
+                          <Text>{item.description}</Text>
+                        </View>
+        
+                        <View style={styles.tableCell_3}>
+                          <Text>{item.quantity}</Text>
+                        </View>
+        
+                        <View style={styles.tableCell_3}>
+                          <Text>{item.price}</Text>
+                        </View>
+        
+                        <View style={[styles.tableCell_3, styles.alignRight]}>
+                          <Text>{fCurrency(item.price * item.quantity)}</Text>
+                        </View>
+                      </View>
+                    ))} */}
+              </View>
+            </View>
+            <View
+              style={{
+                width: '20%',
+                // height: '111.5px',
+                // height: '80%',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: '#DFE3E8',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden',
+              }}
+            >
+              <Image
+                src={avatar}
+                style={{
+                  width: '100%',
+                  height: '111px',
+                  objectFit: 'contain',
+                }}
+              />
+            </View>
+          </View>
+
+          <View style={[styles.gridContainer, styles.mb10]}>
+            <View style={styles.table1}>
+              <View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_6, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>期間</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_7, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>学校名</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_8, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>学習内容</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>現在</Text>
+                  </View>
+                </View>
+                {school.map((item: any, index: any) => (
+                  <View style={styles.tableRow}>
+                    <View style={[styles.tableCell_6]}>
+                      <Text>
+                        {changMonthYearJP(item.timeFrom)} -{' '}
+                        {dayjs(item.timeTo).isSame(dayjs(), 'month') &&
+                        dayjs(item.timeTo).isSame(dayjs(), 'year')
+                          ? '現在'
+                          : changMonthYearJP(item.timeTo)}
+                      </Text>
+                    </View>
+
+                    <View style={[styles.tableCell_7]}>
+                      <Text>{item.name}</Text>
+                    </View>
+
+                    <View style={[styles.tableCell_8]}>
+                      <Text>{item.content}</Text>
+                    </View>
+
+                    <View style={[styles.tableCell_4, styles.textCenter]}>
+                      <Text>{item.current}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+
+              <View>
+                {/* {items.map((item, index) => (
+                      <View style={styles.tableRow} key={item.id}>
+                        <View style={styles.tableCell_1}>
+                          <Text>{index + 1}</Text>
+                        </View>
+        
+                        <View style={styles.tableCell_2}>
+                          <Text style={styles.subtitle2}>{item.title}</Text>
+                          <Text>{item.description}</Text>
+                        </View>
+        
+                        <View style={styles.tableCell_3}>
+                          <Text>{item.quantity}</Text>
+                        </View>
+        
+                        <View style={styles.tableCell_3}>
+                          <Text>{item.price}</Text>
+                        </View>
+        
+                        <View style={[styles.tableCell_3, styles.alignRight]}>
+                          <Text>{fCurrency(item.price * item.quantity)}</Text>
+                        </View>
+                      </View>
+                    ))} */}
+              </View>
+            </View>
+          </View>
+
+          {/* <Text style={[styles.subtitle1, styles.mb8]}>職歴</Text> */}
+          <View style={[styles.gridContainer, styles.mb10]}>
+            <View style={styles.table1}>
+              <View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_6, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>期間</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_7, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>会社(職場)</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_6, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>仕事の内容</Text>
+                  </View>
+                </View>
+                {company.map((item: any, index: any) => (
+                  <View style={styles.tableRow}>
+                    <View style={[styles.tableCell_6]}>
+                      <Text>
+                        {changMonthYearJP(item.timeFrom)} -{' '}
+                        {dayjs(item.timeTo).isSame(dayjs(), 'month') &&
+                        dayjs(item.timeTo).isSame(dayjs(), 'year')
+                          ? '現在'
+                          : changMonthYearJP(item.timeTo)}
+                      </Text>
+                    </View>
+
+                    <View style={[styles.tableCell_7]}>
+                      <Text>{item.name}</Text>
+                    </View>
+
+                    <View style={[styles.tableCell_6]}>
+                      <Text>{item.content}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+          {/* <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text> */}
+          <View style={[styles.gridContainer, styles.mb10]}>
+            <View style={styles.table1}>
+              <View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>関係</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_7, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>氏名</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>生年</Text>
+                  </View>
+                  <View style={[styles.tableCell_8, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>会社名(場所)</Text>
+                  </View>
+                  <View style={[styles.tableCell_8, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>職業</Text>
+                  </View>
+                </View>
+                {family.map((item: any, index: any) => (
+                  <View style={styles.tableRow}>
+                    <View style={[styles.tableCell_4, styles.textCenter]}>
+                      <Text>{item.relationship}</Text>
+                    </View>
+
+                    <View style={[styles.tableCell_7]}>
+                      <Text>{item.name}</Text>
+                    </View>
+
+                    <View style={[styles.tableCell_4, styles.textCenter]}>
+                      <Text>{item.year ? new Date(item.year).getFullYear() : '死亡'}</Text>
+                    </View>
+                    <View style={[styles.tableCell_8]}>
+                      <Text>{item.location}</Text>
+                    </View>
+                    <View style={[styles.tableCell_8]}>
+                      <Text>{item.occupation}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+
+          <View style={[styles.gridContainer]}>
+            <View style={styles.table1}>
+              <View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>趣味</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_6, styles.textLeft]}>
+                    <Text>{interest}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>長所</Text>
+                  </View>
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{strong.join(', ')}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>外国語</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_6, styles.textLeft]}>
+                    <Text>{foreignLanguage}</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_4, styles.titleBackground]}>
+                    <Text style={styles.subtitle2}>短所</Text>
+                  </View>
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{weak.join(', ')}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
+                    <Text style={styles.subtitle2}>日本に親戚がいますか</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{familyInJapan ? 'はい' : 'なし'}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
+                    <Text style={styles.subtitle2}>外国へ行ったことがありますか</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{moveForeign ? 'はい' : 'なし'}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
+                    <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{money}</Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
+                    <Text style={styles.subtitle2}>
+                      実習期間が終了した後、どんな予定がありますか
                     </Text>
                   </View>
-                </View>
-        
-                
-                <View style={[styles.gridContainer, styles.mb10]}>
-                  <View style={styles.table}>
-                    <View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>氏名</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_2}>
-                          <Text>{normalizeName(name)}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>性別</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{gender}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>身長(cm)</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{height}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>フリガナ</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_2}>
-                          <Text>{namejp}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>年齡(歳)</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{age}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>体重(Kg)</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{weight}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>生年月日</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_6}>
-                          <Text>{changDateJP(birthday)}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>血液型</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{blood}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>配偶者</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{married}</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>BMI</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{BMI}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>視力</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_6}>
-                          <Text>{`左目: ${leftEye} - 右目: ${rightEye}`}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>色弱</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{blindColor === true ? 'あり' : 'なし'}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>利き手</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{hand}</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>運転免許</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{driverLicense}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>現住所</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_6}>
-                          <Text>{address}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>喫煙</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{smoke === true ? 'あり' : 'なし'}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>飲酒</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{alcohol === true ? 'あり' : 'なし'}</Text>
-                        </View>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>入れ墨</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.textCenter]}>
-                          <Text>{tattoo === true ? 'あり' : 'なし'}</Text>
-                        </View>
-                      </View>
-                    </View>
-        
-                    <View>
-                      {/* {items.map((item, index) => (
-                      <View style={styles.tableRow} key={item.id}>
-                        <View style={styles.tableCell_1}>
-                          <Text>{index + 1}</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_2}>
-                          <Text style={styles.subtitle2}>{item.title}</Text>
-                          <Text>{item.description}</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_3}>
-                          <Text>{item.quantity}</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_3}>
-                          <Text>{item.price}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_3, styles.alignRight]}>
-                          <Text>{fCurrency(item.price * item.quantity)}</Text>
-                        </View>
-                      </View>
-                    ))} */}
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      width: '20%',
-                      // height: '111.5px',
-                      // height: '80%',
-                      borderWidth: 1,
-                      borderStyle: 'solid',
-                      borderColor: '#DFE3E8',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <Image
-                      src={avatar}
-                      style={{
-                        width: '100%',
-                        height: '111px',
-                        objectFit: 'contain',
-                      }}
-                    />
+
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{plan}</Text>
                   </View>
                 </View>
-        
-                <View style={[styles.gridContainer, styles.mb10]}>
-                  <View style={styles.table1}>
-                    <View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_6, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>期間</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_7, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>学校名</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_8, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>学習内容</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>現在</Text>
-                        </View>
-                      </View>
-                      {school.map((item: any, index: any) => (
-                        <View style={styles.tableRow}>
-                          <View style={[styles.tableCell_6]}>
-                            <Text>
-                              {changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}
-                            </Text>
-                          </View>
-        
-                          <View style={[styles.tableCell_7]}>
-                            <Text>{item.name}</Text>
-                          </View>
-        
-                          <View style={[styles.tableCell_8]}>
-                            <Text>{item.content}</Text>
-                          </View>
-        
-                          <View style={[styles.tableCell_4, styles.textCenter]}>
-                            <Text>{item.current}</Text>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-        
-                    <View>
-                      {/* {items.map((item, index) => (
-                      <View style={styles.tableRow} key={item.id}>
-                        <View style={styles.tableCell_1}>
-                          <Text>{index + 1}</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_2}>
-                          <Text style={styles.subtitle2}>{item.title}</Text>
-                          <Text>{item.description}</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_3}>
-                          <Text>{item.quantity}</Text>
-                        </View>
-        
-                        <View style={styles.tableCell_3}>
-                          <Text>{item.price}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_3, styles.alignRight]}>
-                          <Text>{fCurrency(item.price * item.quantity)}</Text>
-                        </View>
-                      </View>
-                    ))} */}
-                    </View>
+
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
+                    <Text style={styles.subtitle2}>日本に行くの目的・志望動機</Text>
+                  </View>
+
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{aim}</Text>
                   </View>
                 </View>
-        
-                {/* <Text style={[styles.subtitle1, styles.mb8]}>職歴</Text> */}
-                <View style={[styles.gridContainer, styles.mb10]}>
-                  <View style={styles.table1}>
-                    <View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_6, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>期間</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_7, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>会社(職場)</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_6, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>仕事の内容</Text>
-                        </View>
-                      </View>
-                      {company.map((item: any, index: any) => (
-                        <View style={styles.tableRow}>
-                          <View style={[styles.tableCell_6]}>
-                            <Text>
-                              {changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}
-                            </Text>
-                          </View>
-        
-                          <View style={[styles.tableCell_7]}>
-                            <Text>{item.name}</Text>
-                          </View>
-        
-                          <View style={[styles.tableCell_6]}>
-                            <Text>{item.content}</Text>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                </View>
-                {/* <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text> */}
-                <View style={[styles.gridContainer, styles.mb10]}>
-                  <View style={styles.table1}>
-                    <View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>関係</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_7, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>氏名</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>生年</Text>
-                        </View>
-                        <View style={[styles.tableCell_8, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>会社名(場所)</Text>
-                        </View>
-                        <View style={[styles.tableCell_8, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>職業</Text>
-                        </View>
-                      </View>
-                      {family.map((item: any, index: any) => (
-                        <View style={styles.tableRow}>
-                          <View style={[styles.tableCell_4, styles.textCenter]}>
-                            <Text>{item.relationship}</Text>
-                          </View>
-        
-                          <View style={[styles.tableCell_7]}>
-                            <Text>{item.name}</Text>
-                          </View>
-        
-                          <View style={[styles.tableCell_4, styles.textCenter]}>
-                            <Text>{item.year ? new Date(item.year).getFullYear() : '死亡'}</Text>
-                          </View>
-                          <View style={[styles.tableCell_8]}>
-                            <Text>{item.location}</Text>
-                          </View>
-                          <View style={[styles.tableCell_8]}>
-                            <Text>{item.occupation}</Text>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                </View>
-        
-                <View style={[styles.gridContainer]}>
-                  <View style={styles.table1}>
-                    <View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>趣味</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_6, styles.textLeft]}>
-                          <Text>{interest}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>長所</Text>
-                        </View>
-                        <View style={[styles.tableCell_10, styles.textLeft]}>
-                          <Text>{strong.join(', ')}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>外国語</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_6, styles.textLeft]}>
-                          <Text>{foreignLanguage}</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_4, styles.titleBackground]}>
-                          <Text style={styles.subtitle2}>短所</Text>
-                        </View>
-                        <View style={[styles.tableCell_10, styles.textLeft]}>
-                          <Text>{weak.join(', ')}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                          <Text style={styles.subtitle2}>日本に親戚がいますか</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_10, styles.textLeft]}>
-                          <Text>{familyInJapan ? 'はい' : 'なし'}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                          <Text style={styles.subtitle2}>外国へ行ったことがありますか</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_10, styles.textLeft]}>
-                          <Text>{moveForeign ? 'はい' : 'なし'}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                          <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_10, styles.textLeft]}>
-                          <Text>{money}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                          <Text style={styles.subtitle2}>実習期間が終了した後、どんな予定がありますか</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_10, styles.textLeft]}>
-                          <Text>{plan}</Text>
-                        </View>
-                      </View>
-        
-                      <View style={styles.tableRow}>
-                        <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                          <Text style={styles.subtitle2}>日本に行くの目的・志望動機</Text>
-                        </View>
-        
-                        <View style={[styles.tableCell_10, styles.textLeft]}>
-                          <Text>{aim}</Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-        
-                {/* <View style={[styles.gridContainer, styles.footer]} fixed>
+              </View>
+            </View>
+          </View>
+
+          {/* <View style={[styles.gridContainer, styles.footer]} fixed>
                   <View style={styles.col8}>
                     <Text style={styles.subtitle2}>NOTES</Text>
                     <Text>
@@ -754,7 +764,7 @@ export default function InternPDF({ invoice }: Props) {
                     <Text>nhattan@nhattangroup.vn</Text>
                   </View>
                 </View> */}
-              </View>
+        </View>
       </Page>
     </Document>
   );

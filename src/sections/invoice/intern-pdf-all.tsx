@@ -3,6 +3,7 @@ import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/
 // utils
 
 import { IInternItem } from 'src/types/user';
+import dayjs from 'dayjs';
 
 // ----------------------------------------------------------------------
 
@@ -544,7 +545,11 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                 <View style={styles.tableRow}>
                   <View style={[styles.tableCell_6]}>
                     <Text>
-                      {changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}
+                      {changMonthYearJP(item.timeFrom)} -{' '}
+                      {dayjs(item.timeTo).isSame(dayjs(), 'month') &&
+                      dayjs(item.timeTo).isSame(dayjs(), 'year')
+                        ? '現在'
+                        : changMonthYearJP(item.timeTo)}
                     </Text>
                   </View>
 
@@ -613,7 +618,11 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                 <View style={styles.tableRow}>
                   <View style={[styles.tableCell_6]}>
                     <Text>
-                      {changMonthYearJP(item.timeFrom)} - {changMonthYearJP(item.timeTo)}
+                      {changMonthYearJP(item.timeFrom)} -{' '}
+                      {dayjs(item.timeTo).isSame(dayjs(), 'month') &&
+                      dayjs(item.timeTo).isSame(dayjs(), 'year')
+                        ? '現在'
+                        : changMonthYearJP(item.timeTo)}
                     </Text>
                   </View>
 

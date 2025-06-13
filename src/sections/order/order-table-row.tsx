@@ -43,6 +43,7 @@ type Props = {
   onDeleteRow: VoidFunction;
   onRemoveIntern: any;
   onViewInternRow: any;
+  onEditRow: any;
 };
 
 const changDateJP = (date: any) => {
@@ -61,6 +62,7 @@ export default function OrderTableRow({
   onDeleteRow,
   onRemoveIntern,
   onViewInternRow,
+  onEditRow
 }: Props) {
   const {
     items,
@@ -275,7 +277,14 @@ export default function OrderTableRow({
           {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'}
         </MenuItem>
 
-        <MenuItem
+        
+  <MenuItem
+          onClick={onEditRow}
+        >
+          <Iconify icon="fluent:edit-48-filled" />
+          Chỉnh sửa
+        </MenuItem>
+        {/* <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -294,7 +303,7 @@ export default function OrderTableRow({
         >
           <Iconify icon="solar:eye-bold" />
           View
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
 
       <ConfirmDialog

@@ -29,6 +29,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { viVN } from '@mui/x-date-pickers/locales';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { IOrderItem } from 'src/types/order';
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -41,10 +42,10 @@ interface FormValuesProps extends Omit<IUserItem, 'avatarUrl'> {
 
 type Props = {
   // currentUser?: IUserItem;
-  currentTradeUnion?: ITradeUnionItem;
+  currentOrder?: IOrderItem;
 };
 
-export default function OrderNewEditForm({ currentTradeUnion }: Props) {
+export default function OrderNewEditForm({ currentOrder }: Props) {
   // const router = useRouter();
   // console.log('TEST', currentIntern);
   const { t } = useLocales();
@@ -63,17 +64,31 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      name: currentTradeUnion?.name || '',
-      email: currentTradeUnion?.email || '',
-      phone: currentTradeUnion?.phone || '',
-      city: currentTradeUnion?.city || '',
-      state: currentTradeUnion?.state || '',
-      country: currentTradeUnion?.country || '',
-      address: currentTradeUnion?.address || '',
+      name: currentOrder?.name || '',
+      priority: currentOrder?.priority || '',
+      interviewFormat: currentOrder?.interviewFormat || '',
+      status: currentOrder?.status || '',
+      recruitmentDate: currentOrder?.recruitmentDate || '',
+      work: currentOrder?.work || '',
+      description: currentOrder?.description || '',
+      contractPeriod: currentOrder?.contractPeriod || '',
+      ageFrom: currentOrder?.ageFrom || '',
+      ageTo: currentOrder?.ageTo || '',
+      quantity: currentOrder?.quantity || '',
+      quantityMen: currentOrder?.quantityMen || '',
+      quantityWomen: currentOrder?.quantityWomen || '',
+      married: currentOrder?.married || '',
+      study: currentOrder?.study || '',
+      applicationConditions: currentOrder?.applicationConditions || '',
+      insurance: currentOrder?.insurance || '',
+                  housingConditions: currentOrder?.housingConditions || '',
+                  livingConditions: currentOrder?.livingConditions || '',
+                  otherLivingConditions: currentOrder?.otherLivingConditions || '',
+
       // school: currentIntern?.school || [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentTradeUnion]
+    [currentOrder]
   );
 
   const methods = useForm<FormValuesProps>({
@@ -113,15 +128,15 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
     return data;
   }, []);
 
-  const editTradeUnion = useCallback(
-    async (intern: any) => {
-      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/edit`, {
-        ...intern,
-        _id: currentTradeUnion?._id,
+  const editOrder = useCallback(
+    async (order: any) => {
+      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/edit`, {
+        ...order,
+        _id: currentOrder?._id,
       });
       return data;
     },
-    [currentTradeUnion]
+    [currentOrder]
   );
 
   const onSubmit = useCallback(
@@ -129,20 +144,19 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
         // router.push(paths.dashboard.user.list);
-        if (currentTradeUnion) {
-          // await editTradeUnion(data);
-          enqueueSnackbar(currentTradeUnion ? 'Update success!' : 'Create success!');
+        if (currentOrder) {
+          await editOrder(data);
+          enqueueSnackbar(currentOrder ? 'Update success!' : 'Create success!');
         } else {
           await createOrder(data);
-          enqueueSnackbar(currentTradeUnion ? 'Update success!' : 'Create success!');
+          enqueueSnackbar(currentOrder ? 'Update success!' : 'Create success!');
         }
-                reset();
-
+        reset();
       } catch (error) {
         console.error(error);
       }
     },
-    [createOrder, enqueueSnackbar, currentTradeUnion, reset]
+    [createOrder, enqueueSnackbar, currentOrder, reset, editOrder]
     // [currentIntern, enqueueSnackbar, reset, router]
   );
 
@@ -336,14 +350,14 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
               <RHFTextField name="livingConditions" label={t('livingConditions')} />
             </Box>
 
-            <Box sx={{ pt: 3 }}>
+            <Box sx={{ pt: 3, pb: 3 }}>
               <Typography variant="body2" sx={{ color: 'text.disabled', mb: 3 }}>
                 {t('otherLivingConditions')}
               </Typography>
               <RHFEditor simple name="otherLivingConditions" />
             </Box>
 
-            <Box
+            {/* <Box
               rowGap={2}
               columnGap={2}
               display="grid"
@@ -355,8 +369,8 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
               <RHFAutocomplete
                 multiple
                 // limitTags={2}
-                name="listWorker"
-                label={t('listWorker') || ''}
+                name="listIntern"
+                label={t('listIntern') || ''}
                 disablePortal
                 options={interns.map((item: any) => ({ _id: item._id, name: item.name }))}
                 getOptionLabel={(item: any) => item.name}
@@ -367,7 +381,7 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
                   </li>
                 )}
               />
-            </Box>
+            </Box> */}
 
             <Stack alignItems="flex-end" spacing={1.5}>
               {/* <Button
@@ -382,7 +396,7 @@ export default function OrderNewEditForm({ currentTradeUnion }: Props) {
             </Stack>
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentTradeUnion ? t('create_order') : t('edit_order')}
+                {!currentOrder ? t('create_order') : t('edit_order')}
               </LoadingButton>
             </Stack>
           </Card>

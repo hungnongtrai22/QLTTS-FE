@@ -9,6 +9,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import CreateOrder from 'src/pages/dashboard/order/new';
 import InternListByDongThapPage from 'src/pages/dashboard/intern/listByDongThap';
 import OrderListPage from 'src/pages/dashboard/order/list';
+import OrderEditPage from 'src/pages/dashboard/order/edit';
 
 // ----------------------------------------------------------------------
 
@@ -242,7 +243,7 @@ export const dashboardRoutes = [
             path: ':id/edit',
             element: (
               <RoleBasedGuard hasContent roles={['admin']}>
-                <CompanyEditPage />{' '}
+                <OrderEditPage />{' '}
               </RoleBasedGuard>
             ),
           },

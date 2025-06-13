@@ -28,11 +28,14 @@ export default function AllInternsPDF({ interns }: { interns: any[] }) {
   return (
     <Document>
       {/* Mỗi nhóm interns (tối đa 9) được render bởi InternPDFHome trên một Page */}
-      {internChunks.map((group, index) => (
-        <Page key={`home-${index}`} size="A4" orientation="landscape" style={styles.page}>
-          <InternPDFHome invoice={group} />
-        </Page>
-      ))}
+      {internChunks.map((group, index) => {
+  const startIndex = index * 9;
+  return (
+    <Page key={`home-${index}`} size="A4" orientation="landscape" style={styles.page}>
+      <InternPDFHome invoice={group} startIndex={startIndex} />
+    </Page>
+  );
+})}
 
       {/* Sau đó render từng intern bằng InternPDFAll như cũ */}
       {interns.map((intern, index) => (

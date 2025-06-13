@@ -189,6 +189,7 @@ const useStyles = () =>
 
 type Props = {
   invoice: any;
+  startIndex: number;
 };
 
 const changDateJP = (date: any) => {
@@ -199,7 +200,7 @@ const changDateJP = (date: any) => {
   return customFormat;
 };
 
-export default function InternPDFHome({ invoice }: Props) {
+export default function InternPDFHome({ invoice, startIndex = 0 }: Props) {
   // const { name } = invoice;
   console.log("Interns", invoice);
 
@@ -272,7 +273,7 @@ export default function InternPDFHome({ invoice }: Props) {
             </View>
            {invoice.map((intern: any, index : any) => <View style={styles.tableRow}>
               <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{index + 1}</Text>
+                <Text style={styles.subtitle3}>{startIndex + index + 1}</Text>
               </View>
 
               <View style={[styles.tableCell_5, styles.titleNoBackground]}>

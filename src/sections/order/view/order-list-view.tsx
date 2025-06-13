@@ -150,6 +150,13 @@ export default function OrderListView() {
     [router]
   );
 
+    const handleEditRow = useCallback(
+    (id: string) => {
+      router.push(paths.dashboard.order.edit(id));
+    },
+    [router]
+  );
+
   const handleViewInternRow = useCallback(
     (id: string) => {
       router.push(paths.dashboard.intern.profile(id));
@@ -320,6 +327,7 @@ export default function OrderListView() {
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         onViewRow={() => handleViewRow(row.id)}
+                        onEditRow={() => handleEditRow(row._id)}
                         onViewInternRow={handleViewInternRow}
                         onRemoveIntern={handleRemoveInternInOrder}
                       />
