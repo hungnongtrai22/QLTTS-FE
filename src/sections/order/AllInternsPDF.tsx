@@ -11,6 +11,13 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     padding: '10px 24px 10px 24px',
   },
+  pageBorder: {
+      flex: 1, // 👈 QUAN TRỌNG
+
+    borderWidth: 1.5,
+    borderColor: 'black',
+    borderStyle: 'solid',
+  },
 });
 
 // Hàm chia mảng thành các nhóm 9 phần tử
@@ -29,18 +36,20 @@ export default function AllInternsPDF({ interns }: { interns: any[] }) {
     <Document>
       {/* Mỗi nhóm interns (tối đa 9) được render bởi InternPDFHome trên một Page */}
       {internChunks.map((group, index) => {
-  const startIndex = index * 9;
-  return (
-    <Page key={`home-${index}`} size="A4" orientation="landscape" style={styles.page}>
-      <InternPDFHome invoice={group} startIndex={startIndex} />
-    </Page>
-  );
-})}
+        const startIndex = index * 9;
+        return (
+          <Page key={`home-${index}`} size="A4" orientation="landscape" style={styles.page}>
+            <InternPDFHome invoice={group} startIndex={startIndex} />
+          </Page>
+        );
+      })}
 
       {/* Sau đó render từng intern bằng InternPDFAll như cũ */}
       {interns.map((intern, index) => (
         <Page key={`detail-${index}`} size="A4" style={styles.page}>
-          <InternPDFAll invoice={intern} stt={index + 1} />
+          <View style={styles.pageBorder}>
+            <InternPDFAll invoice={intern} stt={index + 1} />
+          </View>
         </Page>
       ))}
     </Document>

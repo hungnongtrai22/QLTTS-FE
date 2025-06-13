@@ -202,6 +202,7 @@ const useStyles = () =>
           textAlign: 'center',
         },
         outerBorder: {
+          flex: 1,
           borderWidth: 1.5,
           borderColor: 'black',
           borderStyle: 'solid',
@@ -310,7 +311,7 @@ export default function InternPDF({ invoice }: Props) {
                     <Text style={styles.subtitle2}>氏名</Text>
                   </View>
 
-                  <View style={styles.tableCell_2}>
+                  <View style={[styles.tableCell_2, styles.textCenter]}>
                     <Text>{normalizeName(name)}</Text>
                   </View>
 
@@ -334,7 +335,7 @@ export default function InternPDF({ invoice }: Props) {
                     <Text style={styles.subtitle2}>フリガナ</Text>
                   </View>
 
-                  <View style={styles.tableCell_2}>
+                  <View style={[styles.tableCell_2, styles.textCenter]}>
                     <Text>{namejp}</Text>
                   </View>
 
@@ -358,7 +359,7 @@ export default function InternPDF({ invoice }: Props) {
                     <Text style={styles.subtitle2}>生年月日</Text>
                   </View>
 
-                  <View style={styles.tableCell_6}>
+                  <View style={[styles.tableCell_6, styles.textCenter]}>
                     <Text>{changDateJP(birthday)}</Text>
                   </View>
 
@@ -389,7 +390,7 @@ export default function InternPDF({ invoice }: Props) {
                     <Text style={styles.subtitle2}>視力</Text>
                   </View>
 
-                  <View style={styles.tableCell_6}>
+                  <View style={[styles.tableCell_6, styles.textCenter]}>
                     <Text>{`左目: ${leftEye} - 右目: ${rightEye}`}</Text>
                   </View>
 
@@ -420,7 +421,7 @@ export default function InternPDF({ invoice }: Props) {
                     <Text style={styles.subtitle2}>現住所</Text>
                   </View>
 
-                  <View style={styles.tableCell_6}>
+                  <View style={[styles.tableCell_6, styles.textCenter]}>
                     <Text>{address}</Text>
                   </View>
 
@@ -522,7 +523,7 @@ export default function InternPDF({ invoice }: Props) {
                 </View>
                 {school.map((item: any, index: any) => (
                   <View style={styles.tableRow}>
-                    <View style={[styles.tableCell_6]}>
+                    <View style={[styles.tableCell_6, styles.textCenter]}>
                       <Text>
                         {changMonthYearJP(item.timeFrom)} -{' '}
                         {dayjs(item.timeTo).isSame(dayjs(), 'month') &&
@@ -532,11 +533,11 @@ export default function InternPDF({ invoice }: Props) {
                       </Text>
                     </View>
 
-                    <View style={[styles.tableCell_7]}>
+                    <View style={[styles.tableCell_7, styles.textCenter]}>
                       <Text>{item.name}</Text>
                     </View>
 
-                    <View style={[styles.tableCell_8]}>
+                    <View style={[styles.tableCell_8, styles.textCenter]}>
                       <Text>{item.content}</Text>
                     </View>
 
@@ -595,7 +596,7 @@ export default function InternPDF({ invoice }: Props) {
                 </View>
                 {company.map((item: any, index: any) => (
                   <View style={styles.tableRow}>
-                    <View style={[styles.tableCell_6]}>
+                    <View style={[styles.tableCell_6, styles.textCenter]}>
                       <Text>
                         {changMonthYearJP(item.timeFrom)} -{' '}
                         {dayjs(item.timeTo).isSame(dayjs(), 'month') &&
@@ -605,11 +606,11 @@ export default function InternPDF({ invoice }: Props) {
                       </Text>
                     </View>
 
-                    <View style={[styles.tableCell_7]}>
+                    <View style={[styles.tableCell_7, styles.textCenter]}>
                       <Text>{item.name}</Text>
                     </View>
 
-                    <View style={[styles.tableCell_6]}>
+                    <View style={[styles.tableCell_6, styles.textCenter]}>
                       <Text>{item.content}</Text>
                     </View>
                   </View>
@@ -646,17 +647,17 @@ export default function InternPDF({ invoice }: Props) {
                       <Text>{item.relationship}</Text>
                     </View>
 
-                    <View style={[styles.tableCell_7]}>
+                    <View style={[styles.tableCell_7, styles.textCenter]}>
                       <Text>{item.name}</Text>
                     </View>
 
                     <View style={[styles.tableCell_4, styles.textCenter]}>
                       <Text>{item.year ? new Date(item.year).getFullYear() : '死亡'}</Text>
                     </View>
-                    <View style={[styles.tableCell_8]}>
+                    <View style={[styles.tableCell_8, styles.textCenter]}>
                       <Text>{item.location}</Text>
                     </View>
-                    <View style={[styles.tableCell_8]}>
+                    <View style={[styles.tableCell_8, styles.textCenter]}>
                       <Text>{item.occupation}</Text>
                     </View>
                   </View>
