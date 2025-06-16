@@ -27,6 +27,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import ExportInternsWithAvatar from 'src/utils/ExportInternsWithAvatar';
+
 import { PDFDownloadLink, pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 // import { pdf } from '@react-pdf/renderer';
@@ -278,6 +280,8 @@ export default function OrderTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
+        
+
         <MenuItem
           onClick={async () => {
             try {
@@ -295,6 +299,8 @@ export default function OrderTableRow({
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
           {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'}
         </MenuItem>
+
+        <ExportInternsWithAvatar interns={listIntern} name={name}/>
 
         <MenuItem onClick={onEditRow}>
           <Iconify icon="fluent:edit-48-filled" />
