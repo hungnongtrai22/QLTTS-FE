@@ -109,7 +109,6 @@ export default function InternListView() {
     filters,
   });
 
-  console.log('TEST', table.order, table.orderBy);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,

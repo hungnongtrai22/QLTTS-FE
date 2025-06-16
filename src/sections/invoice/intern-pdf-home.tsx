@@ -96,7 +96,8 @@ const useStyles = () =>
         tableCell_1: {
           width: '8%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           padding: '1px 0',
@@ -107,14 +108,16 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
         tableCell_3: {
           width: '12.5%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
@@ -123,7 +126,8 @@ const useStyles = () =>
         tableCell_5: {
           width: '23%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
@@ -132,7 +136,8 @@ const useStyles = () =>
         tableCell_4: {
           width: '10%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
@@ -144,7 +149,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -154,7 +160,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -164,7 +171,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -174,7 +182,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -224,9 +233,9 @@ export default function InternPDFHome({ invoice, startIndex = 0 }: Props) {
       <View style={[styles.gridContainer]}>
         <View style={styles.table1}>
           <View>
-            <View style={styles.tableRow}>
-              <View style={[styles.tableCell_9, styles.titleBackground]}>
-                <Text style={styles.subtitle2}>順番</Text>
+            <View style={[styles.tableRow, {borderTopWidth: 1}]}>
+              <View style={[styles.tableCell_9, styles.titleBackground, {borderLeftWidth: 1}]}>
+                <Text style={[styles.subtitle2]}>順番</Text>
               </View>
 
               <View style={[styles.tableCell_5, styles.titleBackground]}>
@@ -272,7 +281,7 @@ export default function InternPDFHome({ invoice, startIndex = 0 }: Props) {
               </View>
             </View>
            {invoice.map((intern: any, index : any) => <View style={styles.tableRow}>
-              <View style={[styles.tableCell_9, styles.titleNoBackground]}>
+              <View style={[styles.tableCell_9, styles.titleNoBackground, {borderLeftWidth: 1}]}>
                 <Text style={styles.subtitle3}>{startIndex + index + 1}</Text>
               </View>
 

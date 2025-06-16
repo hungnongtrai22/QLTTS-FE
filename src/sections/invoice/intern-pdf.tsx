@@ -20,7 +20,7 @@ const useStyles = () =>
         col8: { width: '75%' },
         col6: { width: '50%' },
         mb4: { marginBottom: 4 },
-        mb8: { marginBottom: 8 },
+        mb8: { marginBottom: 8, paddingLeft: 3 },
         mb10: { marginBottom: 10 },
         pImage: { paddingHorizontal: 3, paddingTop: 3 },
         mb40: { marginBottom: 40 },
@@ -100,7 +100,8 @@ const useStyles = () =>
         tableCell_1: {
           width: '8%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           padding: '3px 0',
@@ -111,14 +112,16 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
         tableCell_3: {
           width: '15%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
@@ -127,7 +130,8 @@ const useStyles = () =>
         tableCell_5: {
           width: '25%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
@@ -136,7 +140,8 @@ const useStyles = () =>
         tableCell_4: {
           width: '10%',
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
           height: '100%',
@@ -148,7 +153,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -158,7 +164,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -168,7 +175,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -178,7 +186,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -188,7 +197,8 @@ const useStyles = () =>
           height: '100%',
           // paddingRight: 16,
           textAlign: 'center',
-          borderWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
@@ -202,11 +212,13 @@ const useStyles = () =>
           textAlign: 'center',
         },
         outerBorder: {
-          flex: 1,
+          flex: 1, // 👈 QUAN TRỌNG
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
           borderWidth: 1.5,
           borderColor: 'black',
           borderStyle: 'solid',
-          // padding: 8,
         },
       }),
     []
@@ -306,7 +318,7 @@ export default function InternPDF({ invoice }: Props) {
           <View style={[styles.gridContainer, styles.mb10]}>
             <View style={styles.table}>
               <View>
-                <View style={styles.tableRow}>
+                <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
                   <View style={[styles.tableCell_4, styles.titleBackground]}>
                     <Text style={styles.subtitle2}>氏名</Text>
                   </View>
@@ -481,7 +493,9 @@ export default function InternPDF({ invoice }: Props) {
                 width: '20%',
                 // height: '111.5px',
                 // height: '80%',
-                borderWidth: 1,
+                borderTop: 1,
+                borderBottom: 1,
+                borderRight: 1,
                 borderStyle: 'solid',
                 borderColor: '#DFE3E8',
                 display: 'flex',
@@ -501,6 +515,7 @@ export default function InternPDF({ invoice }: Props) {
             </View>
           </View>
 
+          {family.length < 8 && <Text style={[styles.subtitle1, styles.mb8]}>学歴</Text>}
           <View style={[styles.gridContainer, styles.mb10]}>
             <View style={styles.table1}>
               <View>
@@ -522,7 +537,7 @@ export default function InternPDF({ invoice }: Props) {
                   </View>
                 </View>
                 {school.map((item: any, index: any) => (
-                  <View style={styles.tableRow}>
+                  <View style={styles.tableRow} key={index}>
                     <View style={[styles.tableCell_6, styles.textCenter]}>
                       <Text>
                         {changMonthYearJP(item.timeFrom)} -{' '}
@@ -543,6 +558,26 @@ export default function InternPDF({ invoice }: Props) {
 
                     <View style={[styles.tableCell_4, styles.textCenter]}>
                       <Text>{item.current}</Text>
+                    </View>
+                  </View>
+                ))}
+
+                {Array.from({ length: 4 - school.length }).map((_, idx) => (
+                  <View style={styles.tableRow} key={`empty-${idx}`}>
+                    <View style={[styles.tableCell_6, styles.textCenter]}>
+                      <Text> </Text>
+                    </View>
+
+                    <View style={[styles.tableCell_7, styles.textCenter]}>
+                      <Text> </Text>
+                    </View>
+
+                    <View style={[styles.tableCell_8, styles.textCenter]}>
+                      <Text> </Text>
+                    </View>
+
+                    <View style={[styles.tableCell_4, styles.textCenter]}>
+                      <Text> </Text>
                     </View>
                   </View>
                 ))}
@@ -577,7 +612,7 @@ export default function InternPDF({ invoice }: Props) {
             </View>
           </View>
 
-          {/* <Text style={[styles.subtitle1, styles.mb8]}>職歴</Text> */}
+          {family.length < 8 && <Text style={[styles.subtitle1, styles.mb8]}>職歴</Text>}
           <View style={[styles.gridContainer, styles.mb10]}>
             <View style={styles.table1}>
               <View>
@@ -595,7 +630,7 @@ export default function InternPDF({ invoice }: Props) {
                   </View>
                 </View>
                 {company.map((item: any, index: any) => (
-                  <View style={styles.tableRow}>
+                  <View style={styles.tableRow} key={index}>
                     <View style={[styles.tableCell_6, styles.textCenter]}>
                       <Text>
                         {changMonthYearJP(item.timeFrom)} -{' '}
@@ -615,53 +650,72 @@ export default function InternPDF({ invoice }: Props) {
                     </View>
                   </View>
                 ))}
+
+                {Array.from({ length: Math.max(0, 3 - company.length) }).map((_, idx) => (
+                  <View style={styles.tableRow} key={`empty-company-${idx}`}>
+                    <View style={[styles.tableCell_6, styles.textCenter]}>
+                      <Text> </Text>
+                    </View>
+
+                    <View style={[styles.tableCell_7, styles.textCenter]}>
+                      <Text> </Text>
+                    </View>
+
+                    <View style={[styles.tableCell_6, styles.textCenter]}>
+                      <Text> </Text>
+                    </View>
+                  </View>
+                ))}
               </View>
             </View>
           </View>
           {/* <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text> */}
-          <View style={[styles.gridContainer, styles.mb10]}>
-            <View style={styles.table1}>
-              <View>
-                <View style={styles.tableRow}>
-                  <View style={[styles.tableCell_4, styles.titleBackground]}>
-                    <Text style={styles.subtitle2}>関係</Text>
-                  </View>
-
-                  <View style={[styles.tableCell_7, styles.titleBackground]}>
-                    <Text style={styles.subtitle2}>氏名</Text>
-                  </View>
-
-                  <View style={[styles.tableCell_4, styles.titleBackground]}>
-                    <Text style={styles.subtitle2}>生年</Text>
-                  </View>
-                  <View style={[styles.tableCell_8, styles.titleBackground]}>
-                    <Text style={styles.subtitle2}>会社名(場所)</Text>
-                  </View>
-                  <View style={[styles.tableCell_8, styles.titleBackground]}>
-                    <Text style={styles.subtitle2}>職業</Text>
-                  </View>
-                </View>
-                {family.map((item: any, index: any) => (
+          <View>
+            {family.length < 8 && <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text>}
+            <View style={[styles.gridContainer, styles.mb10]}>
+              <View style={styles.table1}>
+                <View>
                   <View style={styles.tableRow}>
-                    <View style={[styles.tableCell_4, styles.textCenter]}>
-                      <Text>{item.relationship}</Text>
+                    <View style={[styles.tableCell_4, styles.titleBackground]}>
+                      <Text style={styles.subtitle2}>関係</Text>
                     </View>
 
-                    <View style={[styles.tableCell_7, styles.textCenter]}>
-                      <Text>{item.name}</Text>
+                    <View style={[styles.tableCell_7, styles.titleBackground]}>
+                      <Text style={styles.subtitle2}>氏名</Text>
                     </View>
 
-                    <View style={[styles.tableCell_4, styles.textCenter]}>
-                      <Text>{item.year ? new Date(item.year).getFullYear() : '死亡'}</Text>
+                    <View style={[styles.tableCell_4, styles.titleBackground]}>
+                      <Text style={styles.subtitle2}>生年</Text>
                     </View>
-                    <View style={[styles.tableCell_8, styles.textCenter]}>
-                      <Text>{item.location}</Text>
+                    <View style={[styles.tableCell_8, styles.titleBackground]}>
+                      <Text style={styles.subtitle2}>会社名(場所)</Text>
                     </View>
-                    <View style={[styles.tableCell_8, styles.textCenter]}>
-                      <Text>{item.occupation}</Text>
+                    <View style={[styles.tableCell_8, styles.titleBackground]}>
+                      <Text style={styles.subtitle2}>職業</Text>
                     </View>
                   </View>
-                ))}
+                  {family.map((item: any, index: any) => (
+                    <View style={styles.tableRow}>
+                      <View style={[styles.tableCell_4, styles.textCenter]}>
+                        <Text>{item.relationship}</Text>
+                      </View>
+
+                      <View style={[styles.tableCell_7, styles.textCenter]}>
+                        <Text>{item.name}</Text>
+                      </View>
+
+                      <View style={[styles.tableCell_4, styles.textCenter]}>
+                        <Text>{item.year ? new Date(item.year).getFullYear() : '死亡'}</Text>
+                      </View>
+                      <View style={[styles.tableCell_8, styles.textCenter]}>
+                        <Text>{item.location}</Text>
+                      </View>
+                      <View style={[styles.tableCell_8, styles.textCenter]}>
+                        <Text>{item.occupation}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
               </View>
             </View>
           </View>
@@ -669,7 +723,7 @@ export default function InternPDF({ invoice }: Props) {
           <View style={[styles.gridContainer]}>
             <View style={styles.table1}>
               <View>
-                <View style={styles.tableRow}>
+                <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
                   <View style={[styles.tableCell_4, styles.titleBackground]}>
                     <Text style={styles.subtitle2}>趣味</Text>
                   </View>

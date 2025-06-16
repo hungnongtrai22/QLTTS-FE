@@ -12,8 +12,10 @@ const styles = StyleSheet.create({
     padding: '10px 24px 10px 24px',
   },
   pageBorder: {
-      flex: 1, // 👈 QUAN TRỌNG
-
+    flex: 1, // 👈 QUAN TRỌNG
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     borderWidth: 1.5,
     borderColor: 'black',
     borderStyle: 'solid',

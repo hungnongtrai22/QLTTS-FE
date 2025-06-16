@@ -32,6 +32,8 @@ import { saveAs } from 'file-saver';
 // import { pdf } from '@react-pdf/renderer';
 import InternPDF from '../invoice/intern-pdf';
 import AllInternsPDF from './AllInternsPDF';
+import ContactQuickEditForm from '../user/contact-quick-edit-form';
+import SwapForm from '../user/swap-form';
 
 // ----------------------------------------------------------------------
 
@@ -62,7 +64,7 @@ export default function OrderTableRow({
   onDeleteRow,
   onRemoveIntern,
   onViewInternRow,
-  onEditRow
+  onEditRow,
 }: Props) {
   const {
     items,
@@ -84,12 +86,13 @@ export default function OrderTableRow({
 
   const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
 
-
   const confirm = useBoolean();
 
   const collapse = useBoolean();
 
   const popover = usePopover();
+
+  const quickSwap = useBoolean();
 
   const renderPrimary = (
     <TableRow hover selected={selected}>
@@ -227,6 +230,15 @@ export default function OrderTableRow({
                   </PDFDownloadLink>
                 )}
 
+                <Tooltip title="Đổi Số Thự Tự" placement="top" arrow>
+                  <IconButton
+                    color={quickSwap.value ? 'inherit' : 'default'}
+                    onClick={quickSwap.onTrue}
+                  >
+                    <Iconify icon="ri:swap-fill" />
+                  </IconButton>
+                </Tooltip>
+
                 {/* <Box>
                   <IconButton onClick={collapse.onToggle}>
                     <Iconify icon="material-symbols:download" />
@@ -239,6 +251,13 @@ export default function OrderTableRow({
                     <Iconify icon="mdi:trash" />
                   </IconButton>
                 </Box>
+
+                <SwapForm
+                  orderId={_id}
+                  internId={item._id}
+                  open={quickSwap.value}
+                  onClose={quickSwap.onFalse}
+                />
               </Stack>
             ))}
           </Stack>
@@ -277,10 +296,7 @@ export default function OrderTableRow({
           {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'}
         </MenuItem>
 
-        
-  <MenuItem
-          onClick={onEditRow}
-        >
+        <MenuItem onClick={onEditRow}>
           <Iconify icon="fluent:edit-48-filled" />
           Chỉnh sửa
         </MenuItem>
