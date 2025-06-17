@@ -48,7 +48,6 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
   const [study, setStudy] = useState<IStudyItem[]>([]);
   const { user } = useAuthContext();
 
-  console.log(contact);
 
   const handleAttach = () => {
     if (fileRef.current) {
@@ -275,7 +274,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
 
             {renderAbout}
 
-            {renderSocials}
+            {/* {renderSocials} */}
           </Stack>
         </Grid>
       )}

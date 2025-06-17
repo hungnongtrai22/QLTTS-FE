@@ -16,6 +16,8 @@ import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
+import { useLocales } from 'src/locales';
+
 // types
 import { IInternItem, IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
 // _mock
@@ -51,15 +53,7 @@ import InternByDongThapTableToolbar from '../intern-by-dong-thap-table-toolbar';
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', width: 310 },
-  { id: 'phoneNumber', label: 'City', width: 100 },
-  { id: 'birthday', label: 'Date of Birth', width: 120 },
-  { id: 'age', label: 'Age', width: 80 },
-  { id: 'height', label: 'Height', width: 80 },
-  { id: 'weight', label: 'weight', width: 80 },
-  { id: '', width: 88 },
-];
+
 
 const defaultFilters = {
   name: '',
@@ -72,6 +66,18 @@ const defaultFilters = {
 
 export default function InternListByDongThapView() {
   const table = useTable();
+    const { t } = useLocales();
+  
+
+  const TABLE_HEAD = [
+  { id: 'name', label: t('full_name'), width: 310 },
+  { id: 'phoneNumber', label: t('city'), width: 100 },
+  { id: 'birthday', label: t('birthday'), width: 120 },
+  { id: 'age', label: t('age'), width: 80 },
+  { id: 'height', label: t('height'), width: 80 },
+  { id: 'weight', label: t('weight'), width: 80 },
+  { id: '', width: 88 },
+];
 
   const settings = useSettingsContext();
 

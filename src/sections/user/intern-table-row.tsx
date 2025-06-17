@@ -190,6 +190,16 @@ export default function InternTableRow({
           Chỉnh Sửa
         </MenuItem>
 
+         <MenuItem
+          onClick={() => {
+            onEditRow();
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="material-symbols:school" />
+          Nhập Điểm
+        </MenuItem>
+
         {/* <MenuItem
           onClick={() => {
             onEditRow();

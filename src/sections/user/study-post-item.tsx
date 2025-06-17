@@ -25,6 +25,8 @@ import { fShortenNumber } from 'src/utils/format-number';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import Markdown from 'src/components/markdown';
+
 import styles from './study-style.module.css';
 
 // ----------------------------------------------------------------------
@@ -171,7 +173,9 @@ export default function StudyPostItem({ study, intern }: Props) {
           </Stack>
 
           <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
-            {study.comment}
+            {/* {study.comment} */}
+                    <Markdown children={study.comment} />
+            
           </Box>
         </Paper>
       </Stack>
