@@ -35,9 +35,18 @@ type Props = {
   onClose: VoidFunction;
   orderId: string;
   internId: string;
+  internName: string;
+  onHandleGetOrder: any;
 };
 
-export default function SwapForm({ orderId, internId, open, onClose }: Props) {
+export default function SwapForm({
+  orderId,
+  internId,
+  internName,
+  open,
+  onClose,
+  onHandleGetOrder,
+}: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useLocales();
@@ -67,16 +76,16 @@ export default function SwapForm({ orderId, internId, open, onClose }: Props) {
 
   const swapIntern = useCallback(
     async (item: any) => {
-      // const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/swapIntern`, {
-      //   _id: orderId,
-      //   internId: internId,
-      //   newIndex: item.newIndex - 1,
-      // });
+      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/swapIntern`, {
+        _id: orderId,
+        internId: internName,
+        newIndex: item.newIndex - 1,
+      });
 
-      // return data;
-      console.log(orderId, internId, item.newIndex - 1);
+      return data;
+      // console.log(orderId, internId, item.newIndex - 1);
     },
-    [orderId, internId]
+    [orderId, internName]
   );
 
   const onSubmit = useCallback(
@@ -85,6 +94,7 @@ export default function SwapForm({ orderId, internId, open, onClose }: Props) {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         await swapIntern(data);
+        await onHandleGetOrder();
         reset();
         onClose();
         enqueueSnackbar('Update success!');
@@ -94,7 +104,7 @@ export default function SwapForm({ orderId, internId, open, onClose }: Props) {
         console.error(error);
       }
     },
-    [enqueueSnackbar, onClose, reset, swapIntern]
+    [enqueueSnackbar, onClose, reset, swapIntern, onHandleGetOrder]
   );
 
   // useEffect(() => {
@@ -122,7 +132,7 @@ export default function SwapForm({ orderId, internId, open, onClose }: Props) {
       }}
     >
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Cập nhập số thứ tự</DialogTitle>
+        <DialogTitle>Cập nhập số thứ tự thực tập sinh</DialogTitle>
 
         <DialogContent>
           {/* <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>

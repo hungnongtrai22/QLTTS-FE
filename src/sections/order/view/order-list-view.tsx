@@ -330,6 +330,7 @@ export default function OrderListView() {
                         onEditRow={() => handleEditRow(row._id)}
                         onViewInternRow={handleViewInternRow}
                         onRemoveIntern={handleRemoveInternInOrder}
+                        onHandleGetOrder={handleGetAllOrder}
                       />
                     ))}
 

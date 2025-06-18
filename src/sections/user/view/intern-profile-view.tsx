@@ -25,6 +25,7 @@ import ProfileGallery from '../profile-gallery';
 // import ProfileFollowers from '../profile-followers';
 import InternViewForm from '../intern-view-form';
 import InternOtherForm from '../intern-other-form';
+import InternPointForm from '../intern-point-form';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ const TABS = [
   },
   {
     value: 'gallery',
-    label: 'Gallery',
+    label: 'Điểm Số',
     icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
   },
 ];
@@ -149,7 +150,7 @@ export default function InternProfileView() {
         <InternOtherForm currentIntern={intern} />
       )}
 
-      {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}
+      {currentTab === 'gallery' && <InternPointForm internId={intern?._id} />}
     </Container>
   );
 }

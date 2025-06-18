@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+
 import { format } from 'date-fns';
 import { useState } from 'react';
 
@@ -48,6 +50,7 @@ type Props = {
   onRemoveIntern: any;
   onViewInternRow: any;
   onEditRow: any;
+  onHandleGetOrder: any;
 };
 
 const changDateJP = (date: any) => {
@@ -67,6 +70,7 @@ export default function OrderTableRow({
   onRemoveIntern,
   onViewInternRow,
   onEditRow,
+  onHandleGetOrder,
 }: Props) {
   const {
     items,
@@ -87,6 +91,7 @@ export default function OrderTableRow({
   } = row;
 
   const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
+  const [internSelect, setInternSelect] = useState('');
 
   const confirm = useBoolean();
 
@@ -232,14 +237,19 @@ export default function OrderTableRow({
                   </PDFDownloadLink>
                 )}
 
-                <Tooltip title="Đổi Số Thự Tự" placement="top" arrow>
-                  <IconButton
-                    color={quickSwap.value ? 'inherit' : 'default'}
-                    onClick={quickSwap.onTrue}
-                  >
-                    <Iconify icon="ri:swap-fill" />
-                  </IconButton>
-                </Tooltip>
+                {item && (
+                  <Tooltip title="Đổi Số Thự Tự" placement="top" arrow>
+                    <IconButton
+                      color={quickSwap.value ? 'inherit' : 'default'}
+                      onClick={() => {
+                        setInternSelect(item._id);
+                        quickSwap.onTrue();
+                      }}
+                    >
+                      <Iconify icon="ri:swap-fill" />
+                    </IconButton>
+                  </Tooltip>
+                )}
 
                 {/* <Box>
                   <IconButton onClick={collapse.onToggle}>
@@ -257,8 +267,10 @@ export default function OrderTableRow({
                 <SwapForm
                   orderId={_id}
                   internId={item._id}
+                  internName={internSelect}
                   open={quickSwap.value}
                   onClose={quickSwap.onFalse}
+                  onHandleGetOrder={onHandleGetOrder}
                 />
               </Stack>
             ))}
@@ -280,8 +292,6 @@ export default function OrderTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        
-
         <MenuItem
           onClick={async () => {
             try {
@@ -300,7 +310,7 @@ export default function OrderTableRow({
           {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'}
         </MenuItem>
 
-        <ExportInternsWithAvatar interns={listIntern} name={name}/>
+        <ExportInternsWithAvatar interns={listIntern} name={name} />
 
         <MenuItem onClick={onEditRow}>
           <Iconify icon="fluent:edit-48-filled" />
