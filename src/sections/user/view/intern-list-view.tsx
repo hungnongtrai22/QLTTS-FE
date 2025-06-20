@@ -132,8 +132,20 @@ export default function InternListView() {
     [table]
   );
 
-  const handleDeleteRow = useCallback(
-    (id: string) => {
+  const handleDeleteRow = useCallback (
+    async (id: string) => {
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/contact/removeContactByInternId`,{
+        internId: id
+      })
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/removeInternFromAll`,{
+        internId: id
+      })
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/study/removeStudyByInternId`,{
+        internId: id
+      })
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/delete`,{
+        _id: id
+      })
       const deleteRow = tableData.filter((row) => row._id !== id);
       setTableData(deleteRow);
 

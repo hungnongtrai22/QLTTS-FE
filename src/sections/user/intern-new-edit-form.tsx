@@ -426,6 +426,9 @@ export default function InternNewEditForm({ currentIntern }: Props) {
 
   useEffect(() => {
     const handler = setTimeout(() => {
+      if (values?.name === currentIntern?.name) {
+        return;
+      }
       if (values.name) {
         generateNameJP(values.name);
       }
@@ -434,7 +437,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     return () => {
       clearTimeout(handler); // huỷ timeout nếu người dùng tiếp tục gõ
     };
-  }, [values.name, generateNameJP]);
+  }, [values.name, generateNameJP, currentIntern?.name]);
 
   const uploadImageToCloud = useCallback(async (img: any) => {
     const temp = img;

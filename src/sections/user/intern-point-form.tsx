@@ -25,6 +25,7 @@ import FormProvider, {
   RHFUploadAvatar,
   RHFSelect,
   RHFAutocomplete,
+  RHFEditor,
 } from 'src/components/hook-form';
 import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -37,8 +38,8 @@ import 'dayjs/locale/vi';
 import { useLocales } from 'src/locales';
 
 import LoadingButton from '@mui/lab/LoadingButton';
+import { characteristicList } from 'src/utils/characteristic';
 
-import InternPDF from '../invoice/intern-pdf';
 // import { current } from '@reduxjs/toolkit';
 
 // ----------------------------------------------------------------------
@@ -85,7 +86,8 @@ export default function InternPointForm({ internId }: Props) {
   // const values = watch();
 
   // const [city, setCity] = useState('');
-  const [currentStudy, setCurrentStudy] = useState<IStudyItem>();
+  // const [currentStudy, setCurrentStudy] = useState<IStudyItem | null>(null);
+  // console.log(currentStudy);
   const [monthSelect, setMonthSelect] = useState<Date | null>(null);
 
   const NewUserSchema = Yup.object().shape({
@@ -141,10 +143,27 @@ export default function InternPointForm({ internId }: Props) {
 
   const values = watch();
 
+  const createNewStudy = useCallback(async (study: any) => {
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/create`, {
+        ...study,
+        total: study.health + study.cooperation + study.attend + study.discipline + study.attitude + study.acquiringKnowledge + study.write + study.read + study.listen + study.speak,
+        average: (study.write + study.read + study.listen + study.speak) / 4,
+        internId,
+        monthSelect,
+      });
+      return data;
+    }, []);
+
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
-        console.log('das');
+        // console.log('monthSelect', monthSelect);
+        // console.log(currentStudy);
+        if (data?._id !== "") {
+          console.log('edit', data);
+        } else {
+          console.log('create', data);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -166,8 +185,34 @@ export default function InternPointForm({ internId }: Props) {
     );
 
     if (data === null) {
-      console.log('NULL');
-      reset(defaultValues);
+      // console.log("SET NULL");
+      // setCurrentStudy(null);
+      reset({
+        _id: '',
+        internId: '',
+        health: undefined,
+        cooperation: undefined,
+        attend: undefined,
+        discipline: undefined,
+        attitude: undefined,
+        acquiringKnowledge: undefined,
+        write: undefined,
+        read: undefined,
+        listen: undefined,
+        speak: undefined,
+        total: undefined,
+        average: undefined,
+        level: '',
+        time: undefined,
+        kanji: undefined,
+        grammarAndReading: undefined,
+        listeningComprehension: undefined,
+        totalReadingAndListening: undefined,
+        learningProcess: '',
+        characteristic: '',
+        comment: '',
+        createdAt: '',
+      });
       return;
     }
 
@@ -244,7 +289,7 @@ export default function InternPointForm({ internId }: Props) {
                   >
                     <DatePicker
                       label={t('month')}
-                      value={monthSelect && monthSelect !== null ? dayjs(monthSelect) : null}
+                      value={field.value ? dayjs(field.value) : null}
                       onChange={(newValue) => {
                         const dateValue = newValue ? newValue.toDate() : null;
 
@@ -286,13 +331,354 @@ export default function InternPointForm({ internId }: Props) {
                 sm: 'repeat(3, 1fr)',
               }}
             >
-              <RHFTextField name="health" label={t('health')} type="number" />
+              <Controller
+                name="health"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('health')}
+                  />
+                )}
+              />
               {/* <RHFTextField name="strong" label={t('strong')} /> */}
-              <RHFTextField name="cooperation" label={t('cooperation')} type="number" />
-              <RHFTextField name="attend" label={t('attend')} type="number" />
-              <RHFTextField name="discipline" label={t('discipline')} type="number" />
+              <Controller
+                name="cooperation"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('cooperation')}
+                  />
+                )}
+              />
+              <Controller
+                name="attend"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('attend')}
+                  />
+                )}
+              />
+              <Controller
+                name="discipline"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('discipline')}
+                  />
+                )}
+              />
+              <Controller
+                name="attitude"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('attitude')}
+                  />
+                )}
+              />
+              <Controller
+                name="acquiringKnowledge"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('acquiringKnowledge')}
+                  />
+                )}
+              />
+              <Controller
+                name="write"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('write')}
+                  />
+                )}
+              />
+              <Controller
+                name="read"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('read')}
+                  />
+                )}
+              />
+              <Controller
+                name="listen"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('listen')}
+                  />
+                )}
+              />
+              <Controller
+                name="speak"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('speak')}
+                  />
+                )}
+              />
 
+              <RHFSelect
+                fullWidth
+                name="level"
+                label={t('level')}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {['N5', 'N4', 'N3', 'N2', 'N1'].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+
+              <Controller
+                name="time"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('time')}
+                  />
+                )}
+              />
+
+              <Controller
+                name="kanji"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('kanji')}
+                  />
+                )}
+              />
+
+              <Controller
+                name="grammarAndReading"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('grammarAndReading')}
+                  />
+                )}
+              />
+
+              <Controller
+                name="listeningComprehension"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    value={field.value ?? ''} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value === '' ? undefined : Number(value));
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('listeningComprehension')}
+                  />
+                )}
+              />
+
+              <Controller
+                name="learningProcess"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    // type="number"
+                    value={field.value} // Thay vì value={field.value}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      field.onChange(value);
+                    }}
+                    error={!!error}
+                    helperText={error?.message}
+                    InputLabelProps={{ shrink: true }}
+                    label={t('learningProcess')}
+                  />
+                )}
+              />
+              {/* 
+              <RHFSelect
+                fullWidth
+                name="characteristic"
+                label={t('characteristic')}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {characteristicList.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </RHFSelect> */}
+              <RHFAutocomplete
+                name="characteristic"
+                label={t('characteristic') || ''}
+                disablePortal
+                freeSolo
+                options={characteristicList}
+                renderOption={(props, option) => (
+                  <li {...props} key={option} value={option}>
+                    {option}
+                  </li>
+                )}
+              />
               {/* <RHFTextField name="weak" label={t('weak')} /> */}
+            </Box>
+            <Box sx={{ pt: 3 }}>
+              <RHFEditor simple name="comment" />
             </Box>
             <Stack alignItems="flex-end" spacing={1.5}>
               {/* <Button

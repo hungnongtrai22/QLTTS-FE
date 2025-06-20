@@ -214,11 +214,11 @@ export default function InternTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="Xoá"
+        content="Bạn có chắc muốn xóa thực tập sinh (thao tác này sẽ không hoàn tác lại được)?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            Xoá
           </Button>
         }
       />
