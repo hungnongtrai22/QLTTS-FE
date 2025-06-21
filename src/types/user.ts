@@ -167,6 +167,7 @@ export type IStudyItem = {
   characteristic: string;
   comment: string;
   createdAt: any;
+  monthAndYear: any;
 };
 
 export type IInternItem = {

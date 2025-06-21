@@ -75,6 +75,18 @@ const changMonthYearJP = (date: any) => {
   return customFormat;
 };
 
+function normalizeName(name: string): string {
+  return name
+    .normalize('NFD') // Tách dấu
+    .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+    .replace(/đ/g, 'd') // đ -> d
+    .replace(/Đ/g, 'D') // Đ -> D
+    .replace(/[^A-Za-z\s]/g, '') // Loại bỏ ký tự không phải chữ cái hoặc khoảng trắng
+    .toUpperCase() // In hoa
+    .trim() // Bỏ khoảng trắng đầu cuối
+    .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
+}
+
 const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
   const fetchImageBuffer = async (url: string): Promise<ExcelJS.Buffer | undefined> => {
     try {
@@ -149,7 +161,7 @@ const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
 
         // gán dữ liệu
         sheet.getCell(`A${currentRow}`).value = i + 1;
-        sheet.getCell(`B${currentRow}`).value = it.name;
+        sheet.getCell(`B${currentRow}`).value = normalizeName(it.name);
         sheet.getCell(`B${currentRow + 2}`).value = it.namejp;
         sheet.getCell(`C${currentRow}`).value = it.city;
         sheet.getCell(`D${currentRow}`).value = changDateJP(it.birthday);
@@ -211,7 +223,7 @@ const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
 
       for (let i = 0; i < list.length; i++) {
         const it = list[i];
-        const sheetIntern = workbook.addWorksheet(`${i + 1}. ${it.name}`);
+        const sheetIntern = workbook.addWorksheet(`${i + 1}. ${normalizeName(it.name)}`);
         const numberSchool = it.school.length;
         const numberCompany = it.company.length;
         const numberFamily = it.family.length;
@@ -911,7 +923,7 @@ const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
 
         // sheetIntern.mergeCells(`A13:A16`);
 
-        sheetIntern.getCell('B6').value = it.name;
+        sheetIntern.getCell('B6').value = normalizeName(it.name);
         sheetIntern.getCell('E6').value = it.gender;
         sheetIntern.getCell('G6').value = it.age;
         sheetIntern.getCell('B7').value = it.namejp;

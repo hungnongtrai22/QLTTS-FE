@@ -36,6 +36,7 @@ import { viVN } from '@mui/x-date-pickers/locales';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import { useLocales } from 'src/locales';
+import { useSnackbar } from 'src/components/snackbar';
 
 import LoadingButton from '@mui/lab/LoadingButton';
 import { characteristicList } from 'src/utils/characteristic';
@@ -82,6 +83,7 @@ export default function InternPointForm({ internId }: Props) {
   // const router = useRouter();
   // console.log('TEST', currentIntern);
   const { t, currentLang } = useLocales();
+  const { enqueueSnackbar } = useSnackbar();
 
   // const values = watch();
 
@@ -144,25 +146,62 @@ export default function InternPointForm({ internId }: Props) {
   const values = watch();
 
   const createNewStudy = useCallback(async (study: any) => {
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/create`, {
-        ...study,
-        total: study.health + study.cooperation + study.attend + study.discipline + study.attitude + study.acquiringKnowledge + study.write + study.read + study.listen + study.speak,
-        average: (study.write + study.read + study.listen + study.speak) / 4,
-        internId,
-        monthSelect,
-      });
-      return data;
-    }, []);
+    const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/create`, {
+      ...study,
+      total:
+        study.health +
+        study.cooperation +
+        study.attend +
+        study.discipline +
+        study.attitude +
+        study.acquiringKnowledge +
+        study.write +
+        study.read +
+        study.listen +
+        study.speak,
+      average: (study.write + study.read + study.listen + study.speak) / 4,
+      internId,
+      monthAndYear: study.monthSelect,
+    });
+    return data;
+  }, []);
+
+  const editStudy = useCallback(async (study: any) => {
+    const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/study/edit`, {
+      ...study,
+      total:
+        study.health +
+        study.cooperation +
+        study.attend +
+        study.discipline +
+        study.attitude +
+        study.acquiringKnowledge +
+        study.write +
+        study.read +
+        study.listen +
+        study.speak,
+      average: (study.write + study.read + study.listen + study.speak) / 4,
+      internId,
+      monthAndYear: study.monthSelect,
+    });
+    return data;
+  }, []);
 
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
         // console.log('monthSelect', monthSelect);
         // console.log(currentStudy);
-        if (data?._id !== "") {
-          console.log('edit', data);
+        if (data?._id !== '') {
+          await editStudy(data);
+          enqueueSnackbar('Cập Nhập điểm thành công!');
+
+          // console.log('edit', data);
         } else {
-          console.log('create', data);
+          await createNewStudy(data);
+          enqueueSnackbar('Nhập điểm thành công!');
+
+          // console.log('create', data);
         }
       } catch (error) {
         console.error(error);
@@ -179,7 +218,7 @@ export default function InternPointForm({ internId }: Props) {
       `${process.env.REACT_APP_HOST_API}/api/study/getInternByMonth`,
       {
         internId,
-        month: monthSelect.getMonth() + 1,
+        month: monthSelect.getMonth(),
         year: monthSelect.getFullYear(),
       }
     );
@@ -212,6 +251,7 @@ export default function InternPointForm({ internId }: Props) {
         characteristic: '',
         comment: '',
         createdAt: '',
+        monthSelect,
       });
       return;
     }
@@ -254,6 +294,7 @@ export default function InternPointForm({ internId }: Props) {
       characteristic: data.study?.characteristic || '',
       comment: data.study?.comment || '',
       createdAt: data.study?.createdAt || '',
+      monthSelect: data.study?.monthAndYear || '',
     });
   }, [monthSelect, internId, reset, defaultValues]);
 

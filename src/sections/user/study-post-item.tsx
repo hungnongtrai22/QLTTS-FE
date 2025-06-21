@@ -40,7 +40,9 @@ const changDateJP = (date: any) => {
   const jsDate = new Date(date);
   const formatted = jsDate.toLocaleDateString('ja-JP');
   const parts = formatted.split('/');
-  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  // const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+    const customFormat = `${parts[0]}年${parts[1]}月`;
+
   return customFormat;
 };
 const transPointToSharp = (point: number): string => {
@@ -138,7 +140,7 @@ export default function StudyPostItem({ study, intern }: Props) {
       subheader={
         <Box sx={{ color: 'text.disabled', typography: 'caption', mt: 0.5 }}>
           {/* {fDate(study.createdAt)} */}
-          {changDateJP(study.createdAt)}
+          {changDateJP(study.monthAndYear)}
         </Box>
       }
       action={
