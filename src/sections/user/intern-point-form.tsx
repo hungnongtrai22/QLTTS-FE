@@ -93,8 +93,51 @@ export default function InternPointForm({ internId }: Props) {
   const [monthSelect, setMonthSelect] = useState<Date | null>(null);
 
   const NewUserSchema = Yup.object().shape({
-    health: Yup.number().required('Sức khoẻ không được để trống'),
-    cooperation: Yup.number().required('Sức khoẻ không được để trống'),
+    health: Yup.number()
+      .min(0, 'Tình trạng sức khỏe phải lớn hơn hoặc bằng 0')
+      .max(100, 'Tình trạng sức khỏe phải bé hơn hoặc bằng 100')
+      .required('Sức khoẻ không được để trống'),
+    cooperation: Yup.number()
+      .min(0, 'Tính hợp tác phải lớn hơn hoặc bằng 0')
+      .max(100, 'Tính hợp tác phải bé hơn hoặc bằng 100')
+      .required('Tính hợp tác không được để trống'),
+    attend: Yup.number()
+      .min(0, 'Tình hình chuyên cần phải lớn hơn hoặc bằng 0')
+      .max(100, 'Tình hình chuyên cần phải bé hơn hoặc bằng 100')
+      .required('Tình hình chuyên cần không được để trống'),
+    discipline: Yup.number()
+      .min(0, 'Tuân thủ kỷ luật phải lớn hơn hoặc bằng 0')
+      .max(100, 'Tuân thủ kỷ luật phải bé hơn hoặc bằng 100')
+      .required('Tuân thủ kỷ luật không được để trống'),
+    attitude: Yup.number()
+      .min(0, 'Thái độ học tập phải lớn hơn hoặc bằng 0')
+      .max(100, 'Thái độ học tập phải bé hơn hoặc bằng 100')
+      .required('Thái độ học tập không được để trống'),
+    acquiringKnowledge: Yup.number()
+      .min(0, 'Mức độ tiếp thu kiến thức phải lớn hơn hoặc bằng 0')
+      .max(100, 'Mức độ tiếp thu kiến thức phải bé hơn hoặc bằng 100')
+      .required('Mức độ tiếp thu kiến thức không được để trống'),
+    write: Yup.number()
+      .min(0, 'Kỹ năng viết phải lớn hơn hoặc bằng 0')
+      .max(100, 'Kỹ năng viết phải bé hơn hoặc bằng 100')
+      .required('Kỹ năng viết không được để trống'),
+    read: Yup.number()
+      .min(0, 'Kỹ năng đọc hiểu phải lớn hơn hoặc bằng 0')
+      .max(100, 'Kỹ năng đọc hiểu phải bé hơn hoặc bằng 100')
+      .required('Kỹ năng đọc hiểu không được để trống'),
+    listen: Yup.number()
+      .min(0, 'Kỹ năng nghe hiểu phải lớn hơn hoặc bằng 0')
+      .max(100, 'Kỹ năng nghe hiểu phải bé hơn hoặc bằng 100')
+      .required('Kỹ năng nghe hiểu không được để trống'),
+    speak: Yup.number()
+      .min(0, 'Kỹ năng giao tiếp phải lớn hơn hoặc bằng 0')
+      .max(100, 'Kỹ năng giao tiếp phải bé hơn hoặc bằng 100')
+      .required('Kỹ năng giao tiếp không được để trống'),
+    level: Yup.string().required('Trình độ không được để trống'),
+    time: Yup.string().required('Thời gian học không được để trống'),
+    learningProcess: Yup.string().required('Tiến trình học tập không được để trống'),
+    characteristic: Yup.string().required('Tính cách không được để trống'),
+    comment: Yup.string().required('Nhận xét không được để trống'),
   });
 
   const defaultValues = useMemo(
@@ -228,7 +271,6 @@ export default function InternPointForm({ internId }: Props) {
       // setCurrentStudy(null);
       reset({
         _id: '',
-        internId: '',
         health: undefined,
         cooperation: undefined,
         attend: undefined,
@@ -263,7 +305,7 @@ export default function InternPointForm({ internId }: Props) {
     // setCurrentStudy(data.study);
     reset({
       _id: data.study?._id || '',
-      internId: internId || '',
+      internId,
       health: data.study?.health ? Number(data.study?.health) : undefined,
       cooperation: data.study?.cooperation ? Number(data.study.cooperation) : undefined,
       attend: data.study?.attend ? Number(data.study.attend) : undefined,

@@ -216,6 +216,8 @@ export type IInternItem = {
   kraepelin1: number | null;
   kraepelin2: number | null;
   createdAt: any;
+    status: string;
+
 };
 
 export type ITradeUnionItem = {

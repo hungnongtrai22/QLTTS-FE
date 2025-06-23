@@ -53,7 +53,7 @@ import InternTableFiltersResult from '../intern-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{ value: 'all', label: 'Tất cả' }, ...USER_STATUS_OPTIONS];
 
 const defaultFilters = {
   name: '',
@@ -166,15 +166,16 @@ export default function InternListView() {
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleAddInternIntoOrder = useCallback(async () => {
-    const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
 
-    const listIntern = seletedRows.map((item: any) => item._id);
+    // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
+
+    const listIntern = table.selected;
     await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/updateListIntern`, {
       _id: orderSelect?.value,
       listIntern,
     });
     enqueueSnackbar('Thêm thực tập sinh vào đơn hàng thành công!');
-  }, [table, tableData, orderSelect, enqueueSnackbar]);
+  }, [table, orderSelect, enqueueSnackbar]);
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -224,6 +225,9 @@ export default function InternListView() {
     handleGetOrder();
   }, [handleGetAllIntern, handleGetTradeUnion, handleGetOrder]);
 
+    console.log("Selected",table.selected);
+
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -270,9 +274,9 @@ export default function InternListView() {
                       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
                     }
                     color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
+                      (tab.value === 'study' && 'success') ||
+                      (tab.value === 'pass' && 'warning') ||
+                      (tab.value === 'complete' && 'error') ||
                       'default'
                     }
                   >

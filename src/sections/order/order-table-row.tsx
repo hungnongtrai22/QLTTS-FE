@@ -179,7 +179,7 @@ export default function OrderTableRow({
           sx={{ bgcolor: 'background.neutral' }}
         >
           <Stack component={Paper} sx={{ m: 1.5 }}>
-            {listIntern?.map((item: any) => (
+            {listIntern?.map((item: any, index:any) => (
               <Stack
                 key={item._id}
                 direction="row"
@@ -204,7 +204,7 @@ export default function OrderTableRow({
                       textDecoration: 'underline',
                     },
                   }}
-                  primary={item.name}
+                  primary={`${index + 1}. ${item.name}`}
                   secondary={item.namejp}
                   primaryTypographyProps={{
                     typography: 'body2',

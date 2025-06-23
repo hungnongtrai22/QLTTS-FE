@@ -26,6 +26,7 @@ import ProfileGallery from '../profile-gallery';
 import InternViewForm from '../intern-view-form';
 import InternOtherForm from '../intern-other-form';
 import InternPointForm from '../intern-point-form';
+import InternStatusForm from '../intern-status-form';
 
 // ----------------------------------------------------------------------
 
@@ -147,7 +148,11 @@ export default function InternProfileView() {
         //   searchFriends={searchFriends}
         //   onSearchFriends={handleSearchFriends}
         // />
-        <InternOtherForm currentIntern={intern} />
+        <>
+          <InternStatusForm internId={intern?._id} currentStatus={intern?.status}/>
+
+          <InternOtherForm currentIntern={intern} />
+        </>
       )}
 
       {currentTab === 'gallery' && <InternPointForm internId={intern?._id} />}
