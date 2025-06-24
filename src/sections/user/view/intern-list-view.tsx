@@ -280,16 +280,16 @@ export default function InternListView() {
                       'default'
                     }
                   >
-                    {tab.value === 'all' && _userList.length}
-                    {tab.value === 'active' &&
-                      _userList.filter((user) => user.status === 'active').length}
+                    {tab.value === 'all' && dataFiltered.length}
+                    {tab.value === 'study' &&
+                      dataFiltered.filter((user) => user.status === 'study').length}
 
-                    {tab.value === 'pending' &&
-                      _userList.filter((user) => user.status === 'pending').length}
-                    {tab.value === 'banned' &&
-                      _userList.filter((user) => user.status === 'banned').length}
-                    {tab.value === 'rejected' &&
-                      _userList.filter((user) => user.status === 'rejected').length}
+                    {tab.value === 'pass' &&
+                      dataFiltered.filter((user) => user.status === 'pass').length}
+                    {tab.value === 'complete' &&
+                      dataFiltered.filter((user) => user.status === 'complete').length}
+                    {/* {tab.value === 'rejected' &&
+                      dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
                 }
               />

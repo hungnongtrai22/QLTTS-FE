@@ -30,6 +30,7 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ExportInternsWithAvatar from 'src/utils/ExportInternsWithAvatar';
+import ExportInternsPass from 'src/utils/ExportInternsPass';
 
 import { PDFDownloadLink, pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
@@ -311,6 +312,9 @@ export default function OrderTableRow({
         </MenuItem>
 
         <ExportInternsWithAvatar interns={listIntern} name={name} />
+
+                <ExportInternsPass interns={listIntern} name={name} />
+
 
         <MenuItem onClick={onEditRow}>
           <Iconify icon="fluent:edit-48-filled" />

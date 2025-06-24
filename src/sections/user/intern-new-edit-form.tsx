@@ -466,7 +466,19 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/create`, {
       ...intern,
       school: [...intern.schoolList],
-      company: [...intern.companyList],
+      company: intern.companyList.map((item: any) =>
+        item.name === undefined &&
+        item.content === undefined &&
+        item.timeFrom === undefined &&
+        item.timeTo === undefined
+          ? {
+              timeFrom: null,
+              timeTo: null,
+              name: '',
+              content: '',
+            }
+          : item
+      ),
       family: [...intern.familyList],
       avatar: intern.avatarURL,
     });
@@ -479,7 +491,19 @@ export default function InternNewEditForm({ currentIntern }: Props) {
         ...intern,
         _id: currentIntern?._id,
         school: [...intern.schoolList],
-        company: [...intern.companyList],
+        company: intern.companyList.map((item: any) =>
+          item.name === undefined &&
+          item.content === undefined &&
+          item.timeFrom === undefined &&
+          item.timeTo === undefined
+            ? {
+                timeFrom: null,
+                timeTo: null,
+                name: '',
+                content: '',
+              }
+            : item
+        ),
         family: [...intern.familyList],
         avatar: intern.avatarURL,
       });
@@ -494,6 +518,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         data.strong = generateStrongJP(data.strong);
         data.weak = generateWeakJP(data.weak);
+        console.info('DATA', data);
+
         // reset();
         // router.push(paths.dashboard.user.list);
         if (currentIntern) {
@@ -510,7 +536,6 @@ export default function InternNewEditForm({ currentIntern }: Props) {
         } else {
           const images = await uploadImageToCloud(data.avatar);
           data.avatarURL = images;
-          console.info('DATA', data);
           await createNewIntern(data);
           enqueueSnackbar(currentIntern ? 'Update success!' : 'Create success!');
         }
@@ -518,7 +543,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
         console.error(error);
       }
     },
-    [uploadImageToCloud, createNewIntern, editIntern, enqueueSnackbar, currentIntern]
+    [uploadImageToCloud, enqueueSnackbar, currentIntern, createNewIntern, editIntern]
     // [currentIntern, enqueueSnackbar, reset, router]
   );
 
@@ -1243,7 +1268,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                           label={t('start_date')}
                           value={field.value ? dayjs(field.value) : null}
                           onChange={(newValue) => {
-                            field.onChange(newValue);
+                            field.onChange(newValue || null);
                           }}
                           views={['month', 'year']}
                           slotProps={{
@@ -1272,7 +1297,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                           views={['month', 'year']}
                           value={field.value ? dayjs(field.value) : null}
                           onChange={(newValue) => {
-                            field.onChange(newValue);
+                            field.onChange(newValue || null);
                           }}
                           slotProps={{
                             textField: {
