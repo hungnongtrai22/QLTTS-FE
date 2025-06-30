@@ -595,6 +595,27 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     setFamily((pre: any) => [...pre, newFamily]);
   };
 
+  const handleRemoveLastSchool = () => {
+    const currentList = methods.getValues('schoolList');
+    const updatedList = currentList.slice(0, -1);
+    setSchools(updatedList);
+    setValue('schoolList', updatedList);
+  };
+
+  const handleRemoveLastCompany = () => {
+    const currentList = methods.getValues('companyList');
+    const updatedList = currentList.slice(0, -1);
+    setCompany(updatedList); // cập nhật lại state để render
+    setValue('companyList', updatedList); // cập nhật vào form
+  };
+
+  const handleRemoveLastFamily = () => {
+    const currentList = methods.getValues('familyList');
+    const updatedList = currentList.slice(0, -1);
+    setFamily(updatedList);
+    setValue('familyList', updatedList);
+  };
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
@@ -1235,6 +1256,19 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 {t('add_school')}
               </Button>
             </Stack>
+            {schools.length >= 4 && (
+              <Stack alignItems="flex-end" spacing={1.5}>
+                <Button
+                  size="small"
+                  color="error"
+                  startIcon={<Iconify icon="mdi:trash" />}
+                  onClick={handleRemoveLastSchool}
+                  sx={{ flexShrink: 0 }}
+                >
+                  {t('remove_school')}
+                </Button>
+              </Stack>
+            )}
           </Card>
         </Grid>
       </Grid>
@@ -1329,6 +1363,19 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 {t('company_add')}
               </Button>
             </Stack>
+            {company.length >= 2 && (
+              <Stack alignItems="flex-end" spacing={1.5}>
+                <Button
+                  size="small"
+                  color="error"
+                  startIcon={<Iconify icon="mdi:trash" />}
+                  onClick={handleRemoveLastCompany}
+                  sx={{ flexShrink: 0 }}
+                >
+                  {t('remove_company')}
+                </Button>
+              </Stack>
+            )}
           </Card>
         </Grid>
       </Grid>
@@ -1452,6 +1499,19 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 {t('family_add')}
               </Button>
             </Stack>
+            {family.length >= 2 && (
+              <Stack alignItems="flex-end" spacing={1.5}>
+                <Button
+                  size="small"
+                  color="error"
+                  startIcon={<Iconify icon="mdi:trash" />}
+                  onClick={handleRemoveLastFamily}
+                  sx={{ flexShrink: 0 }}
+                >
+                  {t('remove_family')}
+                </Button>
+              </Stack>
+            )}
           </Card>
         </Grid>
       </Grid>

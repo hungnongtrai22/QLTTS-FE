@@ -225,7 +225,6 @@ export default function InternListView() {
     handleGetOrder();
   }, [handleGetAllIntern, handleGetTradeUnion, handleGetOrder]);
 
-    console.log("Selected",table.selected);
 
 
   return (
@@ -445,7 +444,7 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IInternTableFilters;
 }) {
-  const { name, tradeUnion } = filters;
+  const { name, tradeUnion, status } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -463,9 +462,9 @@ function applyFilter({
     );
   }
 
-  // if (status !== 'all') {
-  //   inputData = inputData.filter((user) => user.status === status);
-  // }
+  if (status !== 'all') {
+    inputData = inputData.filter((user) => user.status === status);
+  }
 
   if (tradeUnion.length) {
     inputData = inputData.filter((user) => tradeUnion.includes(user?.tradeUnion?.name));

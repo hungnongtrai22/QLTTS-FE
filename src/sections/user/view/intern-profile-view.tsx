@@ -16,6 +16,8 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { IInternItem } from 'src/types/user';
+import CalendarPage from 'src/pages/dashboard/calendar';
+
 import axios from 'axios';
 
 import ProfileHome from '../profile-home';
@@ -27,6 +29,7 @@ import InternViewForm from '../intern-view-form';
 import InternOtherForm from '../intern-other-form';
 import InternPointForm from '../intern-point-form';
 import InternStatusForm from '../intern-status-form';
+import InternCompanyTradeUnionForm from '../intern-company-trade-union-form';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +52,11 @@ const TABS = [
   {
     value: 'gallery',
     label: 'Điểm Số',
+    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+  },
+  {
+    value: 'attendance',
+    label: 'Điểm danh',
     icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
   },
 ];
@@ -149,13 +157,17 @@ export default function InternProfileView() {
         //   onSearchFriends={handleSearchFriends}
         // />
         <>
-          <InternStatusForm internId={intern?._id} currentStatus={intern?.status}/>
+          <InternStatusForm internId={intern?._id} currentStatus={intern?.status} />
+
+          <InternCompanyTradeUnionForm currentIntern={intern} />
 
           <InternOtherForm currentIntern={intern} />
         </>
       )}
 
       {currentTab === 'gallery' && <InternPointForm internId={intern?._id} />}
+
+      {currentTab === 'attendance' && <CalendarPage />}
     </Container>
   );
 }

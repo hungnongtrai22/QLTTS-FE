@@ -168,6 +168,9 @@
   "kraepelin1": "クレペリン第1回",
   "kraepelin2": "クレペリン第1回",
   "month": "月",
+  "remove_school": "学歴を削除",
+  "remove_company": "職務経歴を削除",
+  "remove_family": "家族情報を削除",
   "demo": {
     "title": "英語"
   }

@@ -34,8 +34,9 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import { useLocales } from 'src/locales';
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import {  strongJPs, strongVNs } from 'src/utils/strong';
-import {  weakJPs, weakVNs } from 'src/utils/weak';
+import { strongJPs, strongVNs } from 'src/utils/strong';
+import { weakJPs, weakVNs } from 'src/utils/weak';
+import ExportIntern from 'src/utils/ExportIntern';
 
 import InternPDF from '../invoice/intern-pdf';
 // import { current } from '@reduxjs/toolkit';
@@ -157,14 +158,12 @@ export default function InternViewForm({ currentIntern }: Props) {
   // console.log('TEST', currentIntern);
   const { t, currentLang } = useLocales();
 
-
   // const values = watch();
 
   // const [city, setCity] = useState('');
 
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Họ và tên không được để trống'),
-  
   });
 
   const defaultValues = useMemo(
@@ -343,7 +342,7 @@ export default function InternViewForm({ currentIntern }: Props) {
                 style={{ textDecoration: 'none' }}
               >
                 {({ loading }) => (
-                  <Tooltip title="Download">
+                  <Tooltip title="Tải PDF">
                     <IconButton>
                       {loading ? (
                         <CircularProgress size={24} color="inherit" />
@@ -355,6 +354,8 @@ export default function InternViewForm({ currentIntern }: Props) {
                 )}
               </PDFDownloadLink>
             )}
+
+            {currentIntern && <ExportIntern intern={currentIntern} />}
 
             <RHFSwitch
               name="blindColor"
@@ -502,7 +503,11 @@ export default function InternViewForm({ currentIntern }: Props) {
                   />
                 )}
               /> */}
-              <RHFTextField name="namejp" label={t('name_jp')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+              <RHFTextField
+                name="namejp"
+                label={t('name_jp')}
+                sx={{ pointerEvents: 'none', opacity: 1 }}
+              />
               {/* <Controller
                 name="namejp"
                 control={control}
@@ -638,7 +643,7 @@ export default function InternViewForm({ currentIntern }: Props) {
 
               <Controller
                 name="weight"
-                control={control}               
+                control={control}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
                     {...field}
@@ -757,7 +762,11 @@ export default function InternViewForm({ currentIntern }: Props) {
                 ))}
               </RHFSelect>
 
-              <RHFTextField name="address" label={t('address')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+              <RHFTextField
+                name="address"
+                label={t('address')}
+                sx={{ pointerEvents: 'none', opacity: 1 }}
+              />
               {/* <RHFTextField name="city" label="City" /> */}
               <Controller
                 name="city"
@@ -898,7 +907,11 @@ export default function InternViewForm({ currentIntern }: Props) {
                       </LocalizationProvider>
                     )}
                   />
-                  <RHFTextField name={`schoolList.${index}.name`} label={t('school_name')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+                  <RHFTextField
+                    name={`schoolList.${index}.name`}
+                    label={t('school_name')}
+                    sx={{ pointerEvents: 'none', opacity: 1 }}
+                  />
                   <RHFSelect
                     fullWidth
                     name={`schoolList.${index}.content`}
@@ -1008,7 +1021,11 @@ export default function InternViewForm({ currentIntern }: Props) {
                       </LocalizationProvider>
                     )}
                   />
-                  <RHFTextField name={`companyList.${index}.name`} label={t('company_name')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+                  <RHFTextField
+                    name={`companyList.${index}.name`}
+                    label={t('company_name')}
+                    sx={{ pointerEvents: 'none', opacity: 1 }}
+                  />
                   <RHFTextField
                     name={`companyList.${index}.content`}
                     label={t('company_content')}
@@ -1054,7 +1071,11 @@ export default function InternViewForm({ currentIntern }: Props) {
                     )}
                   </RHFSelect>
 
-                  <RHFTextField name={`familyList.${index}.name`} label={t('full_name')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+                  <RHFTextField
+                    name={`familyList.${index}.name`}
+                    label={t('full_name')}
+                    sx={{ pointerEvents: 'none', opacity: 1 }}
+                  />
 
                   <Controller
                     name={`familyList.${index}.year`}
@@ -1111,7 +1132,11 @@ export default function InternViewForm({ currentIntern }: Props) {
                     )}
                   />
 
-                  <RHFTextField name={`familyList.${index}.occupation`} label={t('occupation')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+                  <RHFTextField
+                    name={`familyList.${index}.occupation`}
+                    label={t('occupation')}
+                    sx={{ pointerEvents: 'none', opacity: 1 }}
+                  />
                 </>
               ))}
             </Box>
@@ -1133,7 +1158,11 @@ export default function InternViewForm({ currentIntern }: Props) {
                 sm: 'repeat(3, 1fr)',
               }}
             >
-              <RHFTextField name="interest" label={t('interest')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+              <RHFTextField
+                name="interest"
+                label={t('interest')}
+                sx={{ pointerEvents: 'none', opacity: 1 }}
+              />
               {/* <RHFTextField name="strong" label={t('strong')} /> */}
               <RHFAutocomplete
                 multiple
@@ -1201,9 +1230,21 @@ export default function InternViewForm({ currentIntern }: Props) {
                   </MenuItem>
                 ))}
               </RHFSelect>
-              <RHFTextField name="aim" label={t('aim')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
-              <RHFTextField name="money" label={t('money')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
-              <RHFTextField name="plan" label={t('plan')} sx={{ pointerEvents: 'none', opacity: 1 }}/>
+              <RHFTextField
+                name="aim"
+                label={t('aim')}
+                sx={{ pointerEvents: 'none', opacity: 1 }}
+              />
+              <RHFTextField
+                name="money"
+                label={t('money')}
+                sx={{ pointerEvents: 'none', opacity: 1 }}
+              />
+              <RHFTextField
+                name="plan"
+                label={t('plan')}
+                sx={{ pointerEvents: 'none', opacity: 1 }}
+              />
             </Box>
             <Stack alignItems="flex-end" spacing={1.5}>
               {/* <Button

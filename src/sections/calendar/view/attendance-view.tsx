@@ -32,6 +32,8 @@ import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import { isDateError } from 'src/components/custom-date-range-picker';
+import axios from 'axios';
+
 //
 import { useCalendar } from '../hooks';
 import { StyledCalendar } from '../styles';
@@ -64,7 +66,7 @@ function useInitial() {
 
 // ----------------------------------------------------------------------
 
-export default function CalendarView() {
+export default function AttendanceView() {
   useInitial();
 
   const theme = useTheme();
@@ -107,6 +109,16 @@ export default function CalendarView() {
     //
     onClickEventInFilters,
   } = useCalendar();
+
+   const onCreateAttedance = useCallback(
+      async (newEvent: any) => {
+        const response = await axios.post(`${process.env.REACT_APP_HOST_API}/api/attendance/create`, {
+          
+        });
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      []
+    );
 
   useEffect(() => {
     onInitialView();
@@ -155,13 +167,13 @@ export default function CalendarView() {
             mb: { xs: 3, md: 5 },
           }}
         >
-          <Typography variant="h4">Điểm Danh</Typography>
+          <Typography variant="h4">Calendar</Typography>
           <Button
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
             onClick={onOpenForm}
           >
-            Thêm Sự Kiện
+            New Event
           </Button>
         </Stack>
 

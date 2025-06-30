@@ -20,6 +20,19 @@ type Props = StackProps & {
   results: number;
 };
 
+function changeTextStatus(value: any) {
+  if (value === 'study') {
+    return 'Đang học';
+  }
+  if (value === 'pass') {
+    return 'Đã xuất cảnh';
+  }
+  if (value === 'complete') {
+    return 'Hoàn thành hợp đồng';
+  }
+  return '';
+}
+
 export default function InternTableFiltersResult({
   filters,
   onFilters,
@@ -43,14 +56,19 @@ export default function InternTableFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          {" "}thực tập sinh được tìm thấy
+          {' '}
+          thực tập sinh được tìm thấy
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.status !== 'all' && (
-          <Block label="Status:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+          <Block label="Trạng thái:">
+            <Chip
+              size="small"
+              label={changeTextStatus(filters.status)}
+              onDelete={handleRemoveStatus}
+            />
           </Block>
         )}
 

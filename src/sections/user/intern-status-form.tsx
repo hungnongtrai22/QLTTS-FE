@@ -136,29 +136,7 @@ export default function InternStatusForm({ internId, currentStatus }: Props) {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={3}>
-        <Grid xs={4} md={4}>
-          <Card sx={{ p: 3 }}>
-            {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-              Family:
-            </Typography> */}
-            <Box
-              rowGap={3}
-              columnGap={3}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(1, 1fr)',
-              }}
-            >
-              
-              {/* <RHFTextField name="strong" label={t('strong')} /> */}
-
-              {/* <RHFTextField name="weak" label={t('weak')} /> */}
-            </Box>
-          </Card>
-        </Grid>
-      </Grid>
+     
 
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
