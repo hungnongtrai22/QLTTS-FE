@@ -160,16 +160,16 @@ export default function CalendarView({ intern }: Props) {
 
   // console.log("Date", date);
 
-  const getAttendaceByMonth = useCallback(async () => {
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_HOST_API}/api/attendance/getAllAttendByInternId`,
-      {
-        internId: intern?._id,
-      }
-    );
-    if (data) {
-    }
-  }, [intern]);
+  // const getAttendaceByMonth = useCallback(async () => {
+  //   const { data } = await axios.post(
+  //     `${process.env.REACT_APP_HOST_API}/api/attendance/getAllAttendByInternId`,
+  //     {
+  //       internId: intern?._id,
+  //     }
+  //   );
+  //   if (data) {
+  //   }
+  // }, [intern]);
 
   // const addAttendHandler = useCallback(async (attendItem : any) => {
   //   const { data } = await axios.post(
