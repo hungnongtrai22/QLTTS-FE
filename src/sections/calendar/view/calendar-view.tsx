@@ -5,8 +5,11 @@ import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
+import allLocales from '@fullcalendar/core/locales-all';
+
 //
 import { useState, useEffect, useCallback } from 'react';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Card from '@mui/material/Card';
@@ -32,6 +35,10 @@ import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import { isDateError } from 'src/components/custom-date-range-picker';
+import { useLocales } from 'src/locales';
+import axios from 'axios';
+import { IInternItem } from 'src/types/user';
+
 //
 import { useCalendar } from '../hooks';
 import { StyledCalendar } from '../styles';
@@ -63,9 +70,14 @@ function useInitial() {
 }
 
 // ----------------------------------------------------------------------
+type Props = {
+  intern?: IInternItem;
+};
 
-export default function CalendarView() {
+export default function CalendarView({ intern }: Props) {
   useInitial();
+
+  const { currentLang } = useLocales();
 
   const theme = useTheme();
 
@@ -76,6 +88,8 @@ export default function CalendarView() {
   const openFilters = useBoolean();
 
   const [filters, setFilters] = useState(defaultFilters);
+  // const [events, setEvents] = useState([]);
+  // const [currentEvent, setCurrentEvent] = useState(events.find((event : any) => event._id === currentEventId));
 
   const dateError = isDateError(filters.startDate, filters.endDate);
 
@@ -106,7 +120,7 @@ export default function CalendarView() {
     onCloseForm,
     //
     onClickEventInFilters,
-  } = useCalendar();
+  } = useCalendar({internId: intern?._id});
 
   useEffect(() => {
     onInitialView();
@@ -143,6 +157,35 @@ export default function CalendarView() {
       sx={{ mb: { xs: 3, md: 5 } }}
     />
   );
+
+  // console.log("Date", date);
+
+  const getAttendaceByMonth = useCallback(async () => {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/attendance/getAllAttendByInternId`,
+      {
+        internId: intern?._id,
+      }
+    );
+    if (data) {
+    }
+  }, [intern]);
+
+  // const addAttendHandler = useCallback(async (attendItem : any) => {
+  //   const { data } = await axios.post(
+  //     `${process.env.REACT_APP_HOST_API}/api/attendance/create`,
+  //     {
+  //       internId: intern?._id,
+  //       attendItem,
+  //       monthAndYear: date,
+  //     }
+  //   );
+  //   await getAttendaceByMonth();
+  // }, [date, intern, getAttendaceByMonth]);
+
+  // useEffect(() => {
+  //   getAttendaceByMonth();
+  // }, [date, getAttendaceByMonth]);
 
   return (
     <>
@@ -181,6 +224,7 @@ export default function CalendarView() {
 
             <FullCalendar
               weekends
+              locale={currentLang.value === 'jp' ? 'ja' : 'vi'} // <== Ngôn ngữ tiếng Nhật
               editable
               droppable
               selectable
@@ -233,21 +277,18 @@ export default function CalendarView() {
           onUpdateEvent={onUpdateEvent}
           currentEventId={currentEventId}
           colorOptions={CALENDAR_COLOR_OPTIONS}
+          // addAttendHandler={addAttendHandler}
         />
       </Dialog>
 
       <CalendarFilters
         open={openFilters.value}
         onClose={openFilters.onFalse}
-        //
         filters={filters}
         onFilters={handleFilters}
-        //
         canReset={canReset}
         onResetFilters={handleResetFilters}
-        //
         dateError={dateError}
-        //
         events={events}
         colorOptions={CALENDAR_COLOR_OPTIONS}
         onClickEvent={onClickEventInFilters}

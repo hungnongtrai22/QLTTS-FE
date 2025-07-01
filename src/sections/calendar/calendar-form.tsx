@@ -33,6 +33,7 @@ type Props = {
   onDeleteEvent: (eventId: string) => void;
   onCreateEvent: (newEvent: ICalendarEvent) => void;
   onUpdateEvent: (newEvent: ICalendarEvent) => void;
+  // addAttendHandler: any;
 };
 
 // ----------------------------------------------------------------------
@@ -46,7 +47,8 @@ export default function CalendarForm({
   onCreateEvent,
   currentEventId,
   onUpdateEvent,
-}: Props) {
+}: // addAttendHandler
+Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const EventSchema = Yup.object().shape({
@@ -84,6 +86,7 @@ export default function CalendarForm({
           start: data.start,
           end: data.end,
         };
+        // await addAttendHandler(newEvent);
         if (!dateError) {
           if (currentEventId) {
             onUpdateEvent(newEvent);
@@ -116,11 +119,16 @@ export default function CalendarForm({
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ px: 3 }}>
-        <RHFTextField name="title" label="Title" />
+        <RHFTextField name="title" label="Tiêu đề" />
 
-        <RHFTextField name="description" label="Description" multiline rows={3} />
+        <RHFTextField name="description" label="Mô tả" multiline rows={3} />
 
-        <RHFSwitch name="allDay" label="All day" />
+        <Stack direction="row" display="inline-flex">
+          <RHFSwitch name="am" label="Buổi sáng" />
+          <RHFSwitch name="pm" label="Buổi chiều" />
+
+          <RHFSwitch name="allDay" label="Cả ngày" />
+        </Stack>
 
         <Controller
           name="start"
@@ -134,7 +142,7 @@ export default function CalendarForm({
                   field.onChange(new Date(newValue).toISOString());
                 }
               }}
-              label="Start date"
+              label="Ngày bắt đầu"
               format="dd/MM/yyyy hh:mm a"
               slotProps={{
                 textField: {
@@ -157,7 +165,7 @@ export default function CalendarForm({
                   field.onChange(new Date(newValue).toISOString());
                 }
               }}
-              label="End date"
+              label="Ngày kết thúc"
               format="dd/MM/yyyy hh:mm a"
               slotProps={{
                 textField: {
@@ -195,7 +203,7 @@ export default function CalendarForm({
         <Box sx={{ flexGrow: 1 }} />
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          Hủy
         </Button>
 
         <LoadingButton
@@ -204,7 +212,7 @@ export default function CalendarForm({
           loading={isSubmitting}
           disabled={dateError}
         >
-          Save Changes
+          Xác Nhận
         </LoadingButton>
       </DialogActions>
     </FormProvider>

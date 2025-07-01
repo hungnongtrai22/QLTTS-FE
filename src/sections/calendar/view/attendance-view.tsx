@@ -108,17 +108,18 @@ export default function AttendanceView() {
     onCloseForm,
     //
     onClickEventInFilters,
-  } = useCalendar();
+  } = useCalendar({internId: ""});
 
-   const onCreateAttedance = useCallback(
-      async (newEvent: any) => {
-        const response = await axios.post(`${process.env.REACT_APP_HOST_API}/api/attendance/create`, {
-          
-        });
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      []
-    );
+  const onCreateAttedance = useCallback(
+    async (newEvent: any) => {
+      const response = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/attendance/create`,
+        {}
+      );
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   useEffect(() => {
     onInitialView();
@@ -245,6 +246,9 @@ export default function AttendanceView() {
           onUpdateEvent={onUpdateEvent}
           currentEventId={currentEventId}
           colorOptions={CALENDAR_COLOR_OPTIONS}
+          // addAttendHandler={() => {
+          //   console.log('TEST');
+          // }}
         />
       </Dialog>
 

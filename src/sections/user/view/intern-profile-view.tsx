@@ -167,7 +167,7 @@ export default function InternProfileView() {
 
       {currentTab === 'gallery' && <InternPointForm internId={intern?._id} />}
 
-      {currentTab === 'attendance' && <CalendarPage />}
+      {currentTab === 'attendance' && <CalendarPage intern={intern}/>}
     </Container>
   );
 }

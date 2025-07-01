@@ -1,8 +1,9 @@
+/* eslint-disable no-empty */
 import merge from 'lodash/merge';
 import FullCalendar from '@fullcalendar/react';
 import { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 import { EventResizeDoneArg } from '@fullcalendar/interaction';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { createEvent, updateEvent, deleteEvent } from 'src/redux/slices/calendar';
@@ -12,10 +13,14 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 // types
 import { ICalendarEvent, ICalendarView } from 'src/types/calendar';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
+type Props = {
+  internId?: string;
+};
 
-export default function useCalendar() {
+export default function useCalendar({ internId }: Props) {
   const calendarRef = useRef<FullCalendar>(null);
 
   const calendarEl = calendarRef.current;
@@ -35,18 +40,50 @@ export default function useCalendar() {
 
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
 
+  console.log(currentEventId);
+
   const [view, setView] = useState<ICalendarView>(smUp ? 'dayGridMonth' : 'listWeek');
 
-  const { events: eventData } = useSelector((state) => state.calendar);
+  // const { events: eventData } = useSelector((state) => state.calendar);
+  const [eventData, setEventData] = useState([]);
 
-  const events = eventData.map((event) => ({
+  const getAttendaceByMonth = useCallback(async () => {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/attendance/getAllAttendByInternId`,
+      {
+        internId,
+      }
+    );
+    if (data) {
+      setEventData(data.attend);
+    }
+  }, [internId]);
+
+  const addAttendHandler = useCallback(
+    async (attendItem: any) => {
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/attendance/create`, {
+        internId,
+        attendItem,
+        monthAndYear: date,
+      });
+      await getAttendaceByMonth();
+    },
+    [date, internId, getAttendaceByMonth]
+  );
+
+  useEffect(() => {
+    getAttendaceByMonth();
+  }, [date, getAttendaceByMonth]);
+
+  const events = eventData.map((event: any) => ({
     ...event,
     textColor: event.color,
+    id: event._id,
   }));
 
   const currentEvent = useSelector(() => {
     if (currentEventId) {
-      return events.find((event) => event.id === currentEventId);
+      return events.find((event: any) => event.id === currentEventId);
     }
 
     return null;
@@ -128,15 +165,16 @@ export default function useCalendar() {
   );
 
   const onClickEvent = useCallback(
-    (arg: EventClickArg) => {
+    (arg: any) => {
       onOpenForm();
+      console.log('Event', arg);
       setCurrentEventId(arg.event.id);
     },
     [onOpenForm]
   );
 
   const onResizeEvent = useCallback(
-    ({ event }: EventResizeDoneArg) => {
+    ({ event }: any) => {
       try {
         dispatch(
           updateEvent(event.id, {
@@ -153,7 +191,7 @@ export default function useCalendar() {
   );
 
   const onDropEvent = useCallback(
-    ({ event }: EventDropArg) => {
+    ({ event }: any) => {
       try {
         dispatch(
           updateEvent(event.id, {
@@ -170,7 +208,8 @@ export default function useCalendar() {
   );
 
   const onCreateEvent = useCallback(
-    (newEvent: ICalendarEvent) => {
+    async (newEvent: ICalendarEvent) => {
+      await addAttendHandler(newEvent);
       dispatch(createEvent(newEvent));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

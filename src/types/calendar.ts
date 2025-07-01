@@ -16,6 +16,8 @@ export type ICalendarView = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'l
 
 export type ICalendarEvent = {
   id?: string;
+  _id?: string;
+
   title: string;
   description: string;
   color: string;

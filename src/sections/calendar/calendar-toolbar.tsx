@@ -13,15 +13,9 @@ import { ICalendarView } from 'src/types/calendar';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useLocales } from 'src/locales';
 
 // ----------------------------------------------------------------------
-
-const VIEW_OPTIONS = [
-  { value: 'dayGridMonth', label: 'Month', icon: 'mingcute:calendar-month-line' },
-  { value: 'timeGridWeek', label: 'Week', icon: 'mingcute:calendar-week-line' },
-  { value: 'timeGridDay', label: 'Day', icon: 'mingcute:calendar-day-line' },
-  { value: 'listWeek', label: 'Agenda', icon: 'fluent:calendar-agenda-24-regular' },
-] as const;
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +29,14 @@ type Props = {
   onChangeView: (newView: ICalendarView) => void;
 };
 
+const changDateJP = (date: any) => {
+  const jsDate = new Date(date);
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
+  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  return customFormat;
+};
+
 export default function CalendarToolbar({
   date,
   view,
@@ -45,6 +47,15 @@ export default function CalendarToolbar({
   onOpenFilters,
 }: Props) {
   const smUp = useResponsive('up', 'sm');
+  const { t,currentLang } = useLocales();
+  console.log(currentLang);
+
+  const VIEW_OPTIONS = [
+    { value: 'dayGridMonth', label: t('month'), icon: 'mingcute:calendar-month-line' },
+    { value: 'timeGridWeek', label: t('week'), icon: 'mingcute:calendar-week-line' },
+    { value: 'timeGridDay', label: t('day'), icon: 'mingcute:calendar-day-line' },
+    { value: 'listWeek', label: t('agenda'), icon: 'fluent:calendar-agenda-24-regular' },
+  ] as const;
 
   const popover = usePopover();
 
@@ -75,7 +86,8 @@ export default function CalendarToolbar({
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButton>
 
-          <Typography variant="h6">{fDate(date)}</Typography>
+          {/* <Typography variant="h6">{fDate(date)}</Typography> */}
+          <Typography variant="h6">{changDateJP(date)}</Typography>
 
           <IconButton onClick={onNextDate}>
             <Iconify icon="eva:arrow-ios-forward-fill" />
@@ -84,7 +96,7 @@ export default function CalendarToolbar({
 
         <Stack direction="row" alignItems="center" spacing={1}>
           <Button size="small" color="error" variant="contained" onClick={onToday}>
-            Today
+            {t('today')}
           </Button>
 
           <IconButton onClick={onOpenFilters}>
