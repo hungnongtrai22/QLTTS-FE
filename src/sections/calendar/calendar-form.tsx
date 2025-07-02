@@ -1,4 +1,6 @@
-import { useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import { useCallback, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -50,6 +52,9 @@ export default function CalendarForm({
 }: // addAttendHandler
 Props) {
   const { enqueueSnackbar } = useSnackbar();
+  // const [allDay, setAllDay] = useState(false);
+  // const [am, setAM] = useState(false);
+  // const [pm, setPM] = useState(false);
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
@@ -69,6 +74,7 @@ Props) {
     control,
     handleSubmit,
     formState: { isSubmitting },
+    setValue,
   } = methods;
 
   const values = watch();
@@ -116,6 +122,35 @@ Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const { am, pm, allDay, start } = values;
+
+    const currentStart = start ? new Date(start) : new Date();
+
+    const baseDate = new Date(
+      currentStart.getFullYear(),
+      currentStart.getMonth(),
+      currentStart.getDate()
+    );
+
+    const setTime = (hour: number, minute: number) => {
+      const d = new Date(baseDate);
+      d.setHours(hour, minute, 0, 0);
+      return d.toISOString();
+    };
+
+    if (allDay) {
+      setValue('start', setTime(8, 0));
+      setValue('end', setTime(17, 0));
+    } else if (am) {
+      setValue('start', setTime(8, 0));
+      setValue('end', setTime(11, 30));
+    } else if (pm) {
+      setValue('start', setTime(13, 0));
+      setValue('end', setTime(17, 0));
+    }
+  }, [values, setValue]);
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ px: 3 }}>
@@ -124,11 +159,40 @@ Props) {
         <RHFTextField name="description" label="Mô tả" multiline rows={3} />
 
         <Stack direction="row" display="inline-flex">
-          <RHFSwitch name="am" label="Buổi sáng" />
-          <RHFSwitch name="pm" label="Buổi chiều" />
-
-          <RHFSwitch name="allDay" label="Cả ngày" />
+          <Controller
+            name="am"
+            control={control}
+            render={({ field }) => <RHFSwitch label="Buổi sáng" {...field} />}
+          />
+          <Controller
+            name="pm"
+            control={control}
+            render={({ field }) => <RHFSwitch label="Buổi chiều" {...field} />}
+          />
+          <Controller
+            name="allDay"
+            control={control}
+            render={({ field }) => <RHFSwitch label="Cả ngày" {...field} />}
+          />
         </Stack>
+
+        {/* <Stack direction="row" display="inline-flex">
+          <Controller
+            name="late"
+            control={control}
+            render={({ field }) => <RHFSwitch label="Buổi sáng" {...field} />}
+          />
+          <Controller
+            name="soon"
+            control={control}
+            render={({ field }) => <RHFSwitch label="Buổi chiều" {...field} />}
+          />
+          <Controller
+            name="off"
+            control={control}
+            render={({ field }) => <RHFSwitch label="Cả ngày" {...field} />}
+          />
+        </Stack> */}
 
         <Controller
           name="start"

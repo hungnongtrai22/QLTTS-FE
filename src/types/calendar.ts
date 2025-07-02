@@ -24,6 +24,8 @@ export type ICalendarEvent = {
   allDay: boolean;
   start: Date | string | null;
   end: Date | string | null;
+  pm?: boolean;
+  am?: boolean;
 };
 
 export type ICalendarState = {
