@@ -11,6 +11,8 @@ import Divider from '@mui/material/Divider';
 import InputBase from '@mui/material/InputBase';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
+import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui/material';
+
 // _mock
 import axios from 'axios';
 
@@ -28,10 +30,13 @@ import {
 // components
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { saveAs } from 'file-saver';
+import { pdf } from '@react-pdf/renderer';
 
 //
 import ProfilePostItem from './profile-post-item';
 import StudyPostItem from './study-post-item';
+import AllStudyPDF from '../order/AllStudyPDF';
 
 // ----------------------------------------------------------------------
 
@@ -43,11 +48,11 @@ type Props = {
 
 export default function ProfileHome({ info, posts, currentIntern }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
 
   const [contact, setContact] = useState<IContactItem>();
   const [study, setStudy] = useState<IStudyItem[]>([]);
   const { user } = useAuthContext();
-
 
   const handleAttach = () => {
     if (fileRef.current) {
@@ -83,9 +88,26 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
       >
         <Stack width={1}>
-          {fNumber(info.totalFollowers)}
+          {/* {fNumber(info.totalFollowers)} */}
           <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-            Follower
+            <Tooltip title="Tải PDF">
+              <IconButton
+                onClick={async () => {
+                  try {
+                    setLoadingDownloadAll(true);
+                    const blob = await pdf(<AllStudyPDF />).toBlob();
+                    saveAs(blob, `All_CVs_${currentIntern?.name || "Test"}.pdf`);
+                  } catch (error) {
+                    console.error('Lỗi khi tạo PDF:', error);
+                  } finally {
+                    setLoadingDownloadAll(false);
+                  }
+                }}
+              >
+                <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
+                {/* {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'} */}
+              </IconButton>
+            </Tooltip>
           </Box>
         </Stack>
 
@@ -284,7 +306,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
           {/* {renderPostInput} */}
 
           {study.map((item) => (
-            <StudyPostItem key={item._id} study={item} intern={currentIntern || null}/>
+            <StudyPostItem key={item._id} study={item} intern={currentIntern || null} />
           ))}
         </Stack>
       </Grid>

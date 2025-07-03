@@ -3,7 +3,7 @@
   "job": "công việc",
   "user": "người dùng",
   "list": "Danh sách",
-  "edit": "chỉnh sửa",
+  "edit": "Chỉnh sửa",
   "shop": "cửa hàng",
   "blog": "blog",
   "post": "bài viết",
@@ -176,6 +176,18 @@
   "remove_school": "Xoá học vấn",
   "remove_company": "Xoá kinh nghiệm làm việc",
   "remove_family": "Xoá thân nhân",
+  "add": "Thêm",
+  "remove": "Xóa",
+  "event": "sự kiện",
+  "title": "Tiêu đề",
+  "morning": "Buổi sáng",
+  "afternoon": "Buổi chiều",
+  "allDay": "Cả ngày",
+  "off": "Nghỉ học",
+  "late": "Đến trễ",
+  "soon": "Về sớm",
+  "submit": "Xác nhận",
+  "cancel": "Hủy",
   "demo": {
     "title": "Vietnamese"
   }

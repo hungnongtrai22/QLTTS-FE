@@ -56,6 +56,8 @@ export default function useCalendar({ internId }: Props) {
     );
     if (data) {
       setEventData(data.attend);
+    }else{
+      setEventData([]);
     }
   }, [internId]);
 
@@ -71,15 +73,40 @@ export default function useCalendar({ internId }: Props) {
     [date, internId, getAttendaceByMonth]
   );
 
+  const editAttendHandler = useCallback(
+    async (attendItem: any) => {
+      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/attendance/updateAttendItem`, {
+        _id: attendItem.attendanceId,
+        itemId: attendItem._id,
+        updateData: attendItem,
+      });
+      await getAttendaceByMonth();
+    },
+    [getAttendaceByMonth]
+  );
+
+    const removeAttendHandler = useCallback(
+    async (eventId: any, attendanceId: any) => {
+      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/attendance/deleteAttendItem`, {
+        _id: attendanceId,
+        itemId: eventId,
+      });
+      await getAttendaceByMonth();
+    },
+    [getAttendaceByMonth]
+  );
+
+
+
   useEffect(() => {
     getAttendaceByMonth();
   }, [date, getAttendaceByMonth]);
 
-  const events = eventData.map((event: any) => ({
+  const events = eventData?.map((event: any) => ({
     ...event,
     textColor: event.color,
     id: event._id,
-  }));
+  })) || [];
 
   const currentEvent = useSelector(() => {
     if (currentEventId) {
@@ -217,8 +244,9 @@ export default function useCalendar({ internId }: Props) {
   );
 
   const onUpdateEvent = useCallback(
-    (newEvent: ICalendarEvent) => {
+    async (newEvent: ICalendarEvent) => {
       if (currentEventId) {
+        await editAttendHandler(newEvent);
         dispatch(updateEvent(currentEventId, newEvent));
       }
     },
@@ -227,9 +255,11 @@ export default function useCalendar({ internId }: Props) {
   );
 
   const onDeleteEvent = useCallback(
-    (eventId: string) => {
+    async (eventId: string, attendanceId: string) => {
+      await removeAttendHandler(eventId, attendanceId);
       dispatch(deleteEvent(eventId));
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dispatch]
   );
 

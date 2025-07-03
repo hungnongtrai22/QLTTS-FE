@@ -77,7 +77,7 @@ type Props = {
 export default function CalendarView({ intern }: Props) {
   useInitial();
 
-  const { currentLang } = useLocales();
+  const { t, currentLang } = useLocales();
 
   const theme = useTheme();
 
@@ -266,7 +266,7 @@ export default function CalendarView({ intern }: Props) {
           exit: theme.transitions.duration.shortest - 80,
         }}
       >
-        <DialogTitle>{currentEventId ? 'Edit' : 'Add'} Event</DialogTitle>
+        <DialogTitle>{currentEventId ? t('edit') : t('add')} {t('event')}</DialogTitle>
 
         <CalendarForm
           openForm={openForm}

@@ -176,6 +176,18 @@
   "remove_school": "学歴を削除",
   "remove_company": "職務経歴を削除",
   "remove_family": "家族情報を削除",
+  "add": "追加",
+  "remove": "削除",
+  "event": "イベント",
+    "title": "タイトル",
+  "morning": "午前",
+  "afternoon": "午後",
+  "allDay": "一日中",
+  "off": "欠席",
+  "late": "遅刻",
+  "soon": "早退",
+  "submit": "確定",
+  "cancel": "キャンセル",
   "demo": {
     "title": "英語"
   }

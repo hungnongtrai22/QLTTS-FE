@@ -13,6 +13,8 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import DialogActions from '@mui/material/DialogActions';
+import { useLocales } from 'src/locales';
+
 // types
 import { ICalendarEvent } from 'src/types/calendar';
 // components
@@ -32,7 +34,7 @@ type Props = {
   onClose: VoidFunction;
   colorOptions: string[];
   currentEventId: string | null;
-  onDeleteEvent: (eventId: string) => void;
+  onDeleteEvent: (eventId: string, attendanceId: string) => void;
   onCreateEvent: (newEvent: ICalendarEvent) => void;
   onUpdateEvent: (newEvent: ICalendarEvent) => void;
   // addAttendHandler: any;
@@ -55,6 +57,9 @@ Props) {
   // const [allDay, setAllDay] = useState(false);
   // const [am, setAM] = useState(false);
   // const [pm, setPM] = useState(false);
+
+    const { t, currentLang } = useLocales();
+  
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
@@ -91,6 +96,13 @@ Props) {
           allDay: data.allDay,
           start: data.start,
           end: data.end,
+          am: data?.am,
+          pm: data?.pm,
+          late: data?.late,
+          soon: data?.soon,
+          off: data?.off,
+          attendanceId: event.attendanceId,
+          _id: event._id
         };
         // await addAttendHandler(newEvent);
         if (!dateError) {
@@ -114,7 +126,7 @@ Props) {
   const onDelete = useCallback(() => {
     try {
       onClose();
-      onDeleteEvent(`${event.id}`);
+      onDeleteEvent(`${event.id}`, event?.attendanceId || "");
       enqueueSnackbar('Delete success!');
     } catch (error) {
       console.error(error);
@@ -154,45 +166,45 @@ Props) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ px: 3 }}>
-        <RHFTextField name="title" label="Tiêu đề" />
+        <RHFTextField name='title' label={t('title')} />
 
-        <RHFTextField name="description" label="Mô tả" multiline rows={3} />
+        <RHFTextField name='description' label={t('description')} multiline rows={3} />
 
         <Stack direction="row" display="inline-flex">
           <Controller
             name="am"
             control={control}
-            render={({ field }) => <RHFSwitch label="Buổi sáng" {...field} />}
+            render={({ field }) => <RHFSwitch label={t('morning')} {...field} />}
           />
           <Controller
             name="pm"
             control={control}
-            render={({ field }) => <RHFSwitch label="Buổi chiều" {...field} />}
+            render={({ field }) => <RHFSwitch label={t('afternoon')} {...field} />}
           />
           <Controller
             name="allDay"
             control={control}
-            render={({ field }) => <RHFSwitch label="Cả ngày" {...field} />}
+            render={({ field }) => <RHFSwitch label={t('allDay')} {...field} />}
           />
         </Stack>
 
-        {/* <Stack direction="row" display="inline-flex">
+        <Stack direction="row" display="inline-flex">
+          <Controller
+            name="off"
+            control={control}
+            render={({ field }) => <RHFSwitch label={t('off')} {...field} />}
+          />
           <Controller
             name="late"
             control={control}
-            render={({ field }) => <RHFSwitch label="Buổi sáng" {...field} />}
+            render={({ field }) => <RHFSwitch label={t('late')} {...field} />}
           />
           <Controller
             name="soon"
             control={control}
-            render={({ field }) => <RHFSwitch label="Buổi chiều" {...field} />}
+            render={({ field }) => <RHFSwitch label={t('soon')} {...field} />}
           />
-          <Controller
-            name="off"
-            control={control}
-            render={({ field }) => <RHFSwitch label="Cả ngày" {...field} />}
-          />
-        </Stack> */}
+        </Stack>
 
         <Controller
           name="start"
@@ -206,7 +218,7 @@ Props) {
                   field.onChange(new Date(newValue).toISOString());
                 }
               }}
-              label="Ngày bắt đầu"
+              label={t('start_date')}
               format="dd/MM/yyyy hh:mm a"
               slotProps={{
                 textField: {
@@ -229,7 +241,7 @@ Props) {
                   field.onChange(new Date(newValue).toISOString());
                 }
               }}
-              label="Ngày kết thúc"
+              label={t('end_date')}
               format="dd/MM/yyyy hh:mm a"
               slotProps={{
                 textField: {
@@ -267,7 +279,7 @@ Props) {
         <Box sx={{ flexGrow: 1 }} />
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Hủy
+          {t('cancel')}
         </Button>
 
         <LoadingButton
@@ -276,7 +288,7 @@ Props) {
           loading={isSubmitting}
           disabled={dateError}
         >
-          Xác Nhận
+          {t('submit')}
         </LoadingButton>
       </DialogActions>
     </FormProvider>

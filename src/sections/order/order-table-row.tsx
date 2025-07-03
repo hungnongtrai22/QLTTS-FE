@@ -180,7 +180,7 @@ export default function OrderTableRow({
           sx={{ bgcolor: 'background.neutral' }}
         >
           <Stack component={Paper} sx={{ m: 1.5 }}>
-            {listIntern?.map((item: any, index:any) => (
+            {listIntern?.map((item: any, index: any) => (
               <Stack
                 key={item._id}
                 direction="row"
@@ -313,8 +313,7 @@ export default function OrderTableRow({
 
         <ExportInternsWithAvatar interns={listIntern} name={name} />
 
-                <ExportInternsPass interns={listIntern} name={name} />
-
+        <ExportInternsPass interns={listIntern} name={name} />
 
         <MenuItem onClick={onEditRow}>
           <Iconify icon="fluent:edit-48-filled" />

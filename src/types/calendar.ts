@@ -26,6 +26,10 @@ export type ICalendarEvent = {
   end: Date | string | null;
   pm?: boolean;
   am?: boolean;
+  late?: boolean;
+  soon?: boolean;
+  off?: boolean;
+  attendanceId?: string;
 };
 
 export type ICalendarState = {
