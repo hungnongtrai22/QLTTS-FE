@@ -95,8 +95,10 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
                 onClick={async () => {
                   try {
                     setLoadingDownloadAll(true);
-                    const blob = await pdf(<AllStudyPDF />).toBlob();
-                    saveAs(blob, `All_CVs_${currentIntern?.name || "Test"}.pdf`);
+                    const blob = await pdf(
+                      <AllStudyPDF intern={currentIntern} study={study} />
+                    ).toBlob();
+                    saveAs(blob, `All_CVs_${currentIntern?.name || 'Test'}.pdf`);
                   } catch (error) {
                     console.error('Lỗi khi tạo PDF:', error);
                   } finally {

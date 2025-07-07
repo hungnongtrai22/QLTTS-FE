@@ -216,8 +216,11 @@ export type IInternItem = {
   kraepelin1: number | null;
   kraepelin2: number | null;
   createdAt: any;
-    status: string;
-
+  status: string;
+  job: string;
+  interviewDate: any;
+  studyDate: any;
+  startDate: any;
 };
 
 export type ITradeUnionItem = {

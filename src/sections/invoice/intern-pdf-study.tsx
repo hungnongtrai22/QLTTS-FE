@@ -3,6 +3,7 @@ import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/
 // utils
 
 import dayjs from 'dayjs';
+import { htmlToText } from 'html-to-text';
 
 // ----------------------------------------------------------------------
 
@@ -106,6 +107,10 @@ const useStyles = () =>
         table10: {
           display: 'flex',
           width: '10%',
+        },
+        table45: {
+          display: 'flex',
+          width: '48%',
         },
         tableRow: {
           padding: 0,
@@ -297,6 +302,114 @@ const useStyles = () =>
           borderColor: '#DFE3E8',
           margin: 0,
         },
+        tableCell_16: {
+          padding: '3px 0',
+          width: '60%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_17: {
+          padding: '3px 0',
+          width: '40%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_18: {
+          padding: '3px 0',
+          width: '60%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_19: {
+          padding: '3px 0',
+          width: '10%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_20: {
+          padding: '3px 0',
+          width: '14%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_21: {
+          padding: '3px 0',
+          width: '27%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_22: {
+          padding: '3px 0',
+          width: '16.5%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_23: {
+          padding: '3px 0',
+          width: '7.5%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
+        tableCell_24: {
+          padding: '3px 0',
+          width: '42.5%',
+          height: '100%',
+          // paddingRight: 16,
+          textAlign: 'center',
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderStyle: 'solid',
+          borderColor: '#DFE3E8',
+          margin: 0,
+        },
         textLeft: {
           textAlign: 'left',
           paddingHorizontal: '3',
@@ -368,7 +481,63 @@ function normalizeName(name: string): string {
     .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
 }
 
-export default function InternPDFStudy() {
+const transPointToSharp = (point: number): string => {
+  if (point < 50) return '×';
+  if (point < 70) return '△';
+  if (point < 80) return '○';
+  if (point < 90) return '◎';
+  return '●';
+};
+
+const transPointToGrade = (point: number): string => {
+  if (point < 50) return 'C';
+  if (point < 60) return 'B-';
+  if (point < 70) return 'B';
+  if (point < 80) return 'B+';
+  if (point < 90) return 'A';
+  return 'A+';
+};
+
+const evaluateStudent = (
+  discipline: number,
+  attitude: number,
+  health: number,
+  cooperation: number,
+  attend: number,
+  total: number
+): string => {
+  const hasCriticalFail =
+    (discipline < 50 && attitude < 50) ||
+    health < 50 ||
+    cooperation < 50 ||
+    attend < 50 ||
+    total < 500;
+
+  if (hasCriticalFail) return '不可';
+  if (total < 700) return '可';
+  if (total < 800) return '良';
+  if (total < 900) return '優';
+  return '秀';
+};
+
+const judgeJLPTResult = (
+  level: string,
+  kanji: number,
+  grammarAndReading: number,
+  listeningComprehension: number
+): string => {
+  const total = kanji + grammarAndReading + listeningComprehension;
+
+  const isPass =
+    kanji >= 19 &&
+    grammarAndReading >= 19 &&
+    listeningComprehension >= 19 &&
+    ((level === 'N5' && total >= 80) || (level === 'N4' && total >= 90));
+
+  return isPass ? '合' : '不';
+};
+
+export default function InternPDFStudy({ item, intern }: any) {
   // const {
   //   name,
   //   namejp,
@@ -405,6 +574,8 @@ export default function InternPDFStudy() {
   // } = invoice;
 
   const styles = useStyles();
+  console.log('intern', intern);
+  console.log('study', item);
 
   return (
     <Document>
@@ -431,7 +602,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>協同組合FUJI様</Text>
+                      <Text>{intern.tradeUnion.name}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -440,7 +611,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>株式会社LIXIL様</Text>
+                      <Text>{intern.companySelect.name}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -449,8 +620,8 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>DƯƠNG TẤN PHÁT</Text>
-                      <Text>ズオン・タン・ファット</Text>
+                      <Text>{normalizeName(intern.name)}</Text>
+                      <Text>{intern.namejp}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -459,7 +630,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>男</Text>
+                      <Text>{intern.gender}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -468,7 +639,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>2002年10月02日</Text>
+                      <Text>{changDateJP(intern.birthday)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -477,7 +648,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>金属プレス作業</Text>
+                      <Text>{intern.job}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -486,7 +657,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>2024年12月16日</Text>
+                      <Text>{changDateJP(intern.interviewDate)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -495,7 +666,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>2024年12月27日</Text>
+                      <Text>{changDateJP(intern.studyDate)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -504,7 +675,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>2025年7月</Text>
+                      <Text>{changMonthYearJP(intern.startDate)}</Text>
                     </View>
                   </View>
                 </View>
@@ -526,7 +697,7 @@ export default function InternPDFStudy() {
                 }}
               >
                 <Image
-                  src="https://res.cloudinary.com/dj4gvts4q/image/upload/v1749021928/dashboard/dyd9ys79aixuhsfukqe2.jpg"
+                  src={intern.avatar}
                   style={{
                     width: '100%',
                     height: '200px',
@@ -546,7 +717,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_11, styles.textCenter]}>
-                      <Text>2025年1月27日</Text>
+                      <Text>{changDateJP(item.monthAndYear)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -555,7 +726,7 @@ export default function InternPDFStudy() {
                     </View>
 
                     <View style={[styles.tableCell_11, styles.textCenter]}>
-                      <Text>1ヶ月</Text>
+                      <Text>{item.time}ヶ月</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -581,12 +752,12 @@ export default function InternPDFStudy() {
             </View>
           </View>
           <View>
-            <View style={[styles.gridContainer, styles.mb10]}>
+            <View style={[styles.gridContainer]}>
               <View style={styles.table40}>
                 <View>
                   <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>B）一般評価</Text>
+                      <Text style={styles.subtitle2}>(B) 一般評価</Text>
                     </View>
                   </View>
                   <View style={[styles.tableRow]}>
@@ -694,10 +865,323 @@ export default function InternPDFStudy() {
               <View style={styles.table10}>
                 <View>
                   <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
-                    <View style={[styles.tableCell_13, styles.titleNoBackground]}>
+                    <View
+                      style={[styles.tableCell_13, styles.titleNoBackground, { height: '115px' }]}
+                    >
                       <Text style={styles.subtitle2}>(D)</Text>
                       <Text style={styles.subtitle2}>総合</Text>
                       <Text style={styles.subtitle2}>評価</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.table10}>
+                <View>
+                  <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
+                    <View
+                      style={[styles.tableCell_13, styles.titleNoBackground, { height: '115px' }]}
+                    >
+                      <Text style={styles.subtitle2}>学習進</Text>
+                      <Text style={styles.subtitle2}>捗</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={[styles.gridContainer, styles.mb10]}>
+              <View style={styles.table40}>
+                <View>
+                  <View style={[styles.tableRow, { height: '40px' }]}>
+                    <View style={[styles.tableCell_14, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>{item.characteristic}</Text>
+                    </View>
+                    <View style={[styles.tableCell_4, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>{transPointToSharp(item.health)}</Text>
+                    </View>
+                    <View style={[styles.tableCell_4, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>{transPointToSharp(item.cooperation)}</Text>
+                    </View>
+                    <View style={[styles.tableCell_4, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>{transPointToSharp(item.attend)}</Text>
+                    </View>
+                    <View style={[styles.tableCell_4, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>{transPointToSharp(item.discipline)}</Text>
+                    </View>
+                    <View style={[styles.tableCell_4, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>{transPointToSharp(item.attitude)}</Text>
+                    </View>
+                    <View style={[styles.tableCell_3, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>
+                        {transPointToSharp(item.acquiringKnowledge)}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.table40}>
+                <View>
+                  <View style={[styles.tableRow]}>
+                    <View style={styles.table60}>
+                      <View>
+                        <View style={[styles.tableRow, { height: '40px' }]}>
+                          <View style={[styles.tableCell_5, styles.titleNoBackground]}>
+                            <Text style={styles.subtitle2}>{transPointToSharp(item.write)}</Text>
+                          </View>
+                          <View style={[styles.tableCell_5, styles.titleNoBackground]}>
+                            <Text style={styles.subtitle2}>{transPointToSharp(item.read)}</Text>
+                          </View>
+                          <View style={[styles.tableCell_5, styles.titleNoBackground]}>
+                            <Text style={styles.subtitle2}>{transPointToSharp(item.listen)}</Text>
+                          </View>
+                          <View style={[styles.tableCell_5, styles.titleNoBackground]}>
+                            <Text style={styles.subtitle2}>{transPointToSharp(item.speak)}</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.table10}>
+                      <View>
+                        <View style={[styles.tableRow, { height: '40px' }]}>
+                          <View style={[styles.tableCell_13, styles.titleNoBackground]}>
+                            <Text style={styles.subtitle2}>{transPointToGrade(item.average)}</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.table30}>
+                      <View>
+                        <View style={[styles.tableRow, { height: '40px' }]}>
+                          <View style={[styles.tableCell_9, styles.titleNoBackground]}>
+                            <Text style={styles.subtitle2}>{item.level}</Text>
+                          </View>
+                          <View style={[styles.tableCell_15, styles.titleNoBackground]}>
+                            <Text style={styles.subtitle2}>
+                              {judgeJLPTResult(
+                                item.level,
+                                item.kanji,
+                                item.grammarAndReading,
+                                item.listeningComprehension
+                              )}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.table10}>
+                <View>
+                  <View style={[styles.tableRow, { height: '40px' }]}>
+                    <View style={[styles.tableCell_13, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>
+                        {evaluateStudent(
+                          item.discipline,
+                          item.attitude,
+                          item.health,
+                          item.cooperation,
+                          item.attend,
+                          item.total
+                        )}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.table10}>
+                <View>
+                  <View style={[styles.tableRow, { height: '40px' }]}>
+                    <View style={[styles.tableCell_13, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>{item.learningProcess}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View>
+            <View style={[styles.gridContainer, styles.mb10]}>
+              <View style={styles.table1}>
+                <View>
+                  <View style={[styles.tableRow, { borderTopWidth: '1px' }]}>
+                    <View style={[styles.tableCell_13, styles.titleNoBackground]}>
+                      <Text style={styles.subtitle2}>
+                        {htmlToText(item.comment, {
+                          wordwrap: false,
+                          preserveNewlines: true,
+                        })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View>
+            <View style={[styles.gridContainer, styles.mb10]}>
+              <View style={styles.spaceBorder}>
+                <View style={styles.table45}>
+                  <View>
+                    <View style={[styles.tableRow, { borderTopWidth: '1px' }]}>
+                      <View style={[styles.tableCell_17, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>(B) (C)</Text>
+                      </View>
+                      <View style={[styles.tableCell_18, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>(D)総合評価</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow]}>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>●</Text>
+                      </View>
+                      <View style={[styles.tableCell_8, styles.titleNoBackground]}>
+                        <Text>＜100点</Text>
+                      </View>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>秀</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text>100%</Text>
+                      </View>
+                      <View style={[styles.tableCell_21, styles.titleNoBackground]}>
+                        <Text>(D) ＜1000満点</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>秀</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow]}>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>◎</Text>
+                      </View>
+                      <View style={[styles.tableCell_8, styles.titleNoBackground]}>
+                        <Text>＜90点</Text>
+                      </View>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>優</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text>90%</Text>
+                      </View>
+                      <View style={[styles.tableCell_21, styles.titleNoBackground]}>
+                        <Text>(D) ＜900点</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>優</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow]}>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>○</Text>
+                      </View>
+                      <View style={[styles.tableCell_8, styles.titleNoBackground]}>
+                        <Text>＜80点</Text>
+                      </View>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>良</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text>80%</Text>
+                      </View>
+                      <View style={[styles.tableCell_21, styles.titleNoBackground]}>
+                        <Text>(D) ＜800点</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>良</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow]}>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>△</Text>
+                      </View>
+                      <View style={[styles.tableCell_8, styles.titleNoBackground]}>
+                        <Text>＜70点</Text>
+                      </View>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>可</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text>70%</Text>
+                      </View>
+                      <View style={[styles.tableCell_21, styles.titleNoBackground]}>
+                        <Text>(D) ＜700点</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>可</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow]}>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>×</Text>
+                      </View>
+                      <View style={[styles.tableCell_8, styles.titleNoBackground]}>
+                        <Text>＜50点</Text>
+                      </View>
+                      <View style={[styles.tableCell_19, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>不可</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text>50%以下</Text>
+                      </View>
+                      <View style={[styles.tableCell_21, styles.titleNoBackground]}>
+                        <Text>(D) ＜500点</Text>
+                      </View>
+                      <View style={[styles.tableCell_22, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>不可</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.table45}>
+                  <View>
+                    <View
+                      style={[styles.tableRow, { borderTopWidth: '1px', borderLeftWidth: '1px' }]}
+                    >
+                      <View style={[styles.tableCell_13, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>（C）学力</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow, { borderLeftWidth: '1px' }]}>
+                      <View style={[styles.tableCell_24, styles.titleNoBackground]}>
+                        <Text>90点≦平均点数≦100点</Text>
+                      </View>
+                      <View style={[styles.tableCell_23, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>A+</Text>
+                      </View>
+                      <View style={[styles.tableCell_24, styles.titleNoBackground]}>
+                        <Text>60点≦平均点数＜70点</Text>
+                      </View>
+                      <View style={[styles.tableCell_23, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>B</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow, { borderLeftWidth: '1px' }]}>
+                      <View style={[styles.tableCell_24, styles.titleNoBackground]}>
+                        <Text>80点≦平均点数＜90点</Text>
+                      </View>
+                      <View style={[styles.tableCell_23, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>A</Text>
+                      </View>
+                      <View style={[styles.tableCell_24, styles.titleNoBackground]}>
+                        <Text>50点≦平均点数＜60点</Text>
+                      </View>
+                      <View style={[styles.tableCell_23, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>B-</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.tableRow, { borderLeftWidth: '1px' }]}>
+                      <View style={[styles.tableCell_24, styles.titleNoBackground]}>
+                        <Text>70点≦平均点数＜80点</Text>
+                      </View>
+                      <View style={[styles.tableCell_23, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>B+</Text>
+                      </View>
+                      <View style={[styles.tableCell_24, styles.titleNoBackground]}>
+                        <Text>0点≦平均点数＜50点</Text>
+                      </View>
+                      <View style={[styles.tableCell_23, styles.titleNoBackground]}>
+                        <Text style={styles.subtitle2}>C</Text>
+                      </View>
                     </View>
                   </View>
                 </View>

@@ -32,12 +32,9 @@ const chunkArray = (array: any[], size: number) => {
   return result;
 };
 
-export default function AllStudyPDF() {
-
+export default function AllStudyPDF({ intern, study }: any) {
   return (
     <Document>
-
-
       {/* Sau đó render từng intern bằng InternPDFAll như cũ */}
       {/* {interns.map((intern, index) => (
         <Page key={`detail-${index}`} size="A4" style={styles.page}>
@@ -47,11 +44,13 @@ export default function AllStudyPDF() {
         </Page>
       ))} */}
 
-        <Page  size="A4" style={styles.page}>
+      {study.map((item: any, index: any) => (
+        <Page size="A4" style={styles.page} key={index}>
           <View style={styles.pageBorder}>
-            <InternPDFStudy  />
+            <InternPDFStudy item={item} intern={intern} />
           </View>
         </Page>
+      ))}
     </Document>
   );
 }

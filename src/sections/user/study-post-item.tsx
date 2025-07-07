@@ -109,8 +109,7 @@ export default function StudyPostItem({ study, intern }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [message, setMessage] = useState('');
-  console.log(study);
-  console.log(intern);
+
 
   const handleChangeMessage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
@@ -559,7 +558,7 @@ export default function StudyPostItem({ study, intern }: Props) {
                 <td className={styles.td}>
                   <b>不可</b>
                 </td>
-                <td className={styles.td}>50%</td>
+                <td className={styles.td}>50%以下</td>
                 <td className={styles.td}>(D) ＜500点</td>
                 <td className={styles.td}>
                   <b>不可</b>
@@ -580,7 +579,7 @@ export default function StudyPostItem({ study, intern }: Props) {
             </thead>
             <tbody className={styles.tbody}>
               <tr className={styles.tr}>
-                <td className={styles.td}>900点≦平均点数≦1000点</td>
+                <td className={styles.td}>90点≦平均点数≦100点</td>
                 <td className={styles.td}>
                   <b>A+</b>
                 </td>

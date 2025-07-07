@@ -155,12 +155,12 @@
   "total": "Đánh giá tổng hợp",
   "average": "Điểm trung bình",
   "level": "Trình độ",
-  "time": "Thời gian học",
-  "kanji": "Chữ cái / Hán tự",
+  "time": "Tháng học",
+  "kanji": "Từ vựng / Ngữ pháp",
   "grammarAndReading": "Ngữ pháp / Đọc hiểu",
   "listeningComprehension": "Nghe hiểu",
   "totalReadingAndListening": "Tổng điểm",
-  "learningProcess": "Tiến trình học tập",
+  "learningProcess": "Tiến độ học tập",
   "characteristic": "Tính cách",
   "comment": "Lưu ý / Giải thích về điểm yếu",
   "iq": "Bài kiểm tra IQ",
@@ -188,6 +188,9 @@
   "soon": "Về sớm",
   "submit": "Xác nhận",
   "cancel": "Hủy",
+  "interviewDate": "Ngày phỏng vấn",
+  "studyDate": "Ngày nhập học",
+  "startDate": "Ngày dự định khởi hành",
   "demo": {
     "title": "Vietnamese"
   }

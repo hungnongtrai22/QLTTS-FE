@@ -1,6 +1,6 @@
 {
   "app": "アプリ",
-  "job": "仕事",
+  "job": "職種",
   "user": "ユーザー",
   "list": "リスト",
   "edit": "編集",
@@ -188,6 +188,9 @@
   "soon": "早退",
   "submit": "確定",
   "cancel": "キャンセル",
+  "interviewDate": "面接日",
+  "studyDate": "入校日",
+  "startDate": "出国予定日",
   "demo": {
     "title": "英語"
   }

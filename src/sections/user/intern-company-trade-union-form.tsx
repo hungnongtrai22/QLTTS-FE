@@ -13,11 +13,21 @@ import Grid from '@mui/material/Unstable_Grid2';
 // utils
 // types
 import { IInternItem, IStudyItem, IUserItem } from 'src/types/user';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { viVN } from '@mui/x-date-pickers/locales';
 // assets
 // components
 
-import FormProvider, { RHFSelect, RHFAutocomplete, RHFEditor } from 'src/components/hook-form';
+import FormProvider, {
+  RHFSelect,
+  RHFAutocomplete,
+  RHFEditor,
+  RHFTextField,
+} from 'src/components/hook-form';
 import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
@@ -69,6 +79,10 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
       name: currentIntern?.name || '',
       tradeUnion: currentIntern?.tradeUnion || null,
       company: currentIntern?.companySelect || null,
+      job: currentIntern?.job || '',
+      interviewDate: currentIntern?.interviewDate || null,
+      studyDate: currentIntern?.studyDate || null,
+      startDate: currentIntern?.startDate || null,
     }),
     [currentIntern]
   );
@@ -89,24 +103,31 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
 
   const values = watch();
 
-  const editIntern = useCallback(async () => {
-    console.log(currentIntern?._id, tradeUnionSelect, companySelect);
-    const { data } = await axios.put(
-      `${process.env.REACT_APP_HOST_API}/api/user/updateTradeUnion`,
-      {
-        _id: currentIntern?._id,
-        tradeUnion: tradeUnionSelect,
-        companySelect,
-      }
-    );
-    return data;
-  }, [currentIntern, tradeUnionSelect, companySelect]);
+  const editIntern = useCallback(
+    async (value: any) => {
+      console.log(currentIntern?._id, tradeUnionSelect, companySelect);
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_HOST_API}/api/user/updateTradeUnion`,
+        {
+          _id: currentIntern?._id,
+          tradeUnion: tradeUnionSelect,
+          companySelect,
+          job: value?.job,
+          interviewDate: value?.interviewDate,
+          studyDate: value?.studyDate,
+          startDate: value?.startDate,
+        }
+      );
+      return data;
+    },
+    [currentIntern, tradeUnionSelect, companySelect]
+  );
 
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        await editIntern();
+        await editIntern(data);
         // reset();
         enqueueSnackbar('Update success!');
       } catch (error) {
@@ -238,6 +259,92 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
                 )}
                 changeState={handleSelectCompany}
                 isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
+              />
+
+              <RHFTextField name="job" label={t('job')} />
+
+              <Controller
+                name="interviewDate"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="vi"
+                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                  >
+                    <DatePicker
+                      label={t('interviewDate')}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => {
+                        field.onChange(newValue || null);
+                      }}
+                      // views={['month', 'year']}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
+
+              <Controller
+                name="studyDate"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="vi"
+                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                  >
+                    <DatePicker
+                      label={t('studyDate')}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => {
+                        field.onChange(newValue || null);
+                      }}
+                      // views={['month', 'year']}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
+
+              <Controller
+                name="startDate"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="vi"
+                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                  >
+                    <DatePicker
+                      label={t('startDate')}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => {
+                        field.onChange(newValue || null);
+                      }}
+                      views={['month', 'year']}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
               />
             </Box>
 
