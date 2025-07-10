@@ -16,6 +16,8 @@ import { ICompanyItem } from 'src/types/user';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useCallback } from 'react';
+import axios from 'axios';
 //
 
 // ----------------------------------------------------------------------
@@ -43,13 +45,26 @@ export default function CompanyTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { name, city, state, phone, country, createdAt, tradeUnion } = row;
+  const { name, city, state, phone, country, createdAt, tradeUnion, _id } = row;
 
   const confirm = useBoolean();
 
   const quickEdit = useBoolean();
 
   const popover = usePopover();
+
+  const deleteCompanyByTradeUnionHandler = useCallback(async (id: string) => {
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/company/deleteByTradeUnion`,
+        {
+          tradeUnion: id,
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   return (
     <>
@@ -121,11 +136,12 @@ export default function CompanyTableRow({
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
+            deleteCompanyByTradeUnionHandler(_id);
           }}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          Xoá
         </MenuItem>
 
         <MenuItem

@@ -37,15 +37,19 @@ export default function useCalendar({ internId }: Props) {
   const [date, setDate] = useState(new Date());
 
   const [openForm, setOpenForm] = useState(false);
+    const [openEventForm, setOpenEventForm] = useState(false);
+
 
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
+
+  const [statistics, setStatistics] = useState(null);
 
   console.log(currentEventId);
 
   const [view, setView] = useState<ICalendarView>(smUp ? 'dayGridMonth' : 'listWeek');
 
   // const { events: eventData } = useSelector((state) => state.calendar);
-  const [eventData, setEventData] = useState([]);
+  const [eventData, setEventData] = useState<any[]>([]);
 
   const getAttendaceByMonth = useCallback(async () => {
     const { data } = await axios.post(
@@ -54,59 +58,138 @@ export default function useCalendar({ internId }: Props) {
         internId,
       }
     );
+
+    const { data: newData } = await axios.get(
+      `${process.env.REACT_APP_HOST_API}/api/event/getAllEventByInternId`
+    );
     if (data) {
-      setEventData(data.attend);
-    }else{
+      setEventData([...data.attend, ...newData.attend]);
+    } else {
       setEventData([]);
     }
   }, [internId]);
 
+  const getStatisticsHandler = useCallback(
+    async () => {
+      // console.log("Month",date.getMonth());
+      // console.log("Year",date.getFullYear());
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/attendance/statistics`,
+        {
+          internId,
+          month: date.getMonth() + 1,
+          year: date.getFullYear(),
+        }
+      );
+      setStatistics(data);
+    },
+    [date, internId]
+    // [date]
+  );
+
   const addAttendHandler = useCallback(
     async (attendItem: any) => {
+      console.log("Month",date.getMonth() + 1);
+      // console.log("Year",date.getFullYear());
       const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/attendance/create`, {
         internId,
         attendItem,
-        monthAndYear: date,
+        month: date.getMonth() + 1,
+        year: date.getFullYear(),
       });
       await getAttendaceByMonth();
     },
     [date, internId, getAttendaceByMonth]
+    // [date]
+  );
+
+  const addEventHandler = useCallback(
+    async (attendItem: any) => {
+      // console.log("Month",date.getMonth());
+      // console.log("Year",date.getFullYear());
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/event/create`, {
+        attendItem,
+        month: date.getMonth() + 1,
+        year: date.getFullYear(),
+      });
+      await getAttendaceByMonth();
+    },
+    [date, getAttendaceByMonth]
+    // [date]
   );
 
   const editAttendHandler = useCallback(
     async (attendItem: any) => {
-      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/attendance/updateAttendItem`, {
-        _id: attendItem.attendanceId,
-        itemId: attendItem._id,
-        updateData: attendItem,
-      });
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_HOST_API}/api/attendance/updateAttendItem`,
+        {
+          _id: attendItem.attendanceId,
+          itemId: attendItem._id,
+          updateData: attendItem,
+          internId,
+        }
+      );
+      await getAttendaceByMonth();
+    },
+    [getAttendaceByMonth, internId]
+  );
+
+  const editEventHandler = useCallback(
+    async (attendItem: any) => {
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_HOST_API}/api/event/updateEventItem`,
+        {
+          _id: attendItem.attendanceId,
+          itemId: attendItem._id,
+          updateData: attendItem,
+        }
+      );
       await getAttendaceByMonth();
     },
     [getAttendaceByMonth]
+    // [date]
   );
 
-    const removeAttendHandler = useCallback(
+  const removeAttendHandler = useCallback(
     async (eventId: any, attendanceId: any) => {
-      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/attendance/deleteAttendItem`, {
-        _id: attendanceId,
-        itemId: eventId,
-      });
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_HOST_API}/api/attendance/deleteAttendItem`,
+        {
+          _id: attendanceId,
+          itemId: eventId,
+          internId,
+        }
+      );
+      await getAttendaceByMonth();
+    },
+    [getAttendaceByMonth, internId]
+  );
+
+  const removeEventHandler = useCallback(
+    async (eventId: any, attendanceId: any) => {
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_HOST_API}/api/event/deleteEventItem`,
+        {
+          _id: attendanceId,
+          itemId: eventId,
+        }
+      );
       await getAttendaceByMonth();
     },
     [getAttendaceByMonth]
   );
-
-
 
   useEffect(() => {
     getAttendaceByMonth();
-  }, [date, getAttendaceByMonth]);
+    getStatisticsHandler();
+  }, [date, getAttendaceByMonth, getStatisticsHandler]);
 
-  const events = eventData?.map((event: any) => ({
-    ...event,
-    textColor: event.color,
-    id: event._id,
-  })) || [];
+  const events =
+    eventData?.map((event: any) => ({
+      ...event,
+      textColor: event.color,
+      id: event._id,
+    })) || [];
 
   const currentEvent = useSelector(() => {
     if (currentEventId) {
@@ -120,8 +203,18 @@ export default function useCalendar({ internId }: Props) {
     setOpenForm(true);
   }, []);
 
+  const onOpenEventForm = useCallback(() => {
+    setOpenEventForm(true);
+  }, []);
+
   const onCloseForm = useCallback(() => {
     setOpenForm(false);
+    setSelectedRange(null);
+    setCurrentEventId(null);
+  }, []);
+
+  const onCloseEventForm = useCallback(() => {
+    setOpenEventForm(false);
     setSelectedRange(null);
     setCurrentEventId(null);
   }, []);
@@ -243,6 +336,16 @@ export default function useCalendar({ internId }: Props) {
     [dispatch]
   );
 
+    const onCreateNewEvent = useCallback(
+    async (newEvent: ICalendarEvent) => {
+      await addEventHandler(newEvent);
+      dispatch(createEvent(newEvent));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch]
+  );
+
+  
   const onUpdateEvent = useCallback(
     async (newEvent: ICalendarEvent) => {
       if (currentEventId) {
@@ -254,9 +357,29 @@ export default function useCalendar({ internId }: Props) {
     [dispatch, currentEventId]
   );
 
+   const onUpdateNewEvent = useCallback(
+    async (newEvent: ICalendarEvent) => {
+      if (currentEventId) {
+        await editEventHandler(newEvent);
+        dispatch(updateEvent(currentEventId, newEvent));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch, currentEventId]
+  );
+
   const onDeleteEvent = useCallback(
     async (eventId: string, attendanceId: string) => {
       await removeAttendHandler(eventId, attendanceId);
+      dispatch(deleteEvent(eventId));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch]
+  );
+
+  const onDeleteNewEvent = useCallback(
+    async (eventId: string, attendanceId: string) => {
+      await removeEventHandler(eventId, attendanceId);
       dispatch(deleteEvent(eventId));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -296,6 +419,7 @@ export default function useCalendar({ internId }: Props) {
     view,
     date,
     events,
+    statistics,
     initialEvent,
     currentEvent,
     currentEventId,
@@ -312,10 +436,16 @@ export default function useCalendar({ internId }: Props) {
     onDeleteEvent,
     onCreateEvent,
     onUpdateEvent,
+    onDeleteNewEvent,
+    onCreateNewEvent,
+    onUpdateNewEvent,
     //
     openForm,
+    openEventForm,
     onOpenForm,
+    onOpenEventForm,
     onCloseForm,
+    onCloseEventForm,
     //
     onClickEventInFilters,
   };

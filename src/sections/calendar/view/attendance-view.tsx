@@ -108,6 +108,10 @@ export default function AttendanceView() {
     onCloseForm,
     //
     onClickEventInFilters,
+    onCreateNewEvent,
+    onUpdateNewEvent,
+    onDeleteNewEvent,
+    statistics
   } = useCalendar({internId: ""});
 
   const onCreateAttedance = useCallback(
@@ -190,6 +194,7 @@ export default function AttendanceView() {
               onToday={onDateToday}
               onChangeView={onChangeView}
               onOpenFilters={openFilters.onTrue}
+              statistics={statistics}
             />
 
             <FullCalendar
@@ -244,6 +249,9 @@ export default function AttendanceView() {
           onDeleteEvent={onDeleteEvent}
           onCreateEvent={onCreateEvent}
           onUpdateEvent={onUpdateEvent}
+          onDeleteNewEvent={onDeleteNewEvent}
+          onCreateNewEvent={onCreateNewEvent}
+          onUpdateNewEvent={onUpdateNewEvent}
           currentEventId={currentEventId}
           colorOptions={CALENDAR_COLOR_OPTIONS}
           // addAttendHandler={() => {

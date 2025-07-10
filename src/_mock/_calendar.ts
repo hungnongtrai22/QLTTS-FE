@@ -11,6 +11,6 @@ export const CALENDAR_COLOR_OPTIONS = [
   palette.info.darker,
   palette.success.main,
   palette.warning.main,
-  palette.error.main,
+  // palette.error.main,
   palette.error.darker,
 ];

@@ -340,7 +340,7 @@ export default function TradeUnionListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title="Xóa"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?

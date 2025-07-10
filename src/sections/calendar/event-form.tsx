@@ -37,15 +37,12 @@ type Props = {
   onDeleteEvent: (eventId: string, attendanceId: string) => void;
   onCreateEvent: (newEvent: ICalendarEvent) => void;
   onUpdateEvent: (newEvent: ICalendarEvent) => void;
-  onDeleteNewEvent: any;
-  onCreateNewEvent: any;
-  onUpdateNewEvent: any;
   // addAttendHandler: any;
 };
 
 // ----------------------------------------------------------------------
 
-export default function CalendarForm({
+export default function EventForm({
   event,
   onClose,
   openForm,
@@ -54,9 +51,6 @@ export default function CalendarForm({
   onCreateEvent,
   currentEventId,
   onUpdateEvent,
-  onDeleteNewEvent,
-  onCreateNewEvent,
-  onUpdateNewEvent,
 }: // addAttendHandler
 Props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -64,7 +58,8 @@ Props) {
   // const [am, setAM] = useState(false);
   // const [pm, setPM] = useState(false);
 
-  const { t, currentLang } = useLocales();
+    const { t, currentLang } = useLocales();
+  
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
@@ -96,8 +91,8 @@ Props) {
       try {
         const newEvent = {
           title: data.title,
-          description: data.description,
-          color: data.color,
+          description: data?.description,
+          color: '#FF5630',
           allDay: data.allDay,
           start: data.start,
           end: data.end,
@@ -107,16 +102,12 @@ Props) {
           soon: data?.soon,
           off: data?.off,
           attendanceId: event.attendanceId,
-          _id: event._id,
+          _id: event._id
         };
         // await addAttendHandler(newEvent);
         if (!dateError) {
           if (currentEventId) {
-            if (event.color === '#FF5630') {
-              onUpdateNewEvent(newEvent);
-            } else {
-              onUpdateEvent(newEvent);
-            }
+            onUpdateEvent(newEvent);
             enqueueSnackbar('Update success!');
           } else {
             onCreateEvent(newEvent);
@@ -135,11 +126,7 @@ Props) {
   const onDelete = useCallback(() => {
     try {
       onClose();
-      if (event.color === '#FF5630') {
-        onDeleteNewEvent(`${event.id}`, event?.attendanceId || '');
-      } else {
-        onDeleteEvent(`${event.id}`, event?.attendanceId || '');
-      }
+      onDeleteEvent(`${event.id}`, event?.attendanceId || "");
       enqueueSnackbar('Delete success!');
     } catch (error) {
       console.error(error);
@@ -179,11 +166,11 @@ Props) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ px: 3 }}>
-        <RHFTextField name="title" label={t('title')} />
+        <RHFTextField name='title' label={t('title')} />
 
-        <RHFTextField name="description" label={t('description')} multiline rows={3} />
+        <RHFTextField name='description' label={t('description')} multiline rows={3} />
 
-        <Stack direction="row" display="inline-flex">
+        {/* <Stack direction="row" display="inline-flex">
           <Controller
             name="am"
             control={control}
@@ -217,7 +204,7 @@ Props) {
             control={control}
             render={({ field }) => <RHFSwitch label={t('soon')} {...field} />}
           />
-        </Stack>
+        </Stack> */}
 
         <Controller
           name="start"
@@ -267,7 +254,7 @@ Props) {
           )}
         />
 
-        <Controller
+        {/* <Controller
           name="color"
           control={control}
           render={({ field }) => (
@@ -277,7 +264,7 @@ Props) {
               colors={colorOptions}
             />
           )}
-        />
+        /> */}
       </Stack>
 
       <DialogActions>

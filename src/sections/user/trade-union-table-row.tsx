@@ -16,7 +16,10 @@ import { ITradeUnionItem } from 'src/types/user';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import axios from 'axios';
+import { useCallback } from 'react';
 import TradeUnionCreateAccountForm from './trade-union-create-account-form';
+
 //
 
 // ----------------------------------------------------------------------
@@ -44,13 +47,33 @@ export default function TradeUnionTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { name, city, state, phone, country, createdAt } = row;
+  const { name, city, state, phone, country, createdAt, _id } = row;
 
   const confirm = useBoolean();
 
   const quickEdit = useBoolean();
 
   const popover = usePopover();
+
+  const deleteTradeUnionHandler = useCallback(async (id: string) => {
+    try {
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/delete`, {
+        _id: id,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+    const deleteCompanyByTradeUnionHandler = useCallback(async (id: string) => {
+    try {
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/company/deleteByTradeUnion`, {
+        tradeUnion: id,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   return (
     <>
@@ -109,7 +132,11 @@ export default function TradeUnionTableRow({
         </TableCell>
       </TableRow>
 
-      <TradeUnionCreateAccountForm  tradeUnion={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <TradeUnionCreateAccountForm
+        tradeUnion={row}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+      />
 
       <CustomPopover
         open={popover.open}
@@ -121,11 +148,13 @@ export default function TradeUnionTableRow({
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
+            deleteTradeUnionHandler(_id);
+            deleteCompanyByTradeUnionHandler(_id);
           }}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          Xóa
         </MenuItem>
 
         <MenuItem

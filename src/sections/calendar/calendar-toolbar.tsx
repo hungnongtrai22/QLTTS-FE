@@ -14,6 +14,7 @@ import { ICalendarView } from 'src/types/calendar';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useLocales } from 'src/locales';
+import { s } from '@fullcalendar/core/internal-common';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +28,7 @@ type Props = {
   onPrevDate: VoidFunction;
   onOpenFilters: VoidFunction;
   onChangeView: (newView: ICalendarView) => void;
+  statistics: any;
 };
 
 const changDateJP = (date: any) => {
@@ -45,6 +47,7 @@ export default function CalendarToolbar({
   onPrevDate,
   onChangeView,
   onOpenFilters,
+  statistics,
 }: Props) {
   const smUp = useResponsive('up', 'sm');
   const { t,currentLang } = useLocales();
@@ -95,7 +98,12 @@ export default function CalendarToolbar({
         </Stack>
 
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Button size="small" color="error" variant="contained" onClick={onToday}>
+
+          <Button size="small" color="success" variant="contained">
+            {statistics?.attendedDays}/{statistics?.totalSessions}
+          </Button>
+
+           <Button size="small" color="error" variant="contained" onClick={onToday}>
             {t('today')}
           </Button>
 
@@ -103,6 +111,8 @@ export default function CalendarToolbar({
             <Iconify icon="ic:round-filter-list" />
           </IconButton>
         </Stack>
+
+        
       </Stack>
 
       <CustomPopover

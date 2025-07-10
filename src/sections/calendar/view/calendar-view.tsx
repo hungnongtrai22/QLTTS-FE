@@ -36,7 +36,6 @@ import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import { isDateError } from 'src/components/custom-date-range-picker';
 import { useLocales } from 'src/locales';
-import axios from 'axios';
 import { IInternItem } from 'src/types/user';
 
 //
@@ -46,6 +45,7 @@ import CalendarForm from '../calendar-form';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
 import CalendarFiltersResult from '../calendar-filters-result';
+import EventForm from '../event-form';
 
 // ----------------------------------------------------------------------
 
@@ -111,16 +111,23 @@ export default function CalendarView({ intern }: Props) {
     onClickEvent,
     onResizeEvent,
     onDeleteEvent,
+    onDeleteNewEvent,
     onInitialView,
     onCreateEvent,
+    onCreateNewEvent,
     onUpdateEvent,
+    onUpdateNewEvent,
     //
     openForm,
+    openEventForm,
     onOpenForm,
+    onOpenEventForm,
     onCloseForm,
+    onCloseEventForm,
+    statistics,
     //
     onClickEventInFilters,
-  } = useCalendar({internId: intern?._id});
+  } = useCalendar({ internId: intern?._id });
 
   useEffect(() => {
     onInitialView();
@@ -202,7 +209,7 @@ export default function CalendarView({ intern }: Props) {
           <Button
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
-            onClick={onOpenForm}
+            onClick={onOpenEventForm}
           >
             Thêm Sự Kiện
           </Button>
@@ -220,6 +227,7 @@ export default function CalendarView({ intern }: Props) {
               onToday={onDateToday}
               onChangeView={onChangeView}
               onOpenFilters={openFilters.onTrue}
+              statistics={statistics}
             />
 
             <FullCalendar
@@ -266,7 +274,9 @@ export default function CalendarView({ intern }: Props) {
           exit: theme.transitions.duration.shortest - 80,
         }}
       >
-        <DialogTitle>{currentEventId ? t('edit') : t('add')} {t('event')}</DialogTitle>
+        <DialogTitle>
+          {currentEventId ? t('edit') : t('add')} {t('event')}
+        </DialogTitle>
 
         <CalendarForm
           openForm={openForm}
@@ -275,6 +285,36 @@ export default function CalendarView({ intern }: Props) {
           onDeleteEvent={onDeleteEvent}
           onCreateEvent={onCreateEvent}
           onUpdateEvent={onUpdateEvent}
+          onDeleteNewEvent={onDeleteNewEvent}
+          onCreateNewEvent={onCreateNewEvent}
+          onUpdateNewEvent={onUpdateNewEvent}
+          currentEventId={currentEventId}
+          colorOptions={CALENDAR_COLOR_OPTIONS}
+          // addAttendHandler={addAttendHandler}
+        />
+      </Dialog>
+
+      <Dialog
+        fullWidth
+        maxWidth="xs"
+        open={openEventForm}
+        onClose={onCloseEventForm}
+        transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 80,
+        }}
+      >
+        <DialogTitle>
+          {currentEventId ? t('edit') : t('add')} {t('event')}
+        </DialogTitle>
+
+        <EventForm
+          openForm={openEventForm}
+          onClose={onCloseEventForm}
+          event={initialEvent()}
+          onDeleteEvent={onDeleteNewEvent}
+          onCreateEvent={onCreateNewEvent}
+          onUpdateEvent={onUpdateNewEvent}
           currentEventId={currentEventId}
           colorOptions={CALENDAR_COLOR_OPTIONS}
           // addAttendHandler={addAttendHandler}
