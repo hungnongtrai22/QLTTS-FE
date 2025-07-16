@@ -248,7 +248,7 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
 
               <RHFAutocompleteNew
                 name="company"
-                label={t('company') || ''}
+                label={t('company_new') || ''}
                 // disablePortal
                 options={company}
                 getOptionLabel={(option: any) => option?.name || ''}

@@ -5,14 +5,14 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Stack, { StackProps } from '@mui/material/Stack';
 // types
-import { ICompanyTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 type Props = StackProps & {
-  filters: ICompanyTableFilters;
+  filters: IInternTableFilters;
   onFilters: (name: string, value: IUserTableFilterValue) => void;
   //
   onResetFilters: VoidFunction;
@@ -51,6 +51,11 @@ export default function InternTableFiltersResult({
     onFilters('tradeUnion', newValue);
   };
 
+  const handleRemoveCompany = (inputValue: string) => {
+    const newValue = filters?.company?.filter((item) => item !== inputValue) || [];
+    onFilters('company', newValue);
+  };
+
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
@@ -76,6 +81,14 @@ export default function InternTableFiltersResult({
           <Block label="Nghiệp đoàn:">
             {filters.tradeUnion.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
+            ))}
+          </Block>
+        )}
+
+        {!!filters.company?.length && (
+          <Block label="Công ty:">
+            {filters.company.map((item) => (
+              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveCompany(item)} />
             ))}
           </Block>
         )}

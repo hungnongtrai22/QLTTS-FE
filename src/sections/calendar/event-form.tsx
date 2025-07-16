@@ -23,7 +23,12 @@ import { useSnackbar } from 'src/components/snackbar';
 import { ColorPicker } from 'src/components/color-utils';
 import { isDateError } from 'src/components/custom-date-range-picker';
 import FormProvider, { RHFTextField, RHFSwitch } from 'src/components/hook-form';
-
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { viVN } from '@mui/x-date-pickers/locales';
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = ICalendarEvent;
@@ -41,6 +46,7 @@ type Props = {
 };
 
 // ----------------------------------------------------------------------
+dayjs.locale('vi');
 
 export default function EventForm({
   event,
@@ -58,8 +64,7 @@ Props) {
   // const [am, setAM] = useState(false);
   // const [pm, setPM] = useState(false);
 
-    const { t, currentLang } = useLocales();
-  
+  const { t, currentLang } = useLocales();
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
@@ -102,7 +107,7 @@ Props) {
           soon: data?.soon,
           off: data?.off,
           attendanceId: event.attendanceId,
-          _id: event._id
+          _id: event._id,
         };
         // await addAttendHandler(newEvent);
         if (!dateError) {
@@ -126,7 +131,7 @@ Props) {
   const onDelete = useCallback(() => {
     try {
       onClose();
-      onDeleteEvent(`${event.id}`, event?.attendanceId || "");
+      onDeleteEvent(`${event.id}`, event?.attendanceId || '');
       enqueueSnackbar('Delete success!');
     } catch (error) {
       console.error(error);
@@ -166,9 +171,9 @@ Props) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ px: 3 }}>
-        <RHFTextField name='title' label={t('title')} />
+        <RHFTextField name="title" label={t('title')} />
 
-        <RHFTextField name='description' label={t('description')} multiline rows={3} />
+        <RHFTextField name="description" label={t('description')} multiline rows={3} />
 
         {/* <Stack direction="row" display="inline-flex">
           <Controller
@@ -210,47 +215,58 @@ Props) {
           name="start"
           control={control}
           render={({ field }) => (
-            <MobileDateTimePicker
-              {...field}
-              value={new Date(field.value as Date)}
-              onChange={(newValue) => {
-                if (newValue) {
-                  field.onChange(new Date(newValue).toISOString());
-                }
-              }}
-              label={t('start_date')}
-              format="dd/MM/yyyy hh:mm a"
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                },
-              }}
-            />
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="vi"
+              localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+            >
+              <MobileDatePicker
+                {...field}
+                value={field.value ? dayjs(field.value) : null} // SỬA: dùng dayjs thay cho new Date
+                onChange={(newValue) => {
+                  if (newValue) {
+                    const updated = newValue.hour(12).minute(0).second(0).millisecond(0); // set 12:00 PM
+                    field.onChange(updated.toISOString());
+                  }
+                }}
+                label={t('start_date')}
+                format="DD/MM/YYYY"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+              />
+            </LocalizationProvider>
           )}
         />
-
         <Controller
           name="end"
           control={control}
           render={({ field }) => (
-            <MobileDateTimePicker
-              {...field}
-              value={new Date(field.value as Date)}
-              onChange={(newValue) => {
-                if (newValue) {
-                  field.onChange(new Date(newValue).toISOString());
-                }
-              }}
-              label={t('end_date')}
-              format="dd/MM/yyyy hh:mm a"
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: dateError,
-                  helperText: dateError && 'End date must be later than start date',
-                },
-              }}
-            />
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="vi"
+              localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+            >
+              <MobileDatePicker
+                {...field}
+                value={field.value ? dayjs(field.value) : null} // SỬA: dùng dayjs thay cho new Date
+                onChange={(newValue) => {
+                  if (newValue) {
+                    const updated = newValue.hour(12).minute(0).second(0).millisecond(0); // set 12:00 PM
+                    field.onChange(updated.toISOString());
+                  }
+                }}
+                label={t('end_date')}
+                format="DD/MM/YYYY"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+              />
+            </LocalizationProvider>
           )}
         />
 

@@ -19,6 +19,7 @@ export type ICompanyTableFilters = {
 export type IInternTableFilters = {
   name: string;
   tradeUnion: string[];
+  company?: string[];
   status: string;
 };
 

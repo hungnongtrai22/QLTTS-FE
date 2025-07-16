@@ -59,6 +59,7 @@ const defaultFilters = {
   name: '',
   // role: [],
   tradeUnion: [],
+  company: [],
   status: 'all',
 };
 
@@ -79,7 +80,6 @@ export default function InternListView() {
     { id: 'phoneNumber', label: t('city'), width: 100 },
     { id: 'birthday', label: t('birthday'), width: 120 },
     { id: 'age', label: t('age'), width: 80 },
-        
 
     { id: 'height', label: t('height'), width: 100 },
     { id: 'weight', label: t('weight'), width: 100 },
@@ -98,6 +98,7 @@ export default function InternListView() {
 
   const [tableData, setTableData] = useState<IInternItem[]>([]);
   const [tradeUnion, setTradeUnion] = useState([]);
+  const [company, setCompany] = useState([]);
   const [orderSelect, setOrderSelect] = useState<Order | null>(null);
   const [orders, setOrders] = useState([]);
 
@@ -108,7 +109,6 @@ export default function InternListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -121,31 +121,58 @@ export default function InternListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
+  const handleGetCompany = useCallback(
+    async (tradeUnionName: any) => {
+      const { data: newData } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/tradeUnion/findByName`,
+        {
+          name: tradeUnionName,
+        }
+      );
+
+      const tradeUnionId = await newData.tradeUnion._id;
+
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
+        {
+          tradeUnion: tradeUnionId,
+        }
+      );
+
+      setCompany(data.companies.map((item: any) => item.name));
+      console.log('Company', data.companies);
+    },
+    []
+  );
+
   const handleFilters = useCallback(
-    (name: string, value: IUserTableFilterValue) => {
+    async (name: string, value: IUserTableFilterValue) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
         [name]: value,
       }));
+      if (name === 'tradeUnion') {
+        await handleGetCompany(value);
+      }
     },
-    [table]
+    [table, handleGetCompany]
   );
 
-  const handleDeleteRow = useCallback (
+  const handleDeleteRow = useCallback(
     async (id: string) => {
-      await axios.put(`${process.env.REACT_APP_HOST_API}/api/contact/removeContactByInternId`,{
-        internId: id
-      })
-      await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/removeInternFromAll`,{
-        internId: id
-      })
-      await axios.put(`${process.env.REACT_APP_HOST_API}/api/study/removeStudyByInternId`,{
-        internId: id
-      })
-      await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/delete`,{
-        _id: id
-      })
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/contact/removeContactByInternId`, {
+        internId: id,
+      });
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/removeInternFromAll`, {
+        internId: id,
+      });
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/study/removeStudyByInternId`, {
+        internId: id,
+      });
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/delete`, {
+        _id: id,
+      });
       const deleteRow = tableData.filter((row) => row._id !== id);
       setTableData(deleteRow);
 
@@ -166,7 +193,6 @@ export default function InternListView() {
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleAddInternIntoOrder = useCallback(async () => {
-
     // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
 
     const listIntern = table.selected;
@@ -224,8 +250,6 @@ export default function InternListView() {
     handleGetTradeUnion();
     handleGetOrder();
   }, [handleGetAllIntern, handleGetTradeUnion, handleGetOrder]);
-
-
 
   return (
     <>
@@ -300,6 +324,8 @@ export default function InternListView() {
             onFilters={handleFilters}
             //
             roleOptions={tradeUnion}
+            companyOptions={company}
+            interns={dataFiltered}
           />
 
           {canReset && (
@@ -444,7 +470,7 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IInternTableFilters;
 }) {
-  const { name, tradeUnion, status } = filters;
+  const { name, tradeUnion, status, company } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -468,6 +494,10 @@ function applyFilter({
 
   if (tradeUnion.length) {
     inputData = inputData.filter((user) => tradeUnion.includes(user?.tradeUnion?.name));
+  }
+
+   if (company?.length) {
+    inputData = inputData.filter((user) => company.includes(user?.companySelect?.name));
   }
 
   return inputData;

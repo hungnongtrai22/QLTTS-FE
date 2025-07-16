@@ -37,6 +37,9 @@ import { useSettingsContext } from 'src/components/settings';
 import { isDateError } from 'src/components/custom-date-range-picker';
 import { useLocales } from 'src/locales';
 import { IInternItem } from 'src/types/user';
+import { saveAs } from 'file-saver';
+import { pdf } from '@react-pdf/renderer';
+import AllAttendancePDF from 'src/sections/order/AllAttendancePDF';
 
 //
 import { useCalendar } from '../hooks';
@@ -88,6 +91,8 @@ export default function CalendarView({ intern }: Props) {
   const openFilters = useBoolean();
 
   const [filters, setFilters] = useState(defaultFilters);
+  const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
+
   // const [events, setEvents] = useState([]);
   // const [currentEvent, setCurrentEvent] = useState(events.find((event : any) => event._id === currentEventId));
 
@@ -165,34 +170,7 @@ export default function CalendarView({ intern }: Props) {
     />
   );
 
-  // console.log("Date", date);
-
-  // const getAttendaceByMonth = useCallback(async () => {
-  //   const { data } = await axios.post(
-  //     `${process.env.REACT_APP_HOST_API}/api/attendance/getAllAttendByInternId`,
-  //     {
-  //       internId: intern?._id,
-  //     }
-  //   );
-  //   if (data) {
-  //   }
-  // }, [intern]);
-
-  // const addAttendHandler = useCallback(async (attendItem : any) => {
-  //   const { data } = await axios.post(
-  //     `${process.env.REACT_APP_HOST_API}/api/attendance/create`,
-  //     {
-  //       internId: intern?._id,
-  //       attendItem,
-  //       monthAndYear: date,
-  //     }
-  //   );
-  //   await getAttendaceByMonth();
-  // }, [date, intern, getAttendaceByMonth]);
-
-  // useEffect(() => {
-  //   getAttendaceByMonth();
-  // }, [date, getAttendaceByMonth]);
+ 
 
   return (
     <>
@@ -206,6 +184,24 @@ export default function CalendarView({ intern }: Props) {
           }}
         >
           <Typography variant="h4">Điểm Danh</Typography>
+          <Button
+            variant="contained"
+            color='success'
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={async () => {
+              try {
+                setLoadingDownloadAll(true);
+                const blob = await pdf(<AllAttendancePDF />).toBlob();
+                saveAs(blob, `All_CVs_${intern?.name || 'Test'}.pdf`);
+              } catch (error) {
+                console.error('Lỗi khi tạo PDF:', error);
+              } finally {
+                setLoadingDownloadAll(false);
+              }
+            }}
+          >
+            Tải xuống pdf
+          </Button>
           <Button
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
