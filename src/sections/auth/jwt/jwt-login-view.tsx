@@ -43,8 +43,8 @@ export default function JwtLoginView() {
   const password = useBoolean();
 
   const LoginSchema = Yup.object().shape({
-    username: Yup.string().required('Tài khoản không được để trống'),
-    password: Yup.string().required('Mật khẩu không được để trống'),
+    username: Yup.string().required('アカウントを入力してください。'),
+    password: Yup.string().required('パスワードを入力してください。'),
   });
 
   const defaultValues = {
@@ -84,9 +84,9 @@ export default function JwtLoginView() {
     [login, reset, returnTo]
   );
 
-  const renderHead = (
+  const   renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Đăng Nhập</Typography>
+      <Typography variant="h4">ログインページ</Typography>
 
       {/* <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>
@@ -102,11 +102,11 @@ export default function JwtLoginView() {
     <Stack spacing={2.5}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-      <RHFTextField name="username" label="Tài Khoản" />
+      <RHFTextField name="username" label="アカウント" />
 
       <RHFTextField
         name="password"
-        label="Mật Khẩu"
+        label="パスワード"
         type={password.value ? 'text' : 'password'}
         InputProps={{
           endAdornment: (
@@ -119,9 +119,9 @@ export default function JwtLoginView() {
         }}
       />
 
-      <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
+      {/* <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
         Quên mật khẩu?
-      </Link>
+      </Link> */}
 
       <LoadingButton
         fullWidth
@@ -131,7 +131,7 @@ export default function JwtLoginView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Đăng Nhập
+        ログイン
       </LoadingButton>
     </Stack>
   );
@@ -145,7 +145,7 @@ export default function JwtLoginView() {
       </Alert> */}
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        Vui lòng nhập tài khoản và mật khẩu đã được cung cấp
+        提供されたアカウントとパスワードを入力してください。
       </Alert>
 
       {renderForm}

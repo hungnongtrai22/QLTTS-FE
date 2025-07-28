@@ -170,7 +170,7 @@ export default function StudyPostItem({ study, intern }: Props) {
           >
             <Box sx={{ typography: 'subtitle2' }}>日本語の先生</Box>
 
-            <Box sx={{ typography: 'caption', color: 'text.disabled' }}>{fDate(new Date())}</Box>
+            {/* <Box sx={{ typography: 'caption', color: 'text.disabled' }}>{fDate(new Date())}</Box> */}
           </Stack>
 
           <Box sx={{ typography: 'body2', color: 'text.secondary' }}>

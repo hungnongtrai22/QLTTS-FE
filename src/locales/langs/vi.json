@@ -20,7 +20,7 @@
   "general": "chung",
   "banking": "ngân hàng",
   "booking": "đặt chỗ",
-  "profile": "hồ sơ",
+  "profile": "Hồ sơ",
   "account": "tài khoản",
   "product": "sản phẩm",
   "invoice": "hóa đơn",
@@ -200,6 +200,18 @@
   "studying": "Đang học",
   "pass": "Đã xuất cảnh",
   "complete": "Hoàn thành hợp đồng",
+  "welcome": "Chào mừng trở lại",
+  "logout": "Đăng xuất",
+  "home": "Trang chủ",
+  "setting": "Cài đặt", 
+  "download_attendance": "Tải xuống điểm danh",
+  "loading_attendance": "Đang tải xuống",
+  "info_study": "Thành tích học tập",
+  "download_study": "Tải xuống thành tích học tập",
+  "info": "Sơ yếu lý lịch",
+  "attendance": "Điểm danh",
+  "other_info": "Thông tin bổ sung",
+  "point": "Nhập điểm",
   "demo": {
     "title": "Vietnamese"
   }

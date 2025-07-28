@@ -32,6 +32,7 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { saveAs } from 'file-saver';
 import { pdf } from '@react-pdf/renderer';
+import { t } from 'i18next';
 
 //
 import ProfilePostItem from './profile-post-item';
@@ -90,7 +91,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
         <Stack width={1}>
           {/* {fNumber(info.totalFollowers)} */}
           <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-            <Tooltip title="Tải PDF">
+            <Tooltip title={t('download_study') || ""}>
               <IconButton
                 onClick={async () => {
                   try {

@@ -200,6 +200,17 @@
   "studying": "研修中",
   "pass": "出国済み",
   "complete": "契約満了",
+  "logout": "ログアウト",
+  "home": "ホーム",
+  "setting": "設定",
+  "download_attendance": "出席データをダウンロード",
+  "loading_attendance": "ダウンロード中",
+  "info_study": "学習成績",
+  "download_study": "学習成績をダウンロード",
+  "info": "履歴書",
+  "attendance": "出席",
+  "other_info": "追加情報",
+  "point": "成績を入力",
   "demo": {
     "title": "英語"
   }

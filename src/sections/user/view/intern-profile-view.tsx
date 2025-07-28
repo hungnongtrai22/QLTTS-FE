@@ -21,6 +21,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import CalendarViewPage from 'src/pages/dashboard/calendar-view';
 
 import axios from 'axios';
+import { t } from 'i18next';
 
 import ProfileHome from '../profile-home';
 import ProfileCover from '../profile-cover';
@@ -35,51 +36,7 @@ import InternCompanyTradeUnionForm from '../intern-company-trade-union-form';
 
 // ----------------------------------------------------------------------
 
-const TABS = [
-  {
-    value: 'profile',
-    label: 'Thông Tin',
-    icon: <Iconify icon="solar:user-id-bold" width={24} />,
-  },
-  {
-    value: 'followers',
-    label: 'Sơ yếu lý lịch',
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-  },
-  {
-    value: 'friends',
-    label: 'Thông tin bổ sung',
-    icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
-  },
-  {
-    value: 'gallery',
-    label: 'Điểm Số',
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
-  {
-    value: 'attendance',
-    label: 'Điểm danh',
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
-];
 
-const TABSTRADEUNION = [
-  {
-    value: 'profile',
-    label: 'Thông Tin',
-    icon: <Iconify icon="solar:user-id-bold" width={24} />,
-  },
-  {
-    value: 'followers',
-    label: 'Sơ yếu lý lịch',
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-  },
-  {
-    value: 'attendance',
-    label: 'Điểm danh',
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
-];
 // ----------------------------------------------------------------------
 
 export default function InternProfileView() {
@@ -87,6 +44,52 @@ export default function InternProfileView() {
 
   const params = useParams();
   const { user } = useAuthContext();
+
+  const TABS = [
+  {
+    value: 'profile',
+    label: t('info_study'),
+    icon: <Iconify icon="solar:user-id-bold" width={24} />,
+  },
+  {
+    value: 'followers',
+    label: t('info'),
+    icon: <Iconify icon="solar:heart-bold" width={24} />,
+  },
+  {
+    value: 'friends',
+    label: t('other_info'),
+    icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
+  },
+  {
+    value: 'gallery',
+    label: t('point'),
+    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+  },
+  {
+    value: 'attendance',
+    label: t('attendance'),
+    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+  },
+];
+
+const TABSTRADEUNION = [
+  {
+    value: 'profile',
+    label: t('info_study'),
+    icon: <Iconify icon="solar:user-id-bold" width={24} />,
+  },
+  {
+    value: 'followers',
+    label: t('info'),
+    icon: <Iconify icon="solar:heart-bold" width={24} />,
+  },
+  {
+    value: 'attendance',
+    label: t('attendance'),
+    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+  },
+];
 
   const { id } = params;
 
@@ -116,11 +119,11 @@ export default function InternProfileView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Profile"
+        heading={t('profile') || ""}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: intern?.name },
+          { name: t('dashboard') || "", href: paths.dashboard.root },
+          { name: t('intern') || "", href: paths.dashboard.user.root },
+          { name: intern?.namejp },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

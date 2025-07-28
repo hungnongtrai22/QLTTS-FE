@@ -117,7 +117,7 @@ export default function InternByTradeUnionTableToolbar({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Công Ty</InputLabel>
+          <InputLabel>{t('company_new')}</InputLabel>
 
           <Select
             multiple
@@ -197,7 +197,7 @@ export default function InternByTradeUnionTableToolbar({
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
-        sx={{ width: 140 }}
+        // sx={{ width: 140 }}
       >
         <MenuItem
           // onClick={() => {
@@ -243,7 +243,7 @@ export default function InternByTradeUnionTableToolbar({
           }}
         >
           <Iconify icon="solar:printer-minimalistic-bold" />
-          {loadingDownloadAll ? 'Đang tải xuống...' : 'Tải xuống tất cả'}
+          {loadingDownloadAll ? t('loading_attendance') : t('download_attendance')}
         </MenuItem>
         {/* <MenuItem
           onClick={() => {
