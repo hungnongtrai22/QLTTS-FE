@@ -59,9 +59,11 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
 
   const [tradeUnion, setTradeUnion] = useState([]);
   const [tradeUnionSelect, setTradeUnionSelect] = useState(currentIntern?.tradeUnion);
-  console.log('tradeUnionSelect', tradeUnionSelect);
   const [company, setCompany] = useState([]);
   const [companySelect, setCompanySelect] = useState(currentIntern?.companySelect || '');
+
+  const [source, setSource] = useState([]);
+  const [sourceSelect, setSourceSelect] = useState(currentIntern?.source);
 
   const { t, currentLang } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
@@ -83,6 +85,7 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
       interviewDate: currentIntern?.interviewDate || null,
       studyDate: currentIntern?.studyDate || null,
       startDate: currentIntern?.startDate || null,
+      source: currentIntern?.source || null,
     }),
     [currentIntern]
   );
@@ -116,11 +119,12 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
           interviewDate: value?.interviewDate,
           studyDate: value?.studyDate,
           startDate: value?.startDate,
+          source: sourceSelect,
         }
       );
       return data;
     },
-    [currentIntern, tradeUnionSelect, companySelect]
+    [currentIntern, tradeUnionSelect, companySelect, sourceSelect]
   );
 
   const onSubmit = useCallback(
@@ -142,11 +146,20 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
     setTradeUnion(data.tradeUnions);
   }, []);
 
+  const handleGetSource = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/source/list`);
+    setSource(data.sources);
+  }, []);
+
   const handleSelectTradeUnion = useCallback(async (id: any) => {
     setTradeUnionSelect(id);
     setCompanySelect('');
 
     setValue('company', null);
+  }, []);
+
+  const handleSelectSource = useCallback(async (id: any) => {
+    setSourceSelect(id);
   }, []);
 
   const handleSelectCompany = useCallback(async (id: any) => {
@@ -165,6 +178,7 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
 
   useEffect(() => {
     handleGetTradeUnion();
+    handleGetSource();
     // setValue('tradeUnion', currentIntern?.tradeUnion);
     // setValue(
     //   'tradeUnion',
@@ -346,6 +360,25 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
                   </LocalizationProvider>
                 )}
               />
+
+              {source.length > 0 && (
+                <RHFAutocompleteNew
+                  name="source"
+                  label={t('source') || ''}
+                  // disablePortal
+                  // value={tradeUnionSelect}
+                  // defaultValue={tradeUnionSelect._id}
+                  options={source}
+                  getOptionLabel={(option: any) => option?.name || ''}
+                  renderOption={(props, option: any) => (
+                    <li {...props} key={option._id} value={option._id}>
+                      {option.name}
+                    </li>
+                  )}
+                  changeState={handleSelectSource}
+                  isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
+                />
+              )}
             </Box>
 
             <Stack alignItems="flex-end" spacing={1.5}>

@@ -98,7 +98,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
                     const blob = await pdf(
                       <AllStudyPDF intern={currentIntern} study={study} />
                     ).toBlob();
-                    saveAs(blob, `All_CVs_${currentIntern?.name || 'Test'}.pdf`);
+                    saveAs(blob, `${currentIntern?.name || 'Test'}.pdf`);
                   } catch (error) {
                     console.error('Lỗi khi tạo PDF:', error);
                   } finally {
@@ -114,10 +114,10 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
         </Stack>
 
         <Stack width={1}>
-          {fNumber(info.totalFollowing)}
+          {/* {fNumber(info.totalFollowing)}
           <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
             Following
-          </Box>
+          </Box> */}
         </Stack>
       </Stack>
     </Card>
@@ -306,6 +306,8 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
       <Grid xs={user?.role === 'admin' ? 12 : 24} md={user?.role === 'admin' ? 8 : 24}>
         <Stack spacing={3}>
           {/* {renderPostInput} */}
+                      {renderFollows}
+
 
           {study.map((item) => (
             <StudyPostItem key={item._id} study={item} intern={currentIntern || null} />

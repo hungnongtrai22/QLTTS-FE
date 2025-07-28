@@ -192,6 +192,14 @@
   "interviewDate": "面接日",
   "studyDate": "入校日",
   "startDate": "出国予定日",
+  "source": "人材の源",
+  "new_source": "新しい人材元を追加",
+  "create_source": "人材元を作成",
+  "edit_source": "人材元を編集",
+  "all": "すべて",
+  "studying": "研修中",
+  "pass": "出国済み",
+  "complete": "契約満了",
   "demo": {
     "title": "英語"
   }

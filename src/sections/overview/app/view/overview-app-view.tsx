@@ -12,6 +12,8 @@ import { _appFeatured, _appAuthors, _appInstalled, _appRelated, _appInvoices } f
 import { useSettingsContext } from 'src/components/settings';
 // assets
 import { SeoIllustration } from 'src/assets/illustrations';
+import { useAuthContext } from 'src/auth/hooks';
+
 //
 import AppWidget from '../app-widget';
 import AppWelcome from '../app-welcome';
@@ -27,7 +29,8 @@ import AppTopInstalledCountries from '../app-top-installed-countries';
 // ----------------------------------------------------------------------
 
 export default function OverviewAppView() {
-  const { user } = useMockedUser();
+  // const { user } = useMockedUser();
+   const { user } = useAuthContext();
 
   const theme = useTheme();
 
@@ -38,7 +41,7 @@ export default function OverviewAppView() {
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
           <AppWelcome
-            title={`Welcome back 👋 \n ${user?.displayName}`}
+            title={`Welcome back 👋 \n ${user?.name}`}
             description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
             img={<SeoIllustration />}
             action={

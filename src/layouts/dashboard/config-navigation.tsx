@@ -7,6 +7,7 @@ import { useLocales } from 'src/locales';
 // import Label from 'src/components/label';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +50,9 @@ const ICONS = {
 
 export function useNavData() {
   const { t } = useLocales();
+    const { user } = useAuthContext();
+    console.log(user);
+  
 
   const data = useMemo(
     () => [
@@ -138,6 +142,21 @@ export function useNavData() {
               // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
               { title: t('list'), path: paths.dashboard.order.list, roles: ['admin'] },
               { title: t('create'), path: paths.dashboard.order.new, roles: ['admin'] },
+              // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
+              // { title: t('account'), path: paths.dashboard.tradeUnion.account },
+            ],
+          },
+              // Source
+          {
+            title: t('source'),
+            roles: ['admin'],
+            path: paths.dashboard.source.root,
+            icon: ICONS.user,
+            children: [
+              // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
+              // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
+              { title: t('list'), path: paths.dashboard.source.list, roles: ['admin'] },
+              { title: t('create'), path: paths.dashboard.source.new, roles: ['admin'] },
               // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],

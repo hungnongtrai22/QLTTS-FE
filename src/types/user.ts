@@ -20,6 +20,7 @@ export type IInternTableFilters = {
   name: string;
   tradeUnion: string[];
   company?: string[];
+  source?: string[];
   status: string;
 };
 
@@ -211,6 +212,7 @@ export type IInternItem = {
   money: string;
   plan: string;
   tradeUnion: any;
+    source: any;
   companySelect: any;
   iq: number | null;
   math: number | null;
@@ -232,6 +234,16 @@ export type ITradeUnionItem = {
   city: string;
   state: string;
   country: string;
+  phone: string;
+  createdAt: string;
+};
+
+export type ISourceItem = {
+  _id: string;
+  name: string;
+  email: string;
+  address: string;
+  state: string;
   phone: string;
   createdAt: string;
 };

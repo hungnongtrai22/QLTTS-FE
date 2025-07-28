@@ -192,6 +192,14 @@
   "interviewDate": "Ngày phỏng vấn",
   "studyDate": "Ngày nhập học",
   "startDate": "Ngày dự định khởi hành",
+  "source": "Nguồn",
+  "new_source": "Thêm nguồn mới",
+  "create_source": "Tạo nguồn",
+  "edit_source": "Chỉnh sửa nguồn",
+  "all": "Tất cả",
+  "studying": "Đang học",
+  "pass": "Đã xuất cảnh",
+  "complete": "Hoàn thành hợp đồng",
   "demo": {
     "title": "Vietnamese"
   }

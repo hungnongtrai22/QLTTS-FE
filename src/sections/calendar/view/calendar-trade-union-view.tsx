@@ -44,11 +44,12 @@ import AllAttendancePDF from 'src/sections/order/AllAttendancePDF';
 //
 import { useCalendar } from '../hooks';
 import { StyledCalendar } from '../styles';
-import CalendarForm from '../calendar-form';
+// import CalendarForm from '../calendar-form';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
 import CalendarFiltersResult from '../calendar-filters-result';
 import EventForm from '../event-form';
+import CalendarFormView from '../calendar-form-view';
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +78,7 @@ type Props = {
   intern?: IInternItem;
 };
 
-export default function CalendarView({ intern }: Props) {
+export default function CalendarTradeUnionView({ intern }: Props) {
   useInitial();
 
   const { t, currentLang } = useLocales();
@@ -274,7 +275,7 @@ export default function CalendarView({ intern }: Props) {
           {currentEventId ? t('edit') : t('add')} {t('event')}
         </DialogTitle>
 
-        <CalendarForm
+        <CalendarFormView
           openForm={openForm}
           onClose={onCloseForm}
           event={initialEvent()}

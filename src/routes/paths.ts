@@ -108,7 +108,7 @@ export const paths = {
       file: `${ROOTS.DASHBOARD}/file`,
     },
     intern: {
-      root: `${ROOTS.DASHBOARD}/intern`,
+      root: `${ROOTS.DASHBOARD}/intern/list`,
       new: `${ROOTS.DASHBOARD}/intern/new`,
       list: `${ROOTS.DASHBOARD}/intern/list`,
       listByTradeUnion: `${ROOTS.DASHBOARD}/intern/listByTradeUnion`,
@@ -122,7 +122,7 @@ export const paths = {
       },
     },
     tradeUnion: {
-      root: `${ROOTS.DASHBOARD}/tradeUnion`,
+      root: `${ROOTS.DASHBOARD}/tradeUnion/list`,
       new: `${ROOTS.DASHBOARD}/tradeUnion/new`,
       list: `${ROOTS.DASHBOARD}/tradeUnion/list`,
       cards: `${ROOTS.DASHBOARD}/tradeUnion/cards`,
@@ -134,7 +134,7 @@ export const paths = {
       },
     },
     company: {
-      root: `${ROOTS.DASHBOARD}/company`,
+      root: `${ROOTS.DASHBOARD}/company/list`,
       new: `${ROOTS.DASHBOARD}/company/new`,
       list: `${ROOTS.DASHBOARD}/company/list`,
       cards: `${ROOTS.DASHBOARD}/company/cards`,
@@ -146,7 +146,7 @@ export const paths = {
       },
     },
     order: {
-      root: `${ROOTS.DASHBOARD}/order`,
+      root: `${ROOTS.DASHBOARD}/order/list`,
       new: `${ROOTS.DASHBOARD}/order/new`,
       list: `${ROOTS.DASHBOARD}/order/list`,
       cards: `${ROOTS.DASHBOARD}/order/cards`,
@@ -158,8 +158,20 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/order/${MOCK_ID}/edit`,
       },
     },
+    source: {
+      root: `${ROOTS.DASHBOARD}/source/list`,
+      new: `${ROOTS.DASHBOARD}/source/new`,
+      list: `${ROOTS.DASHBOARD}/source/list`,
+      cards: `${ROOTS.DASHBOARD}/source/cards`,
+      profile: `${ROOTS.DASHBOARD}/source/profile`,
+      account: `${ROOTS.DASHBOARD}/source/account`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/source/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/source/${MOCK_ID}/edit`,
+      },
+    },
     user: {
-      root: `${ROOTS.DASHBOARD}/user`,
+      root: `${ROOTS.DASHBOARD}/user/list`,
       new: `${ROOTS.DASHBOARD}/user/new`,
       list: `${ROOTS.DASHBOARD}/user/list`,
       cards: `${ROOTS.DASHBOARD}/user/cards`,

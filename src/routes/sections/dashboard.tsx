@@ -10,6 +10,8 @@ import CreateOrder from 'src/pages/dashboard/order/new';
 import InternListByDongThapPage from 'src/pages/dashboard/intern/listByDongThap';
 import OrderListPage from 'src/pages/dashboard/order/list';
 import OrderEditPage from 'src/pages/dashboard/order/edit';
+import SourceCreatePage from 'src/pages/dashboard/source/new';
+import SourceEditPage from 'src/pages/dashboard/source/edit';
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +53,8 @@ const TradeUnionEditPage = lazy(() => import('src/pages/dashboard/tradeUnion/edi
 const CompanyListPage = lazy(() => import('src/pages/dashboard/company/list'));
 const CompanyCreatePage = lazy(() => import('src/pages/dashboard/company/new'));
 const CompanyEditPage = lazy(() => import('src/pages/dashboard/company/edit'));
-
+// Source
+const SourceListPage = lazy(() => import('src/pages/dashboard/source/list'));
 // USER
 // const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 // const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
@@ -101,7 +104,14 @@ export const dashboardRoutes = [
       </AuthGuard>
     ),
     children: [
-      { element: <IndexPage />, index: true },
+      {
+        element: (
+          <RoleBasedGuard hasContent roles={['admin']}>
+            <IndexPage />
+          </RoleBasedGuard>
+        ),
+        index: true,
+      },
       // { path: 'ecommerce', element: <OverviewEcommercePage /> },
       // { path: 'analytics', element: <OverviewAnalyticsPage /> },
       // { path: 'banking', element: <OverviewBankingPage /> },
@@ -247,6 +257,39 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
+        ],
+      },
+      {
+        path: 'source',
+        children: [
+          // { element: <InternProfilePage />, index: true },
+          // { path: 'profile', element: <InternProfilePage /> },
+          // { path: 'cards', element: <InternCardsPage /> },
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <SourceListPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: 'new',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <SourceCreatePage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <SourceEditPage />
+              </RoleBasedGuard>
+            ),
+          },
+          // { path: 'account', element: <InternAccountPage /> },
         ],
       },
       // {

@@ -41,6 +41,7 @@ import {
 } from 'src/components/table';
 import { useAuthContext } from 'src/auth/hooks';
 import axios from 'axios';
+import { t } from 'i18next';
 
 //
 import InternTableFiltersResult from '../intern-table-filters-result';
@@ -49,23 +50,15 @@ import InternByTradeUnionTableRow from '../intern-by-trade-union-table-row';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', width: 310 },
-  { id: 'phoneNumber', label: 'City', width: 100 },
-  { id: 'birthday', label: 'Date of Birth', width: 120 },
-  { id: 'age', label: 'Age', width: 80 },
-  { id: 'height', label: 'Height', width: 80 },
-  { id: 'weight', label: 'weight', width: 80 },
-  { id: '', width: 88 },
-];
 
 const defaultFilters = {
   name: '',
   // role: [],
   tradeUnion: [],
   status: 'all',
+    company: [],
+
 };
 
 // ----------------------------------------------------------------------
@@ -81,8 +74,27 @@ export default function InternListByTradeUnionView() {
 
   const confirm = useBoolean();
 
+  const TABLE_HEAD = [
+    { id: 'name', label: t('name'), width: 310 },
+    { id: 'state', label: t('state'), width: 100 },
+    { id: 'birthday', label: t('birthday'), width: 120 },
+    { id: 'age', label: t('age'), width: 80 },
+    { id: 'height', label: t('height'), width: 80 },
+    { id: 'weight', label: t('weight'), width: 80 },
+    { id: '', width: 88 },
+  ];
+
+  const STATUS_OPTIONS = [
+  { value: 'all', label: t('all') },
+  { value: 'study', label: t('studying') },
+  { value: 'pass', label: t('pass') },
+  { value: 'complete', label: t('complete') },
+];
+
   const [tableData, setTableData] = useState<IInternItem[]>([]);
   const [tradeUnion, setTradeUnion] = useState([]);
+    const [company, setCompany] = useState([]);
+  
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -176,10 +188,31 @@ export default function InternListByTradeUnionView() {
     // console.log(data.tradeUnions);
   }, []);
 
+   const handleGetCompany = useCallback(
+      async () => {
+        // const { data: newData } = await axios.get(
+        //   `${process.env.REACT_APP_HOST_API}/api/tradeUnion/${tradeUnion}`
+        // );
+  
+        // const tradeUnionId = await newData.tradeUnion._id;
+  
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
+          {
+            tradeUnion: user?.tradeUnion,
+          }
+        );
+  
+        setCompany(data.companies.map((item: any) => item.name));
+        console.log('Company', data.companies);
+      },
+      [user]
+    );
+
   useEffect(() => {
     handleGetAllIntern();
-    handleGetTradeUnion();
-  }, [handleGetAllIntern, handleGetTradeUnion]);
+    handleGetCompany();
+  }, [handleGetAllIntern, handleGetCompany]);
 
   return (
     <>
@@ -227,22 +260,22 @@ export default function InternListByTradeUnionView() {
                       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
                     }
                     color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
+                      (tab.value === 'study' && 'success') ||
+                      (tab.value === 'pass' && 'warning') ||
+                      (tab.value === 'complete' && 'error') ||
                       'default'
                     }
                   >
-                    {tab.value === 'all' && _userList.length}
-                    {tab.value === 'active' &&
-                      _userList.filter((item) => item.status === 'active').length}
+                    {tab.value === 'all' && dataFiltered.length}
+                    {tab.value === 'study' &&
+                      dataFiltered.filter((intern) => intern.status === 'study').length}
 
-                    {tab.value === 'pending' &&
-                      _userList.filter((item) => item.status === 'pending').length}
-                    {tab.value === 'banned' &&
-                      _userList.filter((item) => item.status === 'banned').length}
-                    {tab.value === 'rejected' &&
-                      _userList.filter((item) => item.status === 'rejected').length}
+                    {tab.value === 'pass' &&
+                      dataFiltered.filter((intern) => intern.status === 'pass').length}
+                    {tab.value === 'complete' &&
+                      dataFiltered.filter((intern) => intern.status === 'complete').length}
+                    {/* {tab.value === 'rejected' &&
+                                dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
                 }
               />
@@ -253,6 +286,8 @@ export default function InternListByTradeUnionView() {
             filters={filters}
             onFilters={handleFilters}
             roleOptions={tradeUnion}
+            companyOptions={company}
+              interns={dataFiltered}
           />
 
           {canReset && (
@@ -268,7 +303,7 @@ export default function InternListByTradeUnionView() {
           )}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
+            {/* <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
               rowCount={tableData.length}
@@ -285,7 +320,7 @@ export default function InternListByTradeUnionView() {
                   </IconButton>
                 </Tooltip>
               }
-            />
+            /> */}
 
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -383,7 +418,7 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IInternTableFilters;
 }) {
-  const { name, tradeUnion } = filters;
+  const { name, tradeUnion, company } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -407,6 +442,10 @@ function applyFilter({
 
   if (tradeUnion.length) {
     inputData = inputData.filter((user) => tradeUnion.includes(user?.tradeUnion?.name));
+  }
+
+  if (company?.length) {
+    inputData = inputData.filter((user) => company.includes(user?.companySelect?.name));
   }
 
   return inputData;

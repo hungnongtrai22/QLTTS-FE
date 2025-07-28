@@ -2,6 +2,9 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 // config
 import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { paths } from 'src/routes/paths';
+import { useAuthContext } from 'src/auth/hooks';
+
 //
 import { mainRoutes } from './main';
 import { authRoutes } from './auth';
@@ -12,11 +15,19 @@ import { componentsRoutes } from './components';
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  const { user } = useAuthContext();
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     {
       path: '/',
-      element: <Navigate to={PATH_AFTER_LOGIN} replace />,
+      element: (
+        <Navigate
+          to={
+            user?.role === 'admin' ? paths.dashboard.root : paths.dashboard.intern.listByTradeUnion
+          }
+          replace
+        />
+      ),
     },
 
     // ----------------------------------------------------------------------

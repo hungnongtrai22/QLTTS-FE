@@ -32,7 +32,7 @@ type FormValuesProps = {
 };
 
 export default function JwtLoginView() {
-  const { login } = useAuthContext();
+  const { login, user } = useAuthContext();
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -64,11 +64,17 @@ export default function JwtLoginView() {
   } = methods;
 
   const onSubmit = useCallback(
-    async (data: FormValuesProps) => {
+    async (newData: FormValuesProps) => {
       try {
-        await login?.(data.username, data.password);
+        await login?.(newData.username, newData.password);
+        // console.log('USER', newData);
+        if (newData.username === 'admin') {
+          console.log('OK');
 
-        window.location.href = returnTo || PATH_AFTER_LOGIN;
+          window.location.href = paths.dashboard.root;
+        } else {
+          window.location.href = returnTo || PATH_AFTER_LOGIN;
+        }
       } catch (error) {
         console.error(error);
         reset();
@@ -138,7 +144,7 @@ export default function JwtLoginView() {
         Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
       </Alert> */}
 
-        <Alert severity="info" sx={{ mb: 3 }}>
+      <Alert severity="info" sx={{ mb: 3 }}>
         Vui lòng nhập tài khoản và mật khẩu đã được cung cấp
       </Alert>
 

@@ -17,6 +17,8 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { IInternItem } from 'src/types/user';
 import CalendarPage from 'src/pages/dashboard/calendar';
+import { useAuthContext } from 'src/auth/hooks';
+import CalendarViewPage from 'src/pages/dashboard/calendar-view';
 
 import axios from 'axios';
 
@@ -61,12 +63,30 @@ const TABS = [
   },
 ];
 
+const TABSTRADEUNION = [
+  {
+    value: 'profile',
+    label: 'Thông Tin',
+    icon: <Iconify icon="solar:user-id-bold" width={24} />,
+  },
+  {
+    value: 'followers',
+    label: 'Sơ yếu lý lịch',
+    icon: <Iconify icon="solar:heart-bold" width={24} />,
+  },
+  {
+    value: 'attendance',
+    label: 'Điểm danh',
+    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+  },
+];
 // ----------------------------------------------------------------------
 
 export default function InternProfileView() {
   const settings = useSettingsContext();
 
   const params = useParams();
+  const { user } = useAuthContext();
 
   const { id } = params;
 
@@ -138,9 +158,13 @@ export default function InternProfileView() {
             },
           }}
         >
-          {TABS.map((tab) => (
-            <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-          ))}
+          {user?.role === 'tradeunion'
+            ? TABSTRADEUNION.map((tab) => (
+                <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+              ))
+            : TABS.map((tab) => (
+                <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+              ))}
         </Tabs>
       </Card>
 
@@ -150,7 +174,7 @@ export default function InternProfileView() {
 
       {currentTab === 'followers' && <InternViewForm currentIntern={intern} />}
 
-      {currentTab === 'friends' && (
+      {currentTab === 'friends' && user?.role === 'admin' && (
         // <ProfileFriends
         //   friends={_userFriends}
         //   searchFriends={searchFriends}
@@ -165,9 +189,16 @@ export default function InternProfileView() {
         </>
       )}
 
-      {currentTab === 'gallery' && <InternPointForm internId={intern?._id} />}
+      {currentTab === 'gallery' && user?.role === 'admin' && (
+        <InternPointForm internId={intern?._id} />
+      )}
 
-      {currentTab === 'attendance' && <CalendarPage intern={intern}/>}
+      {currentTab === 'attendance' &&
+        (user?.role === 'admin' ? (
+          <CalendarPage intern={intern} />
+        ) : (
+          <CalendarViewPage intern={intern} />
+        ))}
     </Container>
   );
 }

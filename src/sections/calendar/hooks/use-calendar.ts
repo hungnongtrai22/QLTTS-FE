@@ -37,8 +37,7 @@ export default function useCalendar({ internId }: Props) {
   const [date, setDate] = useState(new Date());
 
   const [openForm, setOpenForm] = useState(false);
-    const [openEventForm, setOpenEventForm] = useState(false);
-
+  const [openEventForm, setOpenEventForm] = useState(false);
 
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
 
@@ -89,17 +88,17 @@ export default function useCalendar({ internId }: Props) {
 
   const addAttendHandler = useCallback(
     async (attendItem: any) => {
-      console.log("Month",date.getMonth() + 1);
+      // console.log('Month', new Date(attendItem.start).getMonth());
       // console.log("Year",date.getFullYear());
       const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/attendance/create`, {
         internId,
         attendItem,
-        month: date.getMonth() + 1,
-        year: date.getFullYear(),
+        month: new Date(attendItem.start).getMonth() + 1,
+        year: new Date(attendItem.start).getFullYear(),
       });
       await getAttendaceByMonth();
     },
-    [date, internId, getAttendaceByMonth]
+    [ internId, getAttendaceByMonth]
     // [date]
   );
 
@@ -336,7 +335,7 @@ export default function useCalendar({ internId }: Props) {
     [dispatch]
   );
 
-    const onCreateNewEvent = useCallback(
+  const onCreateNewEvent = useCallback(
     async (newEvent: ICalendarEvent) => {
       await addEventHandler(newEvent);
       dispatch(createEvent(newEvent));
@@ -345,7 +344,6 @@ export default function useCalendar({ internId }: Props) {
     [dispatch]
   );
 
-  
   const onUpdateEvent = useCallback(
     async (newEvent: ICalendarEvent) => {
       if (currentEventId) {
@@ -357,7 +355,7 @@ export default function useCalendar({ internId }: Props) {
     [dispatch, currentEventId]
   );
 
-   const onUpdateNewEvent = useCallback(
+  const onUpdateNewEvent = useCallback(
     async (newEvent: ICalendarEvent) => {
       if (currentEventId) {
         await editEventHandler(newEvent);
