@@ -421,8 +421,12 @@ const useStyles = () =>
         },
         outerBorder: {
           display: 'flex',
+          position: 'relative',
+
           flexDirection: 'column',
           // justifyContent: 'space-between',
+          // padding: '10px 24px',
+
           height: '100%',
         },
         spaceBorder: {
@@ -437,21 +441,44 @@ const useStyles = () =>
         },
         autoBorder: {
           flex: 1,
-
+          position: 'relative',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
         },
+        logoContainer: {
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-200%, -200%)', // căn giữa chính xác
+          width: 400,
+          height: 400,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+        },
+
+        logoImage: {
+
+
+          borderRadius: '50%',
+          opacity: 0.2, // Giảm độ trong suốt để tạo hiệu ứng mờ
+        },
+
+
+
+
       }),
     []
   );
-
-// ----------------------------------------------------------------------
-
 type Props = {};
 
 const changDateJP = (date: any) => {
   const jsDate = new Date(date);
+
+// ----------------------------------------------------------------------
+
   const formatted = jsDate.toLocaleDateString('ja-JP');
   const parts = formatted.split('/');
   const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
@@ -538,40 +565,11 @@ const judgeJLPTResult = (
 };
 
 export default function InternPDFStudy({ item, intern }: any) {
-  // const {
-  //   name,
-  //   namejp,
-  //   gender,
-  //   height,
-  //   weight,
-  //   avatar,
-  //   age,
-  //   birthday,
-  //   blood,
-  //   married,
-  //   BMI,
-  //   leftEye,
-  //   rightEye,
-  //   blindColor,
-  //   hand,
-  //   driverLicense,
-  //   address,
-  //   smoke,
-  //   alcohol,
-  //   tattoo,
-  //   school,
-  //   company,
-  //   family,
-  //   interest,
-  //   foreignLanguage,
-  //   strong,
-  //   weak,
-  //   aim,
-  //   plan,
-  //   money,
-  //   familyInJapan,
-  //   moveForeign,
-  // } = invoice;
+
+  const text = item.learningProcess;
+  const index = text.indexOf('語第');
+  const firstPart = text.substring(0, index); // `皆の日本`
+  const secondPart = text.substring(index); // `語第25課`
 
   const styles = useStyles();
   console.log('intern', intern);
@@ -580,6 +578,8 @@ export default function InternPDFStudy({ item, intern }: any) {
   return (
     <Document>
       <View style={styles.outerBorder}>
+
+
         <View style={[styles.gridContainer1, styles.mb10, styles.pImage]}>
           {/* <Image source="/assets/logo.png" style={{ width: 32, height: 32 }} /> */}
 
@@ -592,6 +592,11 @@ export default function InternPDFStudy({ item, intern }: any) {
           </View>
         </View>
         <View style={styles.autoBorder}>
+          {/* Logo chìm ở giữa trang */}
+          <View style={styles.logoContainer}>
+            <Image style={styles.logoImage} src="/assets/logo_new.png" />
+          </View>
+          {/* Nội dung khác của PDF */}
           <View>
             <View style={[styles.gridContainer, styles.mb10]}>
               <View style={styles.table}>
@@ -992,7 +997,9 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { height: '40px' }]}>
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>{item.learningProcess}</Text>
+                      <Text style={styles.subtitle2}>{firstPart}</Text>
+                      <Text style={styles.subtitle2}>{secondPart}</Text>
+
                     </View>
                   </View>
                 </View>

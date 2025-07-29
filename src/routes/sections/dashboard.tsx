@@ -12,6 +12,7 @@ import OrderListPage from 'src/pages/dashboard/order/list';
 import OrderEditPage from 'src/pages/dashboard/order/edit';
 import SourceCreatePage from 'src/pages/dashboard/source/new';
 import SourceEditPage from 'src/pages/dashboard/source/edit';
+import InternListBySource from 'src/sections/user/view/intern-list-by-source';
 
 // ----------------------------------------------------------------------
 
@@ -139,6 +140,8 @@ export const dashboardRoutes = [
             ),
           },
           { path: 'listByTradeUnion', element: <InternListByTradeUnionPage /> },
+          { path: 'listBySource', element: <InternListBySource /> },
+
           { path: 'listByDongThap', element: <InternListByDongThapPage /> },
 
           {

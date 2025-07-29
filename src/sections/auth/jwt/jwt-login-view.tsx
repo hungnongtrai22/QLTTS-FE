@@ -23,6 +23,7 @@ import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -67,12 +68,21 @@ export default function JwtLoginView() {
     async (newData: FormValuesProps) => {
       try {
         await login?.(newData.username, newData.password);
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_HOST_API}/api/account/checkRole`,
+          {
+            username: newData.username,
+            password: newData.password,
+          }
+        );
         // console.log('USER', newData);
-        if (newData.username === 'admin') {
-          console.log('OK');
-
+        if (data.role === 'admin') {
           window.location.href = paths.dashboard.root;
-        } else {
+        } else if (data.role === 'source') {
+          window.location.href = paths.dashboard.intern.listBySource;
+        } else if (data.role === 'dongthap') {
+          window.location.href = paths.dashboard.intern.listByDongThap;
+        }else {
           window.location.href = returnTo || PATH_AFTER_LOGIN;
         }
       } catch (error) {
@@ -84,7 +94,7 @@ export default function JwtLoginView() {
     [login, reset, returnTo]
   );
 
-  const   renderHead = (
+  const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
       <Typography variant="h4">ログインページ</Typography>
 
