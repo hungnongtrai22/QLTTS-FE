@@ -33,7 +33,9 @@ const useStyles = () =>
         subtitle3: { fontSize: 12, fontWeight: 700, textAlign: 'center' },
         subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
-          backgroundColor: '#D8DEE9',
+          // backgroundColor: '#D8DEE9',
+          backgroundColor: '#D1E9F6',
+
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -70,7 +72,7 @@ const useStyles = () =>
           borderTopWidth: 1,
           borderStyle: 'solid',
           position: 'absolute',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
         },
         gridContainer: {
           display: 'flex',
@@ -118,7 +120,7 @@ const useStyles = () =>
           // borderWidth: 1, ❌ bỏ dòng này
           // borderBottomWidth: 0,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
           // padding: 0,
         },
@@ -133,7 +135,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           padding: '3px 0',
           margin: 0,
         },
@@ -146,7 +148,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_3: {
@@ -155,7 +157,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           height: '100%',
           padding: '3px 0',
           margin: 0,
@@ -166,7 +168,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           height: '100%',
           padding: '3px 0',
           margin: 0,
@@ -177,7 +179,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           height: '100%',
           padding: '3px 0',
           margin: 0,
@@ -191,7 +193,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_7: {
@@ -203,7 +205,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_8: {
@@ -215,7 +217,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_9: {
@@ -227,7 +229,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_10: {
@@ -239,7 +241,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_11: {
@@ -251,7 +253,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_12: {
@@ -263,7 +265,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_13: {
@@ -275,7 +277,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_14: {
@@ -287,7 +289,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_15: {
@@ -299,7 +301,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_16: {
@@ -311,7 +313,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_17: {
@@ -323,7 +325,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_18: {
@@ -335,7 +337,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_19: {
@@ -347,7 +349,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_20: {
@@ -359,7 +361,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_21: {
@@ -371,7 +373,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_22: {
@@ -383,7 +385,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_23: {
@@ -395,7 +397,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         tableCell_24: {
@@ -407,7 +409,7 @@ const useStyles = () =>
           borderBottomWidth: 1,
           borderRightWidth: 1,
           borderStyle: 'solid',
-          borderColor: '#DFE3E8',
+          borderColor: '#BCCCDC',
           margin: 0,
         },
         textLeft: {
@@ -460,15 +462,9 @@ const useStyles = () =>
         },
 
         logoImage: {
-
-
           borderRadius: '50%',
           opacity: 0.2, // Giảm độ trong suốt để tạo hiệu ứng mờ
         },
-
-
-
-
       }),
     []
   );
@@ -477,7 +473,7 @@ type Props = {};
 const changDateJP = (date: any) => {
   const jsDate = new Date(date);
 
-// ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
 
   const formatted = jsDate.toLocaleDateString('ja-JP');
   const parts = formatted.split('/');
@@ -565,7 +561,6 @@ const judgeJLPTResult = (
 };
 
 export default function InternPDFStudy({ item, intern }: any) {
-
   const text = item.learningProcess;
   const index = text.indexOf('語第');
   const firstPart = text.substring(0, index); // `皆の日本`
@@ -578,8 +573,6 @@ export default function InternPDFStudy({ item, intern }: any) {
   return (
     <Document>
       <View style={styles.outerBorder}>
-
-
         <View style={[styles.gridContainer1, styles.mb10, styles.pImage]}>
           {/* <Image source="/assets/logo.png" style={{ width: 32, height: 32 }} /> */}
 
@@ -607,7 +600,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{intern.tradeUnion.name}</Text>
+                      <Text>{intern.tradeUnion.name}様</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -616,7 +609,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{intern.companySelect.name}</Text>
+                      <Text>{intern.companySelect.name}様</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -694,7 +687,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                   border: 1,
                   // borderRight: 1,
                   borderStyle: 'solid',
-                  borderColor: '#DFE3E8',
+                  borderColor: '#BCCCDC',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -999,7 +992,6 @@ export default function InternPDFStudy({ item, intern }: any) {
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
                       <Text style={styles.subtitle2}>{firstPart}</Text>
                       <Text style={styles.subtitle2}>{secondPart}</Text>
-
                     </View>
                   </View>
                 </View>

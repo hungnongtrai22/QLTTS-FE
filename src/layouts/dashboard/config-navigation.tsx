@@ -90,6 +90,11 @@ export function useNavData() {
                 path: paths.dashboard.intern.listByTradeUnion,
                 roles: ['tradeunion'],
               },
+                {
+                title: t('list'),
+                path: paths.dashboard.intern.listBySource,
+                roles: ['source'],
+              },
               {
                 title: t('intern_by_dong_thap'),
                 path: paths.dashboard.intern.listByDongThap,

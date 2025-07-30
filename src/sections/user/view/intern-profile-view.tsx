@@ -73,6 +73,29 @@ export default function InternProfileView() {
   },
 ];
 
+  const TABS_SOURCE = [
+    {
+      value: 'profile',
+      label: t('info_study'),
+      icon: <Iconify icon="solar:user-id-bold" width={24} />,
+    },
+    {
+      value: 'followers',
+      label: t('info'),
+      icon: <Iconify icon="solar:heart-bold" width={24} />,
+    },
+    {
+      value: 'gallery',
+      label: t('point'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
+    {
+      value: 'attendance',
+      label: t('attendance'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
+  ];
+
 const TABSTRADEUNION = [
   {
     value: 'profile',
@@ -161,11 +184,15 @@ const TABSTRADEUNION = [
             },
           }}
         >
+          {/* eslint-disable-next-line no-nested-ternary */}
           {user?.role === 'tradeunion'
             ? TABSTRADEUNION.map((tab) => (
                 <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-              ))
-            : TABS.map((tab) => (
+              )) :
+            user?.role === 'source'
+              ? TABS_SOURCE.map((tab) => (
+                <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+              )) : TABS.map((tab) => (
                 <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
               ))}
         </Tabs>
@@ -192,7 +219,7 @@ const TABSTRADEUNION = [
         </>
       )}
 
-      {currentTab === 'gallery' && user?.role === 'admin' && (
+      {currentTab === 'gallery' && (user?.role === 'admin' || user?.role === 'source') && (
         <InternPointForm internId={intern?._id} />
       )}
 

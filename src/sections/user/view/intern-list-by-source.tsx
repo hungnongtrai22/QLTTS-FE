@@ -47,6 +47,7 @@ import { t } from 'i18next';
 import InternTableFiltersResult from '../intern-table-filters-result';
 import InternByTradeUnionTableToolbar from '../intern-by-trade-union-table-toolbar';
 import InternByTradeUnionTableRow from '../intern-by-trade-union-table-row';
+import InternBySourceTableToolbar from '../intern-by-source-table-toolbar';
 
 // ----------------------------------------------------------------------
 
@@ -177,7 +178,7 @@ export default function InternListBySource() {
     const { data } = await axios.post(
       `${process.env.REACT_APP_HOST_API}/api/user/listBySource`,
       {
-        source: user?._id,
+        source: user?.source,
       }
     );
     setTableData(data.interns);
@@ -283,7 +284,7 @@ export default function InternListBySource() {
             ))}
           </Tabs>
 
-          <InternByTradeUnionTableToolbar
+          <InternBySourceTableToolbar
             filters={filters}
             onFilters={handleFilters}
             roleOptions={tradeUnion}
