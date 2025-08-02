@@ -12,11 +12,11 @@ import { useCallback, useEffect, useState } from 'react';
 import {  ICompanyItem, IDiaryItem } from 'src/types/user';
 
 //
-import DiaryNewEditForm from '../diary-new-edit-form';
+import DiaryViewForm from '../diary-view-form';
 
 // ----------------------------------------------------------------------
 
-export default function DiaryEditView() {
+export default function DiaryProfileView() {
   const settings = useSettingsContext();
 
   const params = useParams();
@@ -54,7 +54,7 @@ export default function DiaryEditView() {
         }}
       />
 
-      {diary && <DiaryNewEditForm currentDiary={diary} />}
+      {diary && <DiaryViewForm currentDiary={diary} />}
     </Container>
   );
 }

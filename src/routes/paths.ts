@@ -171,6 +171,18 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/source/${MOCK_ID}/edit`,
       },
     },
+    diary: {
+      root: `${ROOTS.DASHBOARD}/diary/list`,
+      new: `${ROOTS.DASHBOARD}/diary/new`,
+      list: `${ROOTS.DASHBOARD}/diary/list`,
+      cards: `${ROOTS.DASHBOARD}/diary/cards`,
+      profile: (id: string) => `${ROOTS.DASHBOARD}/diary/${id}/profile`,
+      account: `${ROOTS.DASHBOARD}/diary/account`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/diary/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/diary/${MOCK_ID}/edit`,
+      },
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user/list`,
       new: `${ROOTS.DASHBOARD}/user/new`,

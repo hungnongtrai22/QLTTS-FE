@@ -13,6 +13,10 @@ import OrderEditPage from 'src/pages/dashboard/order/edit';
 import SourceCreatePage from 'src/pages/dashboard/source/new';
 import SourceEditPage from 'src/pages/dashboard/source/edit';
 import InternListBySource from 'src/sections/user/view/intern-list-by-source';
+import DiaryListPage from 'src/pages/dashboard/diary/list';
+import DiaryCreatePage from 'src/pages/dashboard/diary/new';
+import DiaryEditPage from 'src/pages/dashboard/diary/edit';
+import DiaryProfileView from 'src/sections/user/view/diary-profile-view';
 
 // ----------------------------------------------------------------------
 
@@ -292,6 +296,41 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
+          // { path: 'account', element: <InternAccountPage /> },
+        ],
+      },
+       {
+        path: 'diary',
+        children: [
+          // { element: <InternProfilePage />, index: true },
+          // { path: 'profile', element: <InternProfilePage /> },
+          // { path: 'cards', element: <InternCardsPage /> },
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent>
+                <DiaryListPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: 'new',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <DiaryCreatePage />{' '}
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <DiaryEditPage />
+              </RoleBasedGuard>
+            ),
+          },
+                    { path: ':id/profile', element: <DiaryProfileView /> },
+
           // { path: 'account', element: <InternAccountPage /> },
         ],
       },

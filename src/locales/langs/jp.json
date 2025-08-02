@@ -211,6 +211,15 @@
   "attendance": "出席",
   "other_info": "追加情報",
   "point": "成績を入力",
+  "intern_name": "実習生の氏名",
+  "status_call": "通話状況",
+  "direction_call": "通話の方向",
+  "diary": "連絡日誌",
+  "person": "担当者",
+  "create_diary": "作成",
+  "new_diary": "連絡日誌を追加",
+  "edit_diary": "連絡日誌を編集",
+
   "demo": {
     "title": "英語"
   }

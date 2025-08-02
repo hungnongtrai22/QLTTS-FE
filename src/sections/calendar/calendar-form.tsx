@@ -23,6 +23,14 @@ import { useSnackbar } from 'src/components/snackbar';
 import { ColorPicker } from 'src/components/color-utils';
 import { isDateError } from 'src/components/custom-date-range-picker';
 import FormProvider, { RHFTextField, RHFSwitch } from 'src/components/hook-form';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { viVN } from '@mui/x-date-pickers/locales';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
+
+dayjs.locale('vi');
 
 // ----------------------------------------------------------------------
 
@@ -223,22 +231,30 @@ Props) {
           name="start"
           control={control}
           render={({ field }) => (
-            <MobileDateTimePicker
-              {...field}
-              value={new Date(field.value as Date)}
-              onChange={(newValue) => {
-                if (newValue) {
-                  field.onChange(new Date(newValue).toISOString());
-                }
-              }}
-              label={t('start_date')}
-              format="dd/MM/yyyy hh:mm a"
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                },
-              }}
-            />
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="vi"
+              localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+            >
+              <MobileDateTimePicker
+                {...field}
+                // value={new Date(field.value as Date)}
+                value={field.value ? dayjs(field.value) : null}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    // field.onChange(new Date(newValue).toISOString());
+                    field.onChange(newValue);
+                  }
+                }}
+                label={t('start_date')}
+                // format="dd/MM/yyyy hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+              />
+            </LocalizationProvider>
           )}
         />
 
@@ -246,24 +262,32 @@ Props) {
           name="end"
           control={control}
           render={({ field }) => (
-            <MobileDateTimePicker
-              {...field}
-              value={new Date(field.value as Date)}
-              onChange={(newValue) => {
-                if (newValue) {
-                  field.onChange(new Date(newValue).toISOString());
-                }
-              }}
-              label={t('end_date')}
-              format="dd/MM/yyyy hh:mm a"
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: dateError,
-                  helperText: dateError && 'End date must be later than start date',
-                },
-              }}
-            />
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="vi"
+              localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+            >
+              <MobileDateTimePicker
+                {...field}
+                // value={new Date(field.value as Date)}
+                value={field.value ? dayjs(field.value) : null}
+                onChange={(newValue) => {
+                  if (newValue) {
+                    // field.onChange(new Date(newValue).toISOString());
+                    field.onChange(newValue);
+                  }
+                }}
+                label={t('end_date')}
+                // format="dd/MM/yyyy hh:mm a"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: dateError,
+                    helperText: dateError && 'End date must be later than start date',
+                  },
+                }}
+              />
+            </LocalizationProvider>
           )}
         />
 

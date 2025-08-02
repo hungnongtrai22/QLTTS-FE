@@ -213,6 +213,17 @@
   "other_info": "Thông tin bổ sung",
   "point": "Nhập điểm",
   "intern_by_source": "Danh sách thực tập sinh",
+  "intern_name": "Tên thực tập sinh",
+  "status_call": "Trạng thái cuộc gọi",
+  "direction_call": "Hướng cuộc gọi",
+  "diary": "Nhật ký liên lạc",
+  "new_diary": "Thêm nhật ký liên lạc",
+  "edit_diary": "Chỉnh sửa nhật ký liên lạc",
+  "title_dashboard_create_diary": "Bảng điều khiển: Tạo nhật ký liên lạc mới",
+  "time_call": "Thời gian",
+  "person": "Người phụ trách",
+  "create_diary": "Tạo",
+  "direction": "Hướng cuộc gọi",
   "demo": {
     "title": "Vietnamese"
   }

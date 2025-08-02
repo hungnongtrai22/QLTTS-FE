@@ -248,6 +248,19 @@ export type ISourceItem = {
   createdAt: string;
 };
 
+export type IDiaryItem = {
+  _id: string;
+  name: string;
+  intern: any;
+  status: string;
+  direction: string;
+  startDate: string;
+  endDate: string;
+  time: number;
+  description: string;
+  person: string;
+};
+
 export type ICompanyItem = {
   _id: string;
   name: string;
