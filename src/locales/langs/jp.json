@@ -219,7 +219,10 @@
   "create_diary": "作成",
   "new_diary": "連絡日誌を追加",
   "edit_diary": "連絡日誌を編集",
-
+  "dashboard_app": "ダッシュボード：アプリ",  
+"welcome_back": "お戻りなさいませ",
+  "content": "実習生の情報を更新する場合は、常に正確かつ完全なデータであることを確認してください。",
+  "go_now": "",
   "demo": {
     "title": "英語"
   }
