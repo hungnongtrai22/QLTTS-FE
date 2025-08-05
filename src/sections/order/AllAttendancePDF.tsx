@@ -1,5 +1,4 @@
-import { Document, Page, View, StyleSheet } from '@react-pdf/renderer';
-
+import { Document, Page, View, StyleSheet, Image, Text } from '@react-pdf/renderer';
 
 import InternPDFAttendance from '../invoice/intern-pdf-attendance';
 
@@ -20,6 +19,26 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: 'black',
     borderStyle: 'solid',
+    position: "relative",
+    zIndex: -1,
+  },
+  logoContainer: {
+    position: 'absolute',
+    top: '10%',
+    left: '50%',
+    transform: 'translate(-200%, -200%)', // căn giữa chính xác
+    width: 400,
+    height: 400,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  logoImage: {
+    borderRadius: '50%',
+        zIndex: 9999,
+
+    // opacity: 0.1, // Giảm độ trong suốt để tạo hiệu ứng mờ
   },
 });
 
@@ -32,10 +51,8 @@ const chunkArray = (array: any[], size: number) => {
   return result;
 };
 
-export default function AllAttendancePDF({ intern, attendance,event }: any) {
-
-  console.log("INTERNS", intern);
-
+export default function AllAttendancePDF({ intern, attendance, event }: any) {
+  console.log('INTERNS', intern);
 
   return (
     <Document>
@@ -58,8 +75,12 @@ export default function AllAttendancePDF({ intern, attendance,event }: any) {
       {attendance.map((item: any, index: any) => (
         <Page size="A4" key={index} style={styles.page} orientation="landscape">
           <View style={styles.pageBorder}>
-            <InternPDFAttendance item={item} intern={intern} count={index + 1} event={event}/>
+            {/* <View style={styles.logoContainer}>
+              <Image style={styles.logoImage} src="/assets/logo_new.png" />
+            </View>  */}
+            <InternPDFAttendance item={item} intern={intern} count={index + 1} event={event} />
           </View>
+         
         </Page>
       ))}
     </Document>

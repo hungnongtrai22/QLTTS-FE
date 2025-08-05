@@ -463,7 +463,7 @@ const useStyles = () =>
 
         logoImage: {
           borderRadius: '50%',
-          opacity: 0.2, // Giảm độ trong suốt để tạo hiệu ứng mờ
+          opacity: 0.1, // Giảm độ trong suốt để tạo hiệu ứng mờ
         },
       }),
     []

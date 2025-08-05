@@ -121,6 +121,7 @@ const useStyles = () =>
         table20: {
           display: 'flex',
           width: '20%',
+          zIndex: -1,
         },
         table18: {
           display: 'flex',
@@ -504,6 +505,8 @@ const useStyles = () =>
           flexDirection: 'column',
           // justifyContent: 'space-between',
           height: '100%',
+          // border: '1px solid red',
+          // position: 'relative',
         },
         spaceBorder: {
           flex: 1,
@@ -521,6 +524,25 @@ const useStyles = () =>
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+        },
+        logoContainer: {
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-200%, -175%)', // căn giữa chính xác
+          width: 400,
+          height: 400,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          // zIndex: -1,
+        },
+
+        logoImage: {
+          borderRadius: '50%',
+                    // zIndex: -1,
+
+          opacity: 0.1, // Giảm độ trong suốt để tạo hiệu ứng mờ
         },
       }),
     []
@@ -654,6 +676,8 @@ export default function InternPDFAttendance({ item, intern, count, event }: any)
   return (
     <Document>
       <View style={styles.outerBorder}>
+        {/* Logo chìm ở giữa trang */}
+
         <View style={[styles.gridContainer1, styles.mb10, styles.pImage]}>
           {/* <Image source="/assets/logo.png" style={{ width: 32, height: 32 }} /> */}
 
@@ -662,6 +686,7 @@ export default function InternPDFAttendance({ item, intern, count, event }: any)
         
           </View> */}
         </View>
+
         <View>
           <View>
             <View style={[styles.gridContainer]}>
@@ -781,8 +806,17 @@ export default function InternPDFAttendance({ item, intern, count, event }: any)
             </View>
           </View>
           {intern.map((int: any, i: any) => (
-            <InternPDFAttendanceItem int={int} i={i} month={item.month} year={item.year} checkEvent={checkIsEvent} />
+            <InternPDFAttendanceItem
+              int={int}
+              i={i}
+              month={item.month}
+              year={item.year}
+              checkEvent={checkIsEvent}
+            />
           ))}
+        </View>
+        <View style={styles.logoContainer}>
+          <Image style={styles.logoImage} src="/assets/logo_new.png" />
         </View>
       </View>
     </Document>

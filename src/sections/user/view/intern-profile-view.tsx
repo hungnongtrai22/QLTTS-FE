@@ -224,7 +224,7 @@ const TABSTRADEUNION = [
       )}
 
       {currentTab === 'attendance' &&
-        (user?.role === 'admin' ? (
+        (user?.role === 'admin' || user?.role === 'source' ? (
           <CalendarPage intern={intern} />
         ) : (
           <CalendarViewPage intern={intern} />

@@ -13,6 +13,7 @@ import { useSettingsContext } from 'src/components/settings';
 // assets
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useAuthContext } from 'src/auth/hooks';
+import { t } from 'i18next';
 
 //
 import AppWidget from '../app-widget';
@@ -41,8 +42,8 @@ export default function OverviewAppView() {
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
           <AppWelcome
-            title={`Welcome back 👋 \n ${user?.name}`}
-            description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
+            title={`${t('welcome_back')} 👋 \n ${user?.name}`}
+            description={t('content') || ""}
             img={<SeoIllustration />}
             action={
               <Button variant="contained" color="primary">
