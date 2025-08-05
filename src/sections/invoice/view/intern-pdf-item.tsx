@@ -209,7 +209,7 @@ export default function InternPDFAttendanceItem({ int, i, month, year, checkEven
 
               <View style={[styles.tableCell_29, styles.textCenter]}>
                 <Text>{int.name}</Text>
-                <Text>{int.namejp}</Text>
+                <Text style={{fontSize: '8px'}}>{int.namejp}</Text>
               </View>
             </View>
           </View>
