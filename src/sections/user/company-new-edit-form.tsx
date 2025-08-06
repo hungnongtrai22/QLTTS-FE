@@ -85,7 +85,6 @@ type Props = {
 
 export default function CompanyNewEditForm({ currentCompany }: Props) {
   // const router = useRouter();
-  console.log('TEST', currentCompany);
   const { t } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -238,7 +237,7 @@ export default function CompanyNewEditForm({ currentCompany }: Props) {
             </Stack>
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentCompany ? t('create_trade_union') : t('edit_trade_union')}
+                {!currentCompany ? t('create_company') : t('edit_company')}
               </LoadingButton>
             </Stack>
           </Card>

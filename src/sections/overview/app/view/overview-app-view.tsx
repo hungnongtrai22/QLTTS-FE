@@ -47,7 +47,7 @@ export default function OverviewAppView() {
             img={<SeoIllustration />}
             action={
               <Button variant="contained" color="primary">
-                Go Now
+                {t('go_now')}
               </Button>
             }
           />

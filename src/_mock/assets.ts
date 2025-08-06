@@ -268,8 +268,9 @@ export const _roles = [
 // ----------------------------------------------------------------------
 
 export const _postTitles = [
-  '10 Essential Tips for Healthy Living',
-  'The Ultimate Guide to Productivity Hacks',
+  '🏡 Công ty Nhật Bản ghé thăm nhà học viên sau phỏng vấn – Gắn kết từ những điều giản dị',
+  '🎉 BUỔI GẶP MẶT VÀ PHÁT THƯỞNG CHO TTS VỀ NƯỚC ĐÚNG THỜI HẠN VÀ CÓ THÀNH TÍCH TỐT NĂM 2025 🎉',
+  'Buổi Gặp Mặt Thực Tập Sinh với Nghiệp Đoàn ngày 18/4/2025',
   'Exploring the Hidden Gems of [Destination]',
   'How to Master the Art of Public Speaking',
   'The Future of Artificial Intelligence: Trends and Insights',
@@ -471,6 +472,9 @@ export const _taskNames = [
 // ----------------------------------------------------------------------
 
 export const _sentences = [
+  'Sau buổi phỏng vấn thành công, không chỉ dừng lại ở kết quả, đại diện công ty Nhật Bản đã có buổi ghé thăm trực tiếp nhà học viên — một nghĩa cử đầy chân thành, thể hiện sự quan tâm sâu sắc đến từng bạn và gia đình.',
+  'Sáng ngày  06/06/2025 , tại văn Trung Tâm Việc Làm Đồng Tháp đã diễn ra buổi gặp mặt và phát thưởng dành cho các bạn Thực tập sinh (TTS) hoàn thành chương trình tu nghiệp tại Nhật Bản, trở về nước đúng thời hạn và đạt thành tích tốt trong suốt quá trình làm việc.',
+  'Vào ngày 18/4/2025, công ty Nhật Tân đã tổ chức thành công buổi gặp mặt giữa các bạn thực tập sinh chuẩn bị xuất cảnh và nghiệp đoàn phía Nhật Bản.',
   'The sun slowly set over the horizon, painting the sky in vibrant hues of orange and pink.',
   'She eagerly opened the gift, her eyes sparkling with excitement.',
   'The old oak tree stood tall and majestic, its branches swaying gently in the breeze.',

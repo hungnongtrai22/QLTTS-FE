@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import CompanyEditView from 'src/sections/user/view/company-edit-view';
+import CompanyEditView from 'src/sections/user/view/company-new-edit-view';
 // sections
 
 // ----------------------------------------------------------------------

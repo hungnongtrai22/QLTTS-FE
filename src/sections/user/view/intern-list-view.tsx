@@ -213,12 +213,13 @@ export default function InternListView() {
     [router]
   );
 
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.intern.profile(id));
-    },
-    [router]
-  );
+ const handleViewRow = useCallback(
+  (id: string) => {
+    const url = paths.dashboard.intern.profile(id);
+    window.open(url, '_blank');
+  },
+  []
+);
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
