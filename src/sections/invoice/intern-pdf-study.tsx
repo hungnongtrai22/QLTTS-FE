@@ -34,7 +34,9 @@ const useStyles = () =>
         subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
           // backgroundColor: '#D8DEE9',
-          backgroundColor: '#D1E9F6',
+          // backgroundColor: '#D1E9F6',
+                    backgroundColor: '#77BEF0',
+
 
           display: 'flex',
           justifyContent: 'center',
@@ -562,9 +564,9 @@ const judgeJLPTResult = (
 
 export default function InternPDFStudy({ item, intern }: any) {
   const text = item.learningProcess;
-  const index = text.indexOf('語第');
-  const firstPart = text.substring(0, index); // `皆の日本`
-  const secondPart = text.substring(index); // `語第25課`
+  const index = text.indexOf('第');
+  const firstPart = text.substring(0, index); // `皆の日本語`
+  const secondPart = text.substring(index); // `第25課`
 
   const styles = useStyles();
   console.log('intern', intern);

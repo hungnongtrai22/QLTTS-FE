@@ -93,6 +93,8 @@ export default function InternPointForm({ internId }: Props) {
   const [monthSelect, setMonthSelect] = useState<Date | null>(null);
 
   const NewUserSchema = Yup.object().shape({
+    monthSelect: Yup.date()
+      .required('Tháng không được để trống'),
     health: Yup.number()
       .min(0, 'Tình trạng sức khỏe phải lớn hơn hoặc bằng 0')
       .max(100, 'Tình trạng sức khỏe phải bé hơn hoặc bằng 100')
@@ -124,7 +126,12 @@ export default function InternPointForm({ internId }: Props) {
     read: Yup.number()
       .min(0, 'Kỹ năng đọc hiểu phải lớn hơn hoặc bằng 0')
       .max(100, 'Kỹ năng đọc hiểu phải bé hơn hoặc bằng 100')
-      .required('Kỹ năng đọc hiểu không được để trống'),
+      .required('Kỹ năng đọc hiểu không được để trống')
+      .test(
+    'is-divisible-by-10',
+    'Kỹ năng đọc hiểu phải chia hết cho 10',
+    (value) => value === undefined || value % 10 === 0
+  ),
     listen: Yup.number()
       .min(0, 'Kỹ năng nghe hiểu phải lớn hơn hoặc bằng 0')
       .max(100, 'Kỹ năng nghe hiểu phải bé hơn hoặc bằng 100')
@@ -266,6 +273,15 @@ export default function InternPointForm({ internId }: Props) {
       }
     );
 
+     const { data: newData } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/study/getByInternId`,
+      {
+        internId,
+      }
+    );
+
+    console.log("NEW", newData)
+
     if (data === null) {
       // console.log("SET NULL");
       // setCurrentStudy(null);
@@ -290,7 +306,7 @@ export default function InternPointForm({ internId }: Props) {
         listeningComprehension: undefined,
         totalReadingAndListening: undefined,
         learningProcess: '',
-        characteristic: '',
+        characteristic: newData?.study?.characteristic ||'',
         comment: '',
         createdAt: '',
         monthSelect,
@@ -333,12 +349,16 @@ export default function InternPointForm({ internId }: Props) {
         ? Number(data.study.totalReadingAndListening)
         : undefined,
       learningProcess: data.study?.learningProcess || '',
-      characteristic: data.study?.characteristic || '',
+      characteristic: data?.study?.characteristic || newData?.study?.characteristic ||'',
       comment: data.study?.comment || '',
       createdAt: data.study?.createdAt || '',
       monthSelect: data.study?.monthAndYear || '',
     });
+
+
   }, [monthSelect, internId, reset, defaultValues]);
+
+
 
   useEffect(() => {
     handleGetStudyByMonth();
@@ -572,6 +592,7 @@ export default function InternPointForm({ internId }: Props) {
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
                     label={t('read')}
+                    inputProps={{ step: 10 }}
                   />
                 )}
               />

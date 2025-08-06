@@ -56,9 +56,9 @@ export default function CompanyTableRow({
   const deleteCompanyByTradeUnionHandler = useCallback(async (id: string) => {
     try {
       const { data } = await axios.post(
-        `${process.env.REACT_APP_HOST_API}/api/company/deleteByTradeUnion`,
+        `${process.env.REACT_APP_HOST_API}/api/company/delete`,
         {
-          tradeUnion: id,
+          _id: id,
         }
       );
     } catch (error) {
@@ -112,11 +112,11 @@ export default function CompanyTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
+          {/* <Tooltip title="Quick Edit" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
               <Iconify icon="solar:pen-bold" />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
 
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -151,18 +151,18 @@ export default function CompanyTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          Chỉnh Sửa
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="Xóa"
+        content="Bạn có chắc muốn xóa?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            Xóa
           </Button>
         }
       />
