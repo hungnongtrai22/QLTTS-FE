@@ -12,10 +12,23 @@ Font.register({
   fonts: [{ src: '/fonts/NotoSansJP-Regular.ttf' }, { src: '/fonts/NotoSansJP-Bold.ttf' }],
 });
 
+Font.register({
+  family: 'UD Digi Kyokasho N-R',
+  fonts: [{ src: '/fonts/UDDigiKyokashoN-R-01.ttf' }, { src: '/fonts/UDDigiKyokashoN-B-01.ttf' }],
+});
+
+Font.register({
+  family: 'Kosugi Maru',
+  fonts: [{ src: '/fonts/KosugiMaru-Regular.ttf' }],
+});
+
 const useStyles = () =>
   useMemo(
     () =>
       StyleSheet.create({
+        altFont: {
+          fontFamily: 'Noto Sans JP',
+        },
         col4: { width: '25%' },
         col8: { width: '75%' },
         col6: { width: '50%' },
@@ -35,8 +48,8 @@ const useStyles = () =>
         titleBackground: {
           // backgroundColor: '#D8DEE9',
           // backgroundColor: '#D1E9F6',
-                    backgroundColor: '#77BEF0',
-
+          // backgroundColor: '#77BEF0',
+          backgroundColor: '#A6E3E9',
 
           display: 'flex',
           justifyContent: 'center',
@@ -124,6 +137,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           // padding: 0,
         },
         noBorder: {
@@ -140,6 +156,9 @@ const useStyles = () =>
           borderColor: '#BCCCDC',
           padding: '3px 0',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_2: {
           padding: '3px 0',
@@ -152,6 +171,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_3: {
           width: '13.5%',
@@ -163,6 +185,9 @@ const useStyles = () =>
           height: '100%',
           padding: '3px 0',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_5: {
           width: '25%',
@@ -174,6 +199,9 @@ const useStyles = () =>
           height: '100%',
           padding: '3px 0',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_4: {
           width: '10.5%',
@@ -185,6 +213,9 @@ const useStyles = () =>
           height: '100%',
           padding: '3px 0',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_6: {
           padding: '3px 0',
@@ -197,6 +228,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_7: {
           padding: '3px 0',
@@ -209,6 +243,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_8: {
           padding: '3px 0',
@@ -221,6 +258,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_9: {
           padding: '3px 0',
@@ -233,6 +273,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_10: {
           padding: '3px 0',
@@ -245,6 +288,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_11: {
           padding: '3px 0',
@@ -257,6 +303,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_12: {
           padding: '3px 0',
@@ -269,6 +318,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_13: {
           padding: '3px 0',
@@ -281,6 +333,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_14: {
           padding: '3px 0',
@@ -293,6 +348,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_15: {
           padding: '3px 0',
@@ -305,6 +363,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_16: {
           padding: '3px 0',
@@ -317,6 +378,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_17: {
           padding: '3px 0',
@@ -329,6 +393,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_18: {
           padding: '3px 0',
@@ -341,6 +408,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_19: {
           padding: '3px 0',
@@ -353,6 +423,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_20: {
           padding: '3px 0',
@@ -365,6 +438,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_21: {
           padding: '3px 0',
@@ -377,6 +453,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_22: {
           padding: '3px 0',
@@ -389,6 +468,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_23: {
           padding: '3px 0',
@@ -401,6 +483,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         tableCell_24: {
           padding: '3px 0',
@@ -413,6 +498,9 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#BCCCDC',
           margin: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         textLeft: {
           textAlign: 'left',
@@ -465,7 +553,7 @@ const useStyles = () =>
 
         logoImage: {
           borderRadius: '50%',
-          opacity: 0.1, // Giảm độ trong suốt để tạo hiệu ứng mờ
+          opacity: 0.05, // Giảm độ trong suốt để tạo hiệu ứng mờ
         },
       }),
     []
@@ -580,7 +668,7 @@ export default function InternPDFStudy({ item, intern }: any) {
 
           <View>
             {/* <Text style={styles.h3}>{currentStatus}</Text> */}
-            <Text style={styles.subtitle3}>技能実習生事前教育評価表</Text>
+            <Text style={[styles.subtitle3, styles.altFont]}>技能実習生事前教育評価表</Text>
             {/* <Text style={styles.subtitle4}>
               8 TX01, Thanh Xuan Ward, District 12, Ho Chi Minh City, Vietnam
             </Text> */}
@@ -598,7 +686,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>組合・管理団体の名称</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>組合・管理団体の名称</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
@@ -607,75 +695,75 @@ export default function InternPDFStudy({ item, intern }: any) {
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>受け入れ企業の名称</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>受け入れ企業の名称</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{intern.companySelect.name}様</Text>
+                      <Text style={styles.altFont}>{intern.companySelect.name}様</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>実習生の氏名</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>実習生の氏名</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
                       <Text>{normalizeName(intern.name)}</Text>
-                      <Text>{intern.namejp}</Text>
+                      <Text style={styles.altFont}>{intern.namejp}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>性別</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>性別</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{intern.gender}</Text>
+                      <Text style={styles.altFont}>{intern.gender}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>生年月日</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>生年月日</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{changDateJP(intern.birthday)}</Text>
+                      <Text style={styles.altFont}>{changDateJP(intern.birthday)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>職種</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>職種</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{intern.job}</Text>
+                      <Text style={styles.altFont}>{intern.job}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>面接日</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>面接日</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{changDateJP(intern.interviewDate)}</Text>
+                      <Text style={styles.altFont}>{changDateJP(intern.interviewDate)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>入校日</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>入校日</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{changDateJP(intern.studyDate)}</Text>
+                      <Text style={styles.altFont}>{changDateJP(intern.studyDate)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>出国予定日</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>出国予定日</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textCenter]}>
-                      <Text>{changMonthYearJP(intern.startDate)}</Text>
+                      <Text style={styles.altFont}>{changMonthYearJP(intern.startDate)}</Text>
                     </View>
                   </View>
                 </View>
@@ -713,38 +801,38 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
                     <View style={[styles.tableCell_5, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>報告日</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>報告日</Text>
                     </View>
 
                     <View style={[styles.tableCell_11, styles.textCenter]}>
-                      <Text>{changDateJP(item.monthAndYear)}</Text>
+                      <Text style={styles.altFont}>{changDateJP(item.monthAndYear)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_5, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>報告期限</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>報告期限</Text>
                     </View>
 
                     <View style={[styles.tableCell_11, styles.textCenter]}>
-                      <Text>{item.time}ヶ月</Text>
+                      <Text style={styles.altFont}>{item.time}ヶ月</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_5, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>報告機関</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>報告機関</Text>
                     </View>
 
                     <View style={[styles.tableCell_11, styles.textCenter]}>
-                      <Text>NHAT TAN 人材育成・提供有限会社</Text>
+                      <Text style={styles.altFont}>NHAT TAN 人材育成・提供有限会社</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_5, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>報告部署</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>報告部署</Text>
                     </View>
 
                     <View style={[styles.tableCell_11, styles.textCenter]}>
-                      <Text>教育部</Text>
+                      <Text style={styles.altFont}>教育部</Text>
                     </View>
                   </View>
                 </View>
@@ -757,40 +845,40 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>(B) 一般評価</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>(B) 一般評価</Text>
                     </View>
                   </View>
                   <View style={[styles.tableRow]}>
                     <View style={[styles.tableCell_14, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>性格</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>性格</Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>健康</Text>
-                      <Text style={styles.subtitle2}>状態</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>健康</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>状態</Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>協調</Text>
-                      <Text style={styles.subtitle2}>性</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>協調</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>性</Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>出席</Text>
-                      <Text style={styles.subtitle2}>状況</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>出席</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>状況</Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>規律</Text>
-                      <Text style={styles.subtitle2}>厳守</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>規律</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>厳守</Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>学習</Text>
-                      <Text style={styles.subtitle2}>態度</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>学習</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>態度</Text>
                     </View>
                     <View style={[styles.tableCell_3, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>オリエ</Text>
-                      <Text style={styles.subtitle2}>ンテー</Text>
-                      <Text style={styles.subtitle2}>ション</Text>
-                      <Text style={styles.subtitle2}>知識</Text>
-                      <Text style={styles.subtitle2}>の取</Text>
-                      <Text style={styles.subtitle2}>得度</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>オリエ</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>ンテー</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>ション</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>知識</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>の取</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>得度</Text>
                     </View>
                   </View>
                 </View>
@@ -799,7 +887,9 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>(C) 日本語能力・知識習得度</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>
+                        (C) 日本語能力・知識習得度
+                      </Text>
                     </View>
                   </View>
                   <View style={[styles.tableRow]}>
@@ -807,25 +897,25 @@ export default function InternPDFStudy({ item, intern }: any) {
                       <View>
                         <View style={[styles.tableRow, { height: '40px' }]}>
                           <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>日本語能力</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>日本語能力</Text>
                           </View>
                         </View>
                         <View style={[styles.tableRow, { height: '53.5px' }]}>
                           <View style={[styles.tableCell_5, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>筆記</Text>
-                            <Text style={styles.subtitle2}>力</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>筆記</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>力</Text>
                           </View>
                           <View style={[styles.tableCell_5, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>読解</Text>
-                            <Text style={styles.subtitle2}>力</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>読解</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>力</Text>
                           </View>
                           <View style={[styles.tableCell_5, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>聴解</Text>
-                            <Text style={styles.subtitle2}>力</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>聴解</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>力</Text>
                           </View>
                           <View style={[styles.tableCell_5, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>会話</Text>
-                            <Text style={styles.subtitle2}>力</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>会話</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>力</Text>
                           </View>
                         </View>
                       </View>
@@ -834,7 +924,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                       <View>
                         <View style={[styles.tableRow, { height: '93.5px' }]}>
                           <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>学力</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>学力</Text>
                           </View>
                         </View>
                       </View>
@@ -843,18 +933,18 @@ export default function InternPDFStudy({ item, intern }: any) {
                       <View>
                         <View style={[styles.tableRow, { height: '40px' }]}>
                           <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>日本語能力</Text>
-                            <Text style={styles.subtitle2}>試験</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>日本語能力</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>試験</Text>
                           </View>
                         </View>
                         <View style={[styles.tableRow, { height: '53.5px' }]}>
                           <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>レベ</Text>
-                            <Text style={styles.subtitle2}>ル</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>レベ</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>ル</Text>
                           </View>
                           <View style={[styles.tableCell_15, styles.titleNoBackground]}>
-                            <Text style={styles.subtitle2}>合格</Text>
-                            <Text style={styles.subtitle2}>判定</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>合格</Text>
+                            <Text style={[styles.subtitle2, styles.altFont]}>判定</Text>
                           </View>
                         </View>
                       </View>
@@ -869,8 +959,8 @@ export default function InternPDFStudy({ item, intern }: any) {
                       style={[styles.tableCell_13, styles.titleNoBackground, { height: '115px' }]}
                     >
                       <Text style={styles.subtitle2}>(D)</Text>
-                      <Text style={styles.subtitle2}>総合</Text>
-                      <Text style={styles.subtitle2}>評価</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>総合</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>評価</Text>
                     </View>
                   </View>
                 </View>
@@ -881,8 +971,8 @@ export default function InternPDFStudy({ item, intern }: any) {
                     <View
                       style={[styles.tableCell_13, styles.titleNoBackground, { height: '115px' }]}
                     >
-                      <Text style={styles.subtitle2}>学習進</Text>
-                      <Text style={styles.subtitle2}>捗</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>学習進</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>捗</Text>
                     </View>
                   </View>
                 </View>
@@ -893,7 +983,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { height: '40px' }]}>
                     <View style={[styles.tableCell_14, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>{item.characteristic}</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>{item.characteristic}</Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>
                       <Text style={styles.subtitle2}>{transPointToSharp(item.health)}</Text>
@@ -992,8 +1082,8 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { height: '40px' }]}>
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>{firstPart}</Text>
-                      <Text style={styles.subtitle2}>{secondPart}</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>{firstPart}</Text>
+                      <Text style={[styles.subtitle2, styles.altFont]}>{secondPart}</Text>
                     </View>
                   </View>
                 </View>
@@ -1006,7 +1096,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { borderTopWidth: '1px' }]}>
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                      <Text style={styles.subtitle2}>
+                      <Text style={[styles.subtitle2, styles.altFont]}>
                         {htmlToText(item.comment, {
                           wordwrap: false,
                           preserveNewlines: true,
@@ -1028,7 +1118,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                         <Text style={styles.subtitle2}>(B) (C)</Text>
                       </View>
                       <View style={[styles.tableCell_18, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>(D)総合評価</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>(D)総合評価</Text>
                       </View>
                     </View>
                     <View style={[styles.tableRow]}>
@@ -1036,19 +1126,19 @@ export default function InternPDFStudy({ item, intern }: any) {
                         <Text style={styles.subtitle2}>●</Text>
                       </View>
                       <View style={[styles.tableCell_8, styles.titleNoBackground]}>
-                        <Text>＜100点</Text>
+                        <Text style={styles.altFont}>＜100点</Text>
                       </View>
                       <View style={[styles.tableCell_19, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>秀</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>秀</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
                         <Text>100%</Text>
                       </View>
                       <View style={[styles.tableCell_21, styles.titleNoBackground]}>
-                        <Text>(D) ＜1000満点</Text>
+                        <Text style={styles.altFont}>(D) ＜1000満点</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>秀</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>秀</Text>
                       </View>
                     </View>
                     <View style={[styles.tableRow]}>
@@ -1056,19 +1146,19 @@ export default function InternPDFStudy({ item, intern }: any) {
                         <Text style={styles.subtitle2}>◎</Text>
                       </View>
                       <View style={[styles.tableCell_8, styles.titleNoBackground]}>
-                        <Text>＜90点</Text>
+                        <Text style={styles.altFont}>＜90点</Text>
                       </View>
                       <View style={[styles.tableCell_19, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>優</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>優</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
                         <Text>90%</Text>
                       </View>
                       <View style={[styles.tableCell_21, styles.titleNoBackground]}>
-                        <Text>(D) ＜900点</Text>
+                        <Text style={styles.altFont}>(D) ＜900点</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>優</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>優</Text>
                       </View>
                     </View>
                     <View style={[styles.tableRow]}>
@@ -1076,19 +1166,19 @@ export default function InternPDFStudy({ item, intern }: any) {
                         <Text style={styles.subtitle2}>○</Text>
                       </View>
                       <View style={[styles.tableCell_8, styles.titleNoBackground]}>
-                        <Text>＜80点</Text>
+                        <Text style={styles.altFont}>＜80点</Text>
                       </View>
                       <View style={[styles.tableCell_19, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>良</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>良</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
                         <Text>80%</Text>
                       </View>
                       <View style={[styles.tableCell_21, styles.titleNoBackground]}>
-                        <Text>(D) ＜800点</Text>
+                        <Text style={styles.altFont}>(D) ＜800点</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>良</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>良</Text>
                       </View>
                     </View>
                     <View style={[styles.tableRow]}>
@@ -1096,19 +1186,19 @@ export default function InternPDFStudy({ item, intern }: any) {
                         <Text style={styles.subtitle2}>△</Text>
                       </View>
                       <View style={[styles.tableCell_8, styles.titleNoBackground]}>
-                        <Text>＜70点</Text>
+                        <Text style={styles.altFont}>＜70点</Text>
                       </View>
                       <View style={[styles.tableCell_19, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>可</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>可</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
                         <Text>70%</Text>
                       </View>
                       <View style={[styles.tableCell_21, styles.titleNoBackground]}>
-                        <Text>(D) ＜700点</Text>
+                        <Text style={styles.altFont}>(D) ＜700点</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>可</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>可</Text>
                       </View>
                     </View>
                     <View style={[styles.tableRow]}>
@@ -1116,19 +1206,19 @@ export default function InternPDFStudy({ item, intern }: any) {
                         <Text style={styles.subtitle2}>×</Text>
                       </View>
                       <View style={[styles.tableCell_8, styles.titleNoBackground]}>
-                        <Text>＜50点</Text>
+                        <Text style={styles.altFont}>＜50点</Text>
                       </View>
                       <View style={[styles.tableCell_19, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>不可</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>不可</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
-                        <Text>50%以下</Text>
+                        <Text style={styles.altFont}>50%以下</Text>
                       </View>
                       <View style={[styles.tableCell_21, styles.titleNoBackground]}>
-                        <Text>(D) ＜500点</Text>
+                        <Text style={styles.altFont}>(D) ＜500点</Text>
                       </View>
                       <View style={[styles.tableCell_22, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>不可</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>不可</Text>
                       </View>
                     </View>
                   </View>
@@ -1139,18 +1229,18 @@ export default function InternPDFStudy({ item, intern }: any) {
                       style={[styles.tableRow, { borderTopWidth: '1px', borderLeftWidth: '1px' }]}
                     >
                       <View style={[styles.tableCell_13, styles.titleNoBackground]}>
-                        <Text style={styles.subtitle2}>（C）学力</Text>
+                        <Text style={[styles.subtitle2, styles.altFont]}>（C）学力</Text>
                       </View>
                     </View>
                     <View style={[styles.tableRow, { borderLeftWidth: '1px' }]}>
                       <View style={[styles.tableCell_24, styles.titleNoBackground]}>
-                        <Text>90点≦平均点数≦100点</Text>
+                        <Text style={styles.altFont}>90点≦平均点数≦100点</Text>
                       </View>
                       <View style={[styles.tableCell_23, styles.titleNoBackground]}>
                         <Text style={styles.subtitle2}>A+</Text>
                       </View>
                       <View style={[styles.tableCell_24, styles.titleNoBackground]}>
-                        <Text>60点≦平均点数＜70点</Text>
+                        <Text style={styles.altFont}>60点≦平均点数＜70点</Text>
                       </View>
                       <View style={[styles.tableCell_23, styles.titleNoBackground]}>
                         <Text style={styles.subtitle2}>B</Text>
@@ -1158,13 +1248,13 @@ export default function InternPDFStudy({ item, intern }: any) {
                     </View>
                     <View style={[styles.tableRow, { borderLeftWidth: '1px' }]}>
                       <View style={[styles.tableCell_24, styles.titleNoBackground]}>
-                        <Text>80点≦平均点数＜90点</Text>
+                        <Text style={styles.altFont}>80点≦平均点数＜90点</Text>
                       </View>
                       <View style={[styles.tableCell_23, styles.titleNoBackground]}>
                         <Text style={styles.subtitle2}>A</Text>
                       </View>
                       <View style={[styles.tableCell_24, styles.titleNoBackground]}>
-                        <Text>50点≦平均点数＜60点</Text>
+                        <Text style={styles.altFont}>50点≦平均点数＜60点</Text>
                       </View>
                       <View style={[styles.tableCell_23, styles.titleNoBackground]}>
                         <Text style={styles.subtitle2}>B-</Text>
@@ -1172,13 +1262,13 @@ export default function InternPDFStudy({ item, intern }: any) {
                     </View>
                     <View style={[styles.tableRow, { borderLeftWidth: '1px' }]}>
                       <View style={[styles.tableCell_24, styles.titleNoBackground]}>
-                        <Text>70点≦平均点数＜80点</Text>
+                        <Text style={styles.altFont}>70点≦平均点数＜80点</Text>
                       </View>
                       <View style={[styles.tableCell_23, styles.titleNoBackground]}>
                         <Text style={styles.subtitle2}>B+</Text>
                       </View>
                       <View style={[styles.tableCell_24, styles.titleNoBackground]}>
-                        <Text>0点≦平均点数＜50点</Text>
+                        <Text style={styles.altFont}>0点≦平均点数＜50点</Text>
                       </View>
                       <View style={[styles.tableCell_23, styles.titleNoBackground]}>
                         <Text style={styles.subtitle2}>C</Text>

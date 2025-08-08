@@ -54,7 +54,7 @@ import InternTableToolbarWithSource from '../intern-table-toolbar-with-source';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'Tất cả' }, ...USER_STATUS_OPTIONS];
+// const STATUS_OPTIONS = [{ value: 'all', label: 'Tất cả' }, ...USER_STATUS_OPTIONS];
 
 const defaultFilters = {
   name: '',
@@ -88,6 +88,13 @@ export default function InternListView() {
     { id: 'createdAt', label: t('create_date'), width: 120 },
     // { id: 'createDate', label: t('create_date'), width: 120 },
     { id: '', width: 88 },
+  ];
+
+    const STATUS_OPTIONS = [
+    { value: 'all', label: t('all') },
+    { value: 'study', label: t('studying') },
+    { value: 'pass', label: t('pass') },
+    { value: 'complete', label: t('complete') },
   ];
 
   const table = useTable();

@@ -14,7 +14,8 @@
 
 .thead,
 tfoot {
-  background-color: rgb(228 240 245);
+  /* background-color: rgb(228 240 245); */
+   background-color: #A6E3E9;
 }
 
 .th,

@@ -37,13 +37,17 @@ const useStyles = () =>
         subtitle3: { fontSize: 12, fontWeight: 700, textAlign: 'center' },
         subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
-          backgroundColor: '#578FCA',
+          // backgroundColor: '#578FCA',
+                    backgroundColor: '#A6E3E9',
+
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         },
         titleBackgroundYellow: {
-          backgroundColor: '#FADA7A',
+          // backgroundColor: '#FADA7A',
+          // backgroundColor: '#F9ED69',
+          backgroundColor: '#FFFFD2',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -55,7 +59,9 @@ const useStyles = () =>
           alignItems: 'center',
         },
         titleBackgroundRed: {
-          backgroundColor: '#E14434',
+          // backgroundColor: '#E14434',
+          // backgroundColor: '#E84545',
+          backgroundColor: '#F67280',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -542,7 +548,7 @@ const useStyles = () =>
           borderRadius: '50%',
                     // zIndex: -1,
 
-          opacity: 0.1, // Giảm độ trong suốt để tạo hiệu ứng mờ
+          opacity: 0.05, // Giảm độ trong suốt để tạo hiệu ứng mờ
         },
       }),
     []

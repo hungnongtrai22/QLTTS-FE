@@ -51,7 +51,7 @@ import InternByDongThapTableToolbar from '../intern-by-dong-thap-table-toolbar';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+// const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 
 
@@ -78,6 +78,13 @@ export default function InternListByDongThapView() {
   { id: 'weight', label: t('weight'), width: 80 },
   { id: '', width: 88 },
 ];
+
+  const STATUS_OPTIONS = [
+    { value: 'all', label: t('all') },
+    { value: 'study', label: t('studying') },
+    { value: 'pass', label: t('pass') },
+    { value: 'complete', label: t('complete') },
+  ];
 
   const settings = useSettingsContext();
 

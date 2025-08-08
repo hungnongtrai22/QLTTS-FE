@@ -9,7 +9,9 @@ const useStyles = () =>
     () =>
       StyleSheet.create({
         titleBackgroundYellow: {
-          backgroundColor: '#FADA7A',
+          // backgroundColor: '#FADA7A',
+                    backgroundColor: '#FFFFD2',
+
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -21,13 +23,16 @@ const useStyles = () =>
           alignItems: 'center',
         },
         titleBackgroundRed: {
-          backgroundColor: '#E14434',
+          // backgroundColor: '#E14434',
+                    backgroundColor: '#F67280',
+
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         },
         titleBackgroundGreen: {
-          backgroundColor: '#B6F500',
+          // backgroundColor: '#B6F500',
+          backgroundColor: '#E0F9B5',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
