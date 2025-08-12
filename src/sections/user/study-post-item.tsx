@@ -35,6 +35,11 @@ import Button from '@mui/material/Button';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useAuthContext } from 'src/auth/hooks';
 
+import { Tooltip } from '@mui/material';
+import { saveAs } from 'file-saver';
+import { pdf } from '@react-pdf/renderer';
+import { t } from 'i18next';
+import AllStudyPDF from '../order/AllStudyPDF';
 import styles from './study-style.module.css';
 
 // ----------------------------------------------------------------------
@@ -112,6 +117,7 @@ const judgeJLPTResult = (
 
 export default function StudyPostItem({ study, intern, onRemove }: Props) {
   const { user } = useAuthContext();
+  const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
 
   const popover = usePopover();
 
@@ -168,9 +174,11 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
         </Box>
       }
       action={
-        user?.role === "admin"  && <IconButton>
-          <Iconify icon="eva:more-vertical-fill" onClick={popover.onOpen} />
-        </IconButton>
+        user?.role === 'admin' && (
+          <IconButton>
+            <Iconify icon="eva:more-vertical-fill" onClick={popover.onOpen} />
+          </IconButton>
+        )
       }
     />
   );
@@ -193,15 +201,26 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
             justifyContent="space-between"
             direction={{ xs: 'column', sm: 'row' }}
           >
-            <Box sx={{ typography: 'subtitle2' }}>日本語の先生</Box>
+            <Box sx={{ typography: 'subtitle2' }}>コメント</Box>
 
-            {/* <Box sx={{ typography: 'caption', color: 'text.disabled' }}>{fDate(new Date())}</Box> */}
+            {/* <Box sx={{ typography: 'caption', color: 'text.disabled' }}>担当教師</Box> */}
           </Stack>
 
           <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
             {/* {study.comment} */}
             <Markdown children={study.comment} />
           </Box>
+
+              <Stack
+            // sx={{ mb: 0.5 }}
+            alignItems='flex-end' 
+            // justifyContent="space-between"
+            // direction={{ xs: 'column', sm: 'row' }}
+          >
+            {/* <Box sx={{ typography: 'subtitle2' }}>コメント</Box> */}
+
+            <Box sx={{ typography: 'caption', color: 'text.disabled' }}>担当教師: {study?.teacher}</Box>
+          </Stack>
         </Paper>
       </Stack>
     </Stack>
@@ -643,7 +662,30 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <MenuItem
+         <MenuItem
+          sx={{ color: 'success.main' }}
+          onClick={async () => {
+            try {
+              setLoadingDownloadAll(true);
+              const blob = await pdf(<AllStudyPDF intern={intern} study={[study]} />).toBlob();
+              saveAs(blob, `${intern?.name || 'Test'}.pdf`);
+            } catch (error) {
+              console.error('Lỗi khi tạo PDF:', error);
+            } finally {
+              setLoadingDownloadAll(false);
+            }
+          }}
+        >
+          <Iconify
+            icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'}
+            // width={32} // tăng kích thước icon (mặc định ~24)
+            // height={32}
+            color="success.main"
+          />
+          {t('download')}
+          {/* {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'} */}
+        </MenuItem>
+        {user?.role === "admin" && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -652,7 +694,8 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
           Xóa
-        </MenuItem>
+        </MenuItem>}
+       
       </CustomPopover>
 
       <ConfirmDialog

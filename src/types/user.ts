@@ -170,6 +170,7 @@ export type IStudyItem = {
   comment: string;
   createdAt: any;
   monthAndYear: any;
+  teacher: string;
 };
 
 export type IInternItem = {

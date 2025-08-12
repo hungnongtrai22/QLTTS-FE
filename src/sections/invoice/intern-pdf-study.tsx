@@ -835,6 +835,17 @@ export default function InternPDFStudy({ item, intern }: any) {
                       <Text style={styles.altFont}>教育部</Text>
                     </View>
                   </View>
+                  {item.teacher && (
+                    <View style={styles.tableRow}>
+                      <View style={[styles.tableCell_5, styles.titleBackground]}>
+                        <Text style={[styles.subtitle2, styles.altFont]}>担当教師</Text>
+                      </View>
+
+                      <View style={[styles.tableCell_11, styles.textCenter]}>
+                        <Text style={styles.altFont}>{item.teacher}</Text>
+                      </View>
+                    </View>
+                  )}
                 </View>
               </View>
             </View>

@@ -40,6 +40,7 @@ import { useSnackbar } from 'src/components/snackbar';
 
 import LoadingButton from '@mui/lab/LoadingButton';
 import { characteristicList } from 'src/utils/characteristic';
+import { teacherList } from 'src/utils/teacher';
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -68,6 +69,8 @@ interface FormValuesProps extends Omit<IStudyItem, 'avatarUrl'> {
   totalReadingAndListening: number;
   learningProcess: string;
   characteristic: string;
+    teacher: string;
+
   comment: string;
   createdAt: any;
   monthSelect: any;
@@ -171,6 +174,8 @@ export default function InternPointForm({ internId }: Props) {
       totalReadingAndListening: undefined,
       learningProcess: '',
       characteristic: '',
+            teacher: '',
+
       comment: '',
       createdAt: '',
       // school: currentIntern?.school || [],
@@ -240,7 +245,7 @@ export default function InternPointForm({ internId }: Props) {
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
-        // console.log('monthSelect', monthSelect);
+        console.log('data', data);
         // console.log(currentStudy);
         if (data?._id !== '') {
           await editStudy(data);
@@ -307,6 +312,8 @@ export default function InternPointForm({ internId }: Props) {
         totalReadingAndListening: undefined,
         learningProcess: '',
         characteristic: newData?.study?.characteristic ||'',
+                teacher: newData?.study?.teacher ||'',
+
         comment: '',
         createdAt: '',
         monthSelect,
@@ -350,6 +357,8 @@ export default function InternPointForm({ internId }: Props) {
         : undefined,
       learningProcess: data.study?.learningProcess || '',
       characteristic: data?.study?.characteristic || newData?.study?.characteristic ||'',
+            teacher: data?.study?.teacher || newData?.study?.teacher ||'',
+
       comment: data.study?.comment || '',
       createdAt: data.study?.createdAt || '',
       monthSelect: data.study?.monthAndYear || '',
@@ -773,6 +782,18 @@ export default function InternPointForm({ internId }: Props) {
                 disablePortal
                 freeSolo
                 options={characteristicList}
+                renderOption={(props, option) => (
+                  <li {...props} key={option} value={option}>
+                    {option}
+                  </li>
+                )}
+              />
+                <RHFAutocomplete
+                name="teacher"
+                label={t('teacher') || ''}
+                disablePortal
+                freeSolo
+                options={teacherList}
                 renderOption={(props, option) => (
                   <li {...props} key={option} value={option}>
                     {option}

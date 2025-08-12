@@ -237,8 +237,10 @@
   "increase": "増加",
 "decrease": "減少",
   "user_profile": "技能実習生情報",
-
 "sub": "前月比",
+"download": "ダウンロード",
+    "teacher": "教師",
+
   "demo": {
     "title": "英語"
   }
