@@ -240,9 +240,9 @@
   "learn_listen": "Nghe",
   "learn_speak": "Nói",
   "learn_write": "Viết",
-  "increase": "Tăng",
-  "decrease": "Giảm",
-  "sub": "điểm so với tháng trước",
+  "increase": "Tăng ",
+  "decrease": "Giảm ",
+  "sub": " điểm so với tháng trước",
   "demo": {
     "title": "Vietnamese"
   }
