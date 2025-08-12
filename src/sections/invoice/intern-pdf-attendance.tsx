@@ -38,7 +38,8 @@ const useStyles = () =>
         subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
           // backgroundColor: '#578FCA',
-                    backgroundColor: '#A6E3E9',
+                    // backgroundColor: '#A6E3E9',
+                    backgroundColor: '#799EFF',
 
           display: 'flex',
           justifyContent: 'center',
@@ -61,7 +62,8 @@ const useStyles = () =>
         titleBackgroundRed: {
           // backgroundColor: '#E14434',
           // backgroundColor: '#E84545',
-          backgroundColor: '#F67280',
+          // backgroundColor: '#F67280',
+          backgroundColor: '#FF9B00',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',

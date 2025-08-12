@@ -38,6 +38,7 @@ import { t } from 'i18next';
 import ProfilePostItem from './profile-post-item';
 import StudyPostItem from './study-post-item';
 import AllStudyPDF from '../order/AllStudyPDF';
+import AppAreaInstalled from '../overview/app/app-area-installed';
 
 // ----------------------------------------------------------------------
 
@@ -77,6 +78,10 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
     setStudy(data.studies);
   }, [currentIntern]);
 
+  const handleRemoveStudy = useCallback(async (id: any) => {
+    setStudy((pre: any) => pre.filter((item: any) => item._id !== id));
+  }, []);
+
   useEffect(() => {
     handleGetContactByInternId();
     handleGetByInternId();
@@ -91,7 +96,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
         <Stack width={1}>
           {/* {fNumber(info.totalFollowers)} */}
           <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-            <Tooltip title={t('download_study') || ""}>
+            <Tooltip title={t('download_study') || ''}>
               <IconButton
                 onClick={async () => {
                   try {
@@ -107,19 +112,24 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
                   }
                 }}
               >
-                <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
+                <Iconify
+                  icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'}
+                  width={32} // tăng kích thước icon (mặc định ~24)
+                  height={32}
+                  color="success.main"
+                />
                 {/* {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'} */}
               </IconButton>
             </Tooltip>
           </Box>
         </Stack>
 
-        <Stack width={1}>
-          {/* {fNumber(info.totalFollowing)}
+        {/* <Stack width={1}>
+           {fNumber(info.totalFollowing)}
           <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
             Following
-          </Box> */}
-        </Stack>
+          </Box> 
+        </Stack> */}
       </Stack>
     </Card>
   );
@@ -290,8 +300,80 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
     </Card>
   );
 
+  console.log("sd", study);
+  const studyCate = study.map((item : any)=>item.time).reverse();
+    const studyTotal = study.map((item : any)=>item.total).reverse();
+    const studyListen = study.map((item : any)=>item.listen).reverse();
+    const studyRead = study.map((item : any)=>item.read).reverse();
+    const studySpeak = study.map((item : any)=>item.speak).reverse();
+    const studyWrite = study.map((item : any)=>item.write).reverse();
+    let result = 0;
+    if(studyTotal.length >= 2){
+      result = studyTotal[studyTotal.length - 1] - studyTotal[studyTotal.length - 1 - 1];
+    }
+
   return (
     <Grid container spacing={3}>
+          <Grid xs={24} md={24} lg={24}>
+          <AppAreaInstalled
+            title={t('learning_ability') || ""}
+            subheader={`${result >= 0 ? t('increase') : t('decrease')}${Math.abs(result)}${t('sub')}`}
+            chart={{
+              // categories: [
+              //   '一月',
+              //   '二月',
+              //   '三月',
+              //   '四月	',
+              //   '五月',
+              //   '六月	',
+              //   '七月',
+              //   '八月',
+              //   '九月',
+              //   '十月	',
+              //   '十一月	',
+              //   '十二月	',
+              // ]
+              categories: studyCate,
+              series: [
+                {
+                  year: t('learn_total'),
+                  data: [
+                    {
+                      name: t('learn_total'),
+                      data: studyTotal,
+                    },
+                    // {
+                    //   name: 'America',
+                    //   data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
+                    // },
+                  ],
+                },
+                {
+                  year: t('learn_part'),
+                  data: [
+                    {
+                      name: t('learn_listen'),
+                      data: studyListen,
+                    },
+                    {
+                      name: t('learn_read'),
+                      data: studyRead,
+                    },
+                      {
+                      name: t('learn_speak'),
+                      data: studySpeak,
+                    },
+                      {
+                      name: t('learn_write'),
+                      data: studyWrite,
+                    },
+                  ],
+                },
+              ],
+            }}
+          />
+        </Grid>
+
       {user?.role === 'admin' && (
         <Grid xs={12} md={4}>
           <Stack spacing={3}>
@@ -304,14 +386,19 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
         </Grid>
       )}
 
+      {user?.role !== 'admin' && (
+        <Grid xs={24} md={24} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Stack spacing={3}>{renderFollows}</Stack>
+        </Grid>
+      )}
+
       <Grid xs={user?.role === 'admin' ? 12 : 24} md={user?.role === 'admin' ? 8 : 24}>
         <Stack spacing={3}>
           {/* {renderPostInput} */}
-                      {renderFollows}
-
+          {/* {renderFollows} */}
 
           {study.map((item) => (
-            <StudyPostItem key={item._id} study={item} intern={currentIntern || null} />
+            <StudyPostItem key={item._id} study={item} intern={currentIntern || null} onRemove={handleRemoveStudy}/>
           ))}
         </Stack>
       </Grid>

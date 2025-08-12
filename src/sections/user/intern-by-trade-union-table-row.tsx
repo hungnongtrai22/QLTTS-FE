@@ -31,10 +31,24 @@ type Props = {
 };
 
 const changDateJP = (date: any) => {
+  if(date === null){
+    return "";
+  }
   const jsDate = new Date(date);
   const formatted = jsDate.toLocaleDateString('ja-JP');
   const parts = formatted.split('/');
   const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  return customFormat;
+};
+
+const changMonthJP = (date: any) => {
+  if(date === null){
+    return "";
+  }
+  const jsDate = new Date(date);
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
+  const customFormat = `${parts[0]}年${parts[1]}月`;
   return customFormat;
 };
 
@@ -46,7 +60,7 @@ export default function InternByTradeUnionTableRow({
   onDeleteRow,
   onViewRow,
 }: Props) {
-  const { name, namejp, avatar, city, birthday, age, height, weight } = row;
+  const { name, namejp, avatar, city, birthday, interviewDate, studyDate, startDate, companySelect } = row;
 
   const confirm = useBoolean();
 
@@ -72,15 +86,15 @@ export default function InternByTradeUnionTableRow({
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{city}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{companySelect?.name}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(birthday)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{age}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(interviewDate)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{height}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changDateJP(studyDate)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{weight}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{changMonthJP(startDate)}</TableCell>
 
         {/* <TableCell>
           <Label

@@ -10,7 +10,7 @@ const useStyles = () =>
       StyleSheet.create({
         titleBackgroundYellow: {
           // backgroundColor: '#FADA7A',
-                    backgroundColor: '#FFFFD2',
+          backgroundColor: '#FFFFD2',
 
           display: 'flex',
           justifyContent: 'center',
@@ -24,7 +24,8 @@ const useStyles = () =>
         },
         titleBackgroundRed: {
           // backgroundColor: '#E14434',
-                    backgroundColor: '#F67280',
+          // backgroundColor: '#F67280',
+          backgroundColor: '#FF9B00',
 
           display: 'flex',
           justifyContent: 'center',
@@ -214,7 +215,7 @@ export default function InternPDFAttendanceItem({ int, i, month, year, checkEven
 
               <View style={[styles.tableCell_29, styles.textCenter]}>
                 <Text>{int.name}</Text>
-                <Text style={{fontSize: '8px'}}>{int.namejp}</Text>
+                <Text style={{ fontSize: '8px' }}>{int.namejp}</Text>
               </View>
             </View>
           </View>

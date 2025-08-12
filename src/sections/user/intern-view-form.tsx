@@ -28,10 +28,10 @@ import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { viVN } from '@mui/x-date-pickers/locales';
+import { jaJP } from '@mui/x-date-pickers/locales';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from 'dayjs';
-import 'dayjs/locale/vi';
+import 'dayjs/locale/ja';
 import { useLocales } from 'src/locales';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { strongJPs, strongVNs } from 'src/utils/strong';
@@ -151,7 +151,7 @@ const initFamily = [
   },
 ];
 
-dayjs.locale('vi');
+dayjs.locale('ja');
 
 export default function InternViewForm({ currentIntern }: Props) {
   // const router = useRouter();
@@ -262,6 +262,25 @@ export default function InternViewForm({ currentIntern }: Props) {
     },
     [setValue]
   );
+
+  // console.log("DATE", new Date(currentIntern?.studyDate).getMonth());
+  // console.log("DATE", new Date().getMonth());
+ let monthStudy = 0;
+
+if (currentIntern?.studyDate) {
+  const start = new Date(currentIntern.studyDate);
+  const now = new Date();
+  
+  monthStudy = (now.getFullYear() - start.getFullYear()) * 12 
+             + (now.getMonth() - start.getMonth());
+  
+  // Nếu muốn tính luôn phần ngày (ví dụ chưa đủ 1 tháng vẫn tính 1)
+  // thì có thể +1 nếu ngày hiện tại >= ngày bắt đầu
+  // if (now.getDate() >= start.getDate()) monthStudy++;
+} else {
+  monthStudy = 0;
+}
+
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -561,8 +580,8 @@ export default function InternViewForm({ currentIntern }: Props) {
                 render={({ field, fieldState: { error } }) => (
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                    adapterLocale="ja"
+                    localeText={jaJP.components.MuiLocalizationProvider.defaultProps.localeText}
                   >
                     <DatePicker
                       label={t('birthday')}
@@ -856,8 +875,8 @@ export default function InternViewForm({ currentIntern }: Props) {
                     render={({ field, fieldState: { error } }) => (
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
-                        adapterLocale="vi"
-                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                        adapterLocale="ja"
+                        localeText={jaJP.components.MuiLocalizationProvider.defaultProps.localeText}
                       >
                         <DatePicker
                           label={t('start_date')}
@@ -885,8 +904,8 @@ export default function InternViewForm({ currentIntern }: Props) {
                     render={({ field, fieldState: { error } }) => (
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
-                        adapterLocale="vi"
-                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                        adapterLocale="ja"
+                        localeText={jaJP.components.MuiLocalizationProvider.defaultProps.localeText}
                       >
                         <DatePicker
                           label={t('end_date')}
@@ -970,8 +989,8 @@ export default function InternViewForm({ currentIntern }: Props) {
                     render={({ field, fieldState: { error } }) => (
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
-                        adapterLocale="vi"
-                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                        adapterLocale="ja"
+                        localeText={jaJP.components.MuiLocalizationProvider.defaultProps.localeText}
                       >
                         <DatePicker
                           label={t('start_date')}
@@ -999,8 +1018,8 @@ export default function InternViewForm({ currentIntern }: Props) {
                     render={({ field, fieldState: { error } }) => (
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
-                        adapterLocale="vi"
-                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                        adapterLocale="ja"
+                        localeText={jaJP.components.MuiLocalizationProvider.defaultProps.localeText}
                       >
                         <DatePicker
                           label={t('end_date')}
@@ -1083,8 +1102,8 @@ export default function InternViewForm({ currentIntern }: Props) {
                     render={({ field, fieldState: { error } }) => (
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
-                        adapterLocale="vi"
-                        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                        adapterLocale="ja"
+                        localeText={jaJP.components.MuiLocalizationProvider.defaultProps.localeText}
                       >
                         <DatePicker
                           label={t('year')}
@@ -1217,19 +1236,28 @@ export default function InternViewForm({ currentIntern }: Props) {
                   </li>
                 )}
               />
-              <RHFSelect
-                fullWidth
-                name="foreignLanguage"
-                label={t('foreign_language')}
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-                sx={{ pointerEvents: 'none', opacity: 1 }}
-              >
-                {['日本語：簡単な自己紹介ができます', 'なし'].map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
+              {currentIntern?.status === 'study' && monthStudy > 0 ? (
+                <RHFTextField
+                  name="new"
+                  value={`${monthStudy}か月間勉強しています`}
+                  label={t('foreign_language')}
+                  sx={{ pointerEvents: 'none', opacity: 1 }}
+                />
+              ) : (
+                <RHFSelect
+                  fullWidth
+                  name="foreignLanguage"
+                  label={t('foreign_language')}
+                  PaperPropsSx={{ textTransform: 'capitalize' }}
+                  sx={{ pointerEvents: 'none', opacity: 1 }}
+                >
+                  {['日本語：簡単な自己紹介ができます', 'なし'].map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+              )}
               <RHFTextField
                 name="aim"
                 label={t('aim')}

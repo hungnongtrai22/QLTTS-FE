@@ -223,6 +223,22 @@
 "welcome_back": "お戻りなさいませ",
   "content": "実習生の情報を更新する場合は、常に正確かつ完全なデータであることを確認してください。",
   "go_now": "今すぐ開始",
+  "edit_company": "会社を編集",
+"date_interview": "面接日",
+"date_study": "入学日",
+"date_import": "入国日",
+ "learning_ability": "学習能力",
+  "learn_total": "総合評価",
+  "learn_part": "部分評価",
+  "learn_read": "読解力",
+  "learn_listen": "聴解力",
+  "learn_speak": "会話力",
+  "learn_write": "筆記力",
+  "increase": "増加",
+"decrease": "減少",
+  "user_profile": "技能実習生情報",
+
+"sub": "前月比",
   "demo": {
     "title": "英語"
   }

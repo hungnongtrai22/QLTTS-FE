@@ -11,6 +11,7 @@ import Card, { CardProps } from '@mui/material/Card';
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
@@ -35,9 +36,15 @@ export default function AppAreaInstalled({ title, subheader, chart, ...other }: 
   const theme = useTheme();
 
   const {
+    // colors = [
+    //   [theme.palette.primary.light, theme.palette.primary.main],
+    //   [theme.palette.warning.light, theme.palette.warning.main],
+    // ],
     colors = [
-      [theme.palette.primary.light, theme.palette.primary.main],
-      [theme.palette.warning.light, theme.palette.warning.main],
+      ['#26A69A', '#00A76F'], // Listen
+      ['#FFD666', '#FFB400'], // Read
+      ['#4FC3F7', '#00B8D9'], // Speak
+      ['#FF8A65', '#FF5630'], // Write
     ],
     categories,
     series,
@@ -46,7 +53,7 @@ export default function AppAreaInstalled({ title, subheader, chart, ...other }: 
 
   const popover = usePopover();
 
-  const [seriesData, setSeriesData] = useState('2019');
+  const [seriesData, setSeriesData] = useState(t('learn_total'));
 
   const chartOptions = useChart({
     colors: colors.map((colr) => colr[1]),

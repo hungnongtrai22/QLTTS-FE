@@ -90,11 +90,12 @@ export default function InternListView() {
     { id: '', width: 88 },
   ];
 
-    const STATUS_OPTIONS = [
+  const STATUS_OPTIONS = [
     { value: 'all', label: t('all') },
     { value: 'study', label: t('studying') },
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
+    { value: 'soon', label: t('soon') },
   ];
 
   const table = useTable();
@@ -131,29 +132,26 @@ export default function InternListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleGetCompany = useCallback(
-    async (tradeUnionName: any) => {
-      const { data: newData } = await axios.post(
-        `${process.env.REACT_APP_HOST_API}/api/tradeUnion/findByName`,
-        {
-          name: tradeUnionName,
-        }
-      );
+  const handleGetCompany = useCallback(async (tradeUnionName: any) => {
+    const { data: newData } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/tradeUnion/findByName`,
+      {
+        name: tradeUnionName,
+      }
+    );
 
-      const tradeUnionId = await newData.tradeUnion._id;
+    const tradeUnionId = await newData.tradeUnion._id;
 
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
-        {
-          tradeUnion: tradeUnionId,
-        }
-      );
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
+      {
+        tradeUnion: tradeUnionId,
+      }
+    );
 
-      setCompany(data.companies.map((item: any) => item.name));
-      console.log('Company', data.companies);
-    },
-    []
-  );
+    setCompany(data.companies.map((item: any) => item.name));
+    console.log('Company', data.companies);
+  }, []);
 
   const handleFilters = useCallback(
     async (name: string, value: IUserTableFilterValue) => {
@@ -220,13 +218,10 @@ export default function InternListView() {
     [router]
   );
 
- const handleViewRow = useCallback(
-  (id: string) => {
+  const handleViewRow = useCallback((id: string) => {
     const url = paths.dashboard.intern.profile(id);
     window.open(url, '_blank');
-  },
-  []
-);
+  }, []);
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
@@ -251,7 +246,7 @@ export default function InternListView() {
     // console.log(data.tradeUnions);
   }, []);
 
-   const handleGetSource = useCallback(async () => {
+  const handleGetSource = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/source/list`);
     setSource(data.sources.map((item: any) => item.name));
     // console.log(data.tradeUnions);
@@ -318,6 +313,7 @@ export default function InternListView() {
                       (tab.value === 'study' && 'success') ||
                       (tab.value === 'pass' && 'warning') ||
                       (tab.value === 'complete' && 'error') ||
+                      (tab.value === 'soon' && 'info') ||
                       'default'
                     }
                   >
@@ -329,6 +325,8 @@ export default function InternListView() {
                       dataFiltered.filter((user) => user.status === 'pass').length}
                     {tab.value === 'complete' &&
                       dataFiltered.filter((user) => user.status === 'complete').length}
+                    {tab.value === 'soon' &&
+                      dataFiltered.filter((user) => user.status === 'soon').length}
                     {/* {tab.value === 'rejected' &&
                       dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
@@ -515,7 +513,7 @@ function applyFilter({
     inputData = inputData.filter((user) => tradeUnion.includes(user?.tradeUnion?.name));
   }
 
-   if (company?.length) {
+  if (company?.length) {
     inputData = inputData.filter((user) => company.includes(user?.companySelect?.name));
   }
 

@@ -30,6 +30,9 @@ function changeTextStatus(value: any) {
   if (value === 'complete') {
     return 'Hoàn thành hợp đồng';
   }
+    if (value === 'soon') {
+    return 'Về trước hạn';
+  }
   return '';
 }
 

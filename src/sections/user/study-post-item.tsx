@@ -26,6 +26,14 @@ import { fShortenNumber } from 'src/utils/format-number';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
+import axios from 'axios';
+
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import MenuItem from '@mui/material/MenuItem';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import Button from '@mui/material/Button';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useAuthContext } from 'src/auth/hooks';
 
 import styles from './study-style.module.css';
 
@@ -34,6 +42,7 @@ import styles from './study-style.module.css';
 interface Props {
   study: IStudyItem;
   intern: any;
+  onRemove: any;
 }
 
 const changDateJP = (date: any) => {
@@ -41,7 +50,7 @@ const changDateJP = (date: any) => {
   const formatted = jsDate.toLocaleDateString('ja-JP');
   const parts = formatted.split('/');
   // const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
-    const customFormat = `${parts[0]}年${parts[1]}月`;
+  const customFormat = `${parts[0]}年${parts[1]}月`;
 
   return customFormat;
 };
@@ -101,8 +110,12 @@ const judgeJLPTResult = (
   return isPass ? '合' : '不';
 };
 
-export default function StudyPostItem({ study, intern }: Props) {
-  const { user } = useMockedUser();
+export default function StudyPostItem({ study, intern, onRemove }: Props) {
+  const { user } = useAuthContext();
+
+  const popover = usePopover();
+
+  const confirm = useBoolean();
 
   const commentRef = useRef<HTMLInputElement>(null);
 
@@ -110,6 +123,18 @@ export default function StudyPostItem({ study, intern }: Props) {
 
   const [message, setMessage] = useState('');
 
+  const onDeleteRow = useCallback(
+    async (id: string) => {
+      console.log('DELETE', id);
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/delete`, {
+        id,
+      });
+
+      confirm.onToggle();
+      onRemove(id);
+    },
+    [confirm, onRemove]
+  );
 
   const handleChangeMessage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
@@ -143,8 +168,8 @@ export default function StudyPostItem({ study, intern }: Props) {
         </Box>
       }
       action={
-        <IconButton>
-          <Iconify icon="eva:more-vertical-fill" />
+        user?.role === "admin"  && <IconButton>
+          <Iconify icon="eva:more-vertical-fill" onClick={popover.onOpen} />
         </IconButton>
       }
     />
@@ -175,8 +200,7 @@ export default function StudyPostItem({ study, intern }: Props) {
 
           <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
             {/* {study.comment} */}
-                    <Markdown children={study.comment} />
-            
+            <Markdown children={study.comment} />
           </Box>
         </Paper>
       </Stack>
@@ -612,6 +636,42 @@ export default function StudyPostItem({ study, intern }: Props) {
           </table>
         </Box>
       </Box>
+
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 140 }}
+      >
+        <MenuItem
+          onClick={() => {
+            confirm.onTrue();
+            popover.onClose();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Xóa
+        </MenuItem>
+      </CustomPopover>
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Xóa"
+        content="Bạn có chắc muốn xóa?"
+        action={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              onDeleteRow(study._id);
+            }}
+          >
+            Xóa
+          </Button>
+        }
+      />
 
       {/* {renderInput}  */}
     </Card>

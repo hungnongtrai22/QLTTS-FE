@@ -11,4 +11,8 @@ export const statusIntern = [
     label: 'Hoàn thành hợp đồng',
     value: 'complete',
   },
+  {
+    label: 'Về trước hạn',
+    value: 'soon',
+  },
 ];
