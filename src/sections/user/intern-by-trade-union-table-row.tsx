@@ -60,7 +60,7 @@ export default function InternByTradeUnionTableRow({
   onDeleteRow,
   onViewRow,
 }: Props) {
-  const { name, namejp, avatar, city, birthday, interviewDate, studyDate, startDate, companySelect } = row;
+  const { name, namejp, avatar, birthday, interviewDate, studyDate, startDate, companySelect } = row;
 
   const confirm = useBoolean();
 

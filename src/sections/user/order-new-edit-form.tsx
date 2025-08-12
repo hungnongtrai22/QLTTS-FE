@@ -119,7 +119,7 @@ export default function OrderNewEditForm({ currentOrder }: Props) {
   }, []);
 
   const createOrder = useCallback(async (order: any) => {
-    console.log('TESTT', order);
+    // console.log('TESTT', order);
     const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/order/create`, {
       ...order,
       listWorker: [],

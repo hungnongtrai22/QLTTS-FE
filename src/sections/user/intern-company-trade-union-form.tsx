@@ -108,7 +108,7 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
 
   const editIntern = useCallback(
     async (value: any) => {
-      console.log(currentIntern?._id, tradeUnionSelect, companySelect);
+      // console.log(currentIntern?._id, tradeUnionSelect, companySelect);
       const { data } = await axios.put(
         `${process.env.REACT_APP_HOST_API}/api/user/updateTradeUnion`,
         {

@@ -29,7 +29,7 @@ export default function TradeUnionEditView() {
 
   const handleGetTradeUnionById = useCallback(async () => {
     const {data} = await axios(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/${id}`);
-    console.log("TESTTTT",data.tradeUnion);
+    // console.log("TESTTTT",data.tradeUnion);
     setTradeUnion(data.tradeUnion);
   },[id]);
 

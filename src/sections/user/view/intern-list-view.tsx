@@ -150,7 +150,7 @@ export default function InternListView() {
     );
 
     setCompany(data.companies.map((item: any) => item.name));
-    console.log('Company', data.companies);
+    // console.log('Company', data.companies);
   }, []);
 
   const handleFilters = useCallback(
@@ -236,7 +236,7 @@ export default function InternListView() {
 
   const handleGetAllIntern = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`);
-    console.log(data.interns);
+    // console.log(data.interns);
     setTableData(data.interns);
   }, []);
 

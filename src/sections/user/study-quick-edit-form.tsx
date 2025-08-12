@@ -37,7 +37,7 @@ type Props = {
 };
 
 export default function StudyQuickEditForm({ currentIntern, open, onClose }: Props) {
-  console.log(currentIntern);
+  // console.log(currentIntern);
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useLocales();
 

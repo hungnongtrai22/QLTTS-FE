@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -20,9 +19,8 @@ import { ICalendarEvent } from 'src/types/calendar';
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { ColorPicker } from 'src/components/color-utils';
 import { isDateError } from 'src/components/custom-date-range-picker';
-import FormProvider, { RHFTextField, RHFSwitch } from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -64,7 +62,7 @@ Props) {
   // const [am, setAM] = useState(false);
   // const [pm, setPM] = useState(false);
 
-  const { t, currentLang } = useLocales();
+  const { t } = useLocales();
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),

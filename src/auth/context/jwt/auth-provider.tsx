@@ -93,7 +93,7 @@ export function AuthProvider({ children }: Props) {
         const response = await axios.get(API_ENDPOINTS.auth.me);
 
         const { user } = response.data;
-        console.log("Test", user);
+        // console.log("Test", user);
 
         dispatch({
           type: Types.INITIAL,

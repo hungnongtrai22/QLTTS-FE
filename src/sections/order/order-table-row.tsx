@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import { format } from 'date-fns';
 import { useState } from 'react';
 
 // @mui
@@ -16,12 +15,11 @@ import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import { CircularProgress, TextField, Tooltip } from '@mui/material';
+import { CircularProgress, Tooltip } from '@mui/material';
 
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // utils
-import { fCurrency } from 'src/utils/format-number';
 // types
 import { IOrderItem } from 'src/types/order';
 // components
@@ -37,7 +35,6 @@ import { saveAs } from 'file-saver';
 // import { pdf } from '@react-pdf/renderer';
 import InternPDF from '../invoice/intern-pdf';
 import AllInternsPDF from './AllInternsPDF';
-import ContactQuickEditForm from '../user/contact-quick-edit-form';
 import SwapForm from '../user/swap-form';
 import AllInternsPDFNoScore from './AllInternsPDFNoScore';
 
@@ -75,13 +72,7 @@ export default function OrderTableRow({
   onHandleGetOrder,
 }: Props) {
   const {
-    items,
     status,
-    orderNumber,
-    createdAt,
-    customer,
-    totalQuantity,
-    subTotal,
     name,
     work,
     priority,

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
+import {  View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 // utils
 
 import { IInternItem } from 'src/types/user';

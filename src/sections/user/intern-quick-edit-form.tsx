@@ -37,7 +37,7 @@ type Props = {
 };
 
 export default function InternQuickEditForm({ currentIntern, open, onClose }: Props) {
-  console.log(currentIntern);
+  // console.log(currentIntern);
   const { enqueueSnackbar } = useSnackbar();
   const [tradeUnion, setTradeUnion] = useState([]);
   const [tradeUnionSelect, setTradeUnionSelect] = useState(currentIntern?.tradeUnion?._id || '');

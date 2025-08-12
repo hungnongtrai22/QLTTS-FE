@@ -5,7 +5,6 @@ import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
-import allLocales from '@fullcalendar/core/locales-all';
 
 //
 import { useState, useEffect, useCallback } from 'react';
@@ -14,10 +13,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 // redux
 import { useDispatch } from 'src/redux/store';
@@ -32,14 +29,11 @@ import { useResponsive } from 'src/hooks/use-responsive';
 // _mock
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 // components
-import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import { isDateError } from 'src/components/custom-date-range-picker';
 import { useLocales } from 'src/locales';
 import { IInternItem } from 'src/types/user';
-import { saveAs } from 'file-saver';
-import { pdf } from '@react-pdf/renderer';
-import AllAttendancePDF from 'src/sections/order/AllAttendancePDF';
+
 
 //
 import { useCalendar } from '../hooks';
@@ -91,7 +85,6 @@ export default function CalendarView({ intern }: Props) {
   const openFilters = useBoolean();
 
   const [filters, setFilters] = useState(defaultFilters);
-  const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
 
   // const [events, setEvents] = useState([]);
   // const [currentEvent, setCurrentEvent] = useState(events.find((event : any) => event._id === currentEventId));
@@ -125,8 +118,8 @@ export default function CalendarView({ intern }: Props) {
     //
     openForm,
     openEventForm,
-    onOpenForm,
-    onOpenEventForm,
+    // onOpenForm,
+    // onOpenEventForm,
     onCloseForm,
     onCloseEventForm,
     statistics,

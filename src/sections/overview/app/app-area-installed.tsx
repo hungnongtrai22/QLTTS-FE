@@ -1,7 +1,6 @@
 import { ApexOptions } from 'apexcharts';
 import { useState, useCallback } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import CardHeader from '@mui/material/CardHeader';
@@ -33,7 +32,6 @@ interface Props extends CardProps {
 }
 
 export default function AppAreaInstalled({ title, subheader, chart, ...other }: Props) {
-  const theme = useTheme();
 
   const {
     // colors = [

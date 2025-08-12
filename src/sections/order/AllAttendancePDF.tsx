@@ -1,4 +1,4 @@
-import { Document, Page, View, StyleSheet, Image, Text } from '@react-pdf/renderer';
+import { Document, Page, View, StyleSheet } from '@react-pdf/renderer';
 
 import InternPDFAttendance from '../invoice/intern-pdf-attendance';
 
@@ -42,17 +42,8 @@ const styles = StyleSheet.create({
   },
 });
 
-// Hàm chia mảng thành các nhóm 9 phần tử
-const chunkArray = (array: any[], size: number) => {
-  const result = [];
-  for (let i = 0; i < array.length; i += size) {
-    result.push(array.slice(i, i + size));
-  }
-  return result;
-};
-
 export default function AllAttendancePDF({ intern, attendance, event }: any) {
-  console.log('INTERNS', intern);
+  // console.log('INTERNS', intern);
 
   return (
     <Document>

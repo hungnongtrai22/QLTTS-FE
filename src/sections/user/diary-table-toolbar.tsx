@@ -1,20 +1,17 @@
 import { useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
-import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
+
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
+
 import InputAdornment from '@mui/material/InputAdornment';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import  { SelectChangeEvent } from '@mui/material/Select';
 // types
 import { IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import  { usePopover } from 'src/components/custom-popover';
 import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
@@ -41,15 +38,6 @@ export default function DiaryTableToolbar({
     [onFilters]
   );
 
-  const handleFilterRole = useCallback(
-    (event: SelectChangeEvent<string[]>) => {
-      onFilters(
-        'role',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
-    },
-    [onFilters]
-  );
 
   return (
     <>

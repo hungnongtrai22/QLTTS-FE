@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 // utils
 // types
-import { IDiaryItem, ISourceItem, ITradeUnionItem, IUserItem } from 'src/types/user';
+import { IDiaryItem, IUserItem } from 'src/types/user';
 // assets
 // components
 import { CustomFile } from 'src/components/upload';
@@ -23,7 +23,6 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import axios from 'axios';
 import { useLocales } from 'src/locales';
-import RHFAutocompleteNew from 'src/components/hook-form/rhf-autocomplete-new';
 import { MenuItem } from '@mui/material';
 import { MobileDateTimePicker } from '@mui/x-date-pickers';
 
@@ -201,7 +200,7 @@ export default function DiaryViewForm({ currentDiary }: Props) {
     handleGetInterns();
   }, [handleGetInterns]);
 
-  console.log('NEW', currentDiary);
+  // console.log('NEW', currentDiary);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>

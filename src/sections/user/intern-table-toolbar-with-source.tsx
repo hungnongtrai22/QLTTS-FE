@@ -46,7 +46,7 @@ export default function InternTableToolbarWithSource({
   interns,
 }: Props) {
   const popover = usePopover();
-  console.log('Interns', interns);
+  // console.log('Interns', interns);
   const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
 
   const studyDate = interns[0]?.studyDate;
@@ -73,7 +73,7 @@ export default function InternTableToolbarWithSource({
     }
   }
 
-  console.log(result);
+  // console.log(result);
 
   const { t } = useLocales();
 
@@ -285,7 +285,7 @@ export default function InternTableToolbarWithSource({
                const { data: newEvent } = await axios.get(
                   `${process.env.REACT_APP_HOST_API}/api/event/listAll`
                 );
-                console.log('newEvent', newEvent);
+                // console.log('newEvent', newEvent);
               const blob = await pdf(
                 <AllAttendancePDF intern={interns} attendance={result} event={newEvent}/>
               ).toBlob();

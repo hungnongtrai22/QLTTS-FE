@@ -29,7 +29,7 @@ export default function SourceEditView() {
 
   const handleGetSourceById = useCallback(async () => {
     const {data} = await axios(`${process.env.REACT_APP_HOST_API}/api/source/${id}`);
-    console.log("SOURCE",data.source);
+    // console.log("SOURCE",data.source);
     setSource(data.source);
   },[id]);
 

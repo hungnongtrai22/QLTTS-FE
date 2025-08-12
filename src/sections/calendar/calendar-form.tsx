@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -72,7 +72,7 @@ Props) {
   // const [am, setAM] = useState(false);
   // const [pm, setPM] = useState(false);
 
-  const { t, currentLang } = useLocales();
+  const { t } = useLocales();
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),

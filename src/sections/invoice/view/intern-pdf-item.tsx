@@ -1,8 +1,7 @@
 /* eslint-disable no-nested-ternary */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {useMemo } from 'react';
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
-import axios from 'axios';
 
 const useStyles = () =>
   useMemo(
@@ -180,7 +179,7 @@ function getJapaneseWeekdays(month: number, year: number): (string | '')[] {
 
 export default function InternPDFAttendanceItem({ int, i, month, year, checkEvent }: any) {
   const styles = useStyles();
-  console.log('INTERN', i, int);
+  // console.log('INTERN', i, int);
   const checkOff = (day: any) => {
     const matchedAttendance = int.attendances.find(
       (attendance: any) => attendance.month === month && attendance.year === year

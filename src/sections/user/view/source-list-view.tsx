@@ -82,7 +82,7 @@ export default function SourceListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<ISourceItem[]>([]);
-  console.log(tableData);
+  // console.log(tableData);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -161,7 +161,7 @@ export default function SourceListView() {
 
    const handleGetSource = useCallback(async () => {
     const {data} = await axios.get(`${process.env.REACT_APP_HOST_API}/api/source/list`);
-    console.log(data.sources);
+    // console.log(data.sources);
     setTableData(data.sources);
   }, []);
 

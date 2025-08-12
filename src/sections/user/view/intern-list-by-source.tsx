@@ -176,7 +176,7 @@ export default function InternListBySource() {
   }, []);
 
   const handleGetAllIntern = useCallback(async () => {
-    console.log('USER', user);
+    // console.log('USER', user);
     const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listBySource`, {
       source: user?.source,
     });

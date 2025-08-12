@@ -1,7 +1,6 @@
 // @mui
 import Button from '@mui/material/Button';
 // import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -49,13 +48,12 @@ export default function CompanyTableRow({
 
   const confirm = useBoolean();
 
-  const quickEdit = useBoolean();
 
   const popover = usePopover();
 
   const deleteCompanyByTradeUnionHandler = useCallback(async (id: string) => {
     try {
-      const { data } = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_HOST_API}/api/company/delete`,
         {
           _id: id,

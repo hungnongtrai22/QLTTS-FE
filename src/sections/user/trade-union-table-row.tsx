@@ -57,7 +57,7 @@ export default function TradeUnionTableRow({
 
   const deleteTradeUnionHandler = useCallback(async (id: string) => {
     try {
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/delete`, {
+      await axios.post(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/delete`, {
         _id: id,
       });
     } catch (error) {
@@ -67,7 +67,7 @@ export default function TradeUnionTableRow({
 
     const deleteCompanyByTradeUnionHandler = useCallback(async (id: string) => {
     try {
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/company/deleteByTradeUnion`, {
+      await axios.post(`${process.env.REACT_APP_HOST_API}/api/company/deleteByTradeUnion`, {
         tradeUnion: id,
       });
     } catch (error) {

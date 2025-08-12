@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
-import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
+import { View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 // utils
 
-import dayjs from 'dayjs';
 import { htmlToText } from 'html-to-text';
 
 // ----------------------------------------------------------------------
@@ -558,7 +557,6 @@ const useStyles = () =>
       }),
     []
   );
-type Props = {};
 
 const changDateJP = (date: any) => {
   const jsDate = new Date(date);
@@ -657,8 +655,8 @@ export default function InternPDFStudy({ item, intern }: any) {
   const secondPart = text.substring(index); // `第25課`
 
   const styles = useStyles();
-  console.log('intern', intern);
-  console.log('study', item);
+  // console.log('intern', intern);
+  // console.log('study', item);
 
   return (
     <Document>

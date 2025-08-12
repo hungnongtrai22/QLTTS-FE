@@ -9,20 +9,18 @@ import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import MenuItem from '@mui/material/MenuItem';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 // routes
 // _mock
 // types
-import { IContactItem, IInternItem, IUserItem } from 'src/types/user';
+import { IContactItem, IInternItem } from 'src/types/user';
 // assets
 // components
 import { CustomFile } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
-import { useLocales } from 'src/locales';
+import FormProvider, {  RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -37,12 +35,11 @@ type Props = {
 };
 
 export default function ContactQuickEditForm({ currentIntern, open, onClose }: Props) {
-  console.log(currentIntern);
+  // console.log(currentIntern);
   const { enqueueSnackbar } = useSnackbar();
   const [currentContact, setCurrentContact] = useState<any>();
 
-  console.log(currentContact);
-  const { t } = useLocales();
+  // console.log(currentContact);
 
   const NewUserSchema = Yup.object().shape({});
 

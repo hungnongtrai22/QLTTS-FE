@@ -209,7 +209,7 @@ export default function InternListByTradeUnionView() {
         );
   
         setCompany(data.companies.map((item: any) => item.name));
-        console.log('Company', data.companies);
+        // console.log('Company', data.companies);
       },
       [user]
     );

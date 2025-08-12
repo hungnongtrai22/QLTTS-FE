@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
-import { IDiaryItem, ITradeUnionItem } from 'src/types/user';
+import { IDiaryItem } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -53,7 +53,7 @@ export default function DiaryTableRow({
   onDeleteRow,
   onViewRow
 }: Props) {
-  const { name, intern, status, direction, startDate, endDate, time } = row;
+  const { name, intern, status, direction, startDate, endDate } = row;
 
   const confirm = useBoolean();
 
@@ -64,28 +64,7 @@ export default function DiaryTableRow({
   const { t, currentLang } = useLocales();
 
   const {user} = useAuthContext();
-  const deleteTradeUnionHandler = useCallback(async (id: string) => {
-    try {
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/delete`, {
-        _id: id,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
 
-  const deleteCompanyByTradeUnionHandler = useCallback(async (id: string) => {
-    try {
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_HOST_API}/api/company/deleteByTradeUnion`,
-        {
-          tradeUnion: id,
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
   const transDirection = (val: any) => {
     if (currentLang.value === 'jp') {
       return val === 'Gọi đi' ? '電話して' : '発信';

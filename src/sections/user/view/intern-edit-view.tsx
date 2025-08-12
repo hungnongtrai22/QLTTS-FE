@@ -29,7 +29,7 @@ export default function InternEditView() {
 
   const handleGetInternById = useCallback(async () => {
     const {data} = await axios(`${process.env.REACT_APP_HOST_API}/api/user/${id}`);
-    console.log(data.intern);
+    // console.log(data.intern);
     setIntern(data.intern);
   },[id]);
 

@@ -300,7 +300,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
     </Card>
   );
 
-  console.log("sd", study);
+  // console.log("sd", study);
   const studyCate = study.map((item : any)=>item.time).reverse();
     const studyTotal = study.map((item : any)=>item.total).reverse();
     const studyListen = study.map((item : any)=>item.listen).reverse();

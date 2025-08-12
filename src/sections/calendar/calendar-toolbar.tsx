@@ -5,7 +5,6 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // utils
-import { fDate } from 'src/utils/format-time';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // types
@@ -14,7 +13,6 @@ import { ICalendarView } from 'src/types/calendar';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useLocales } from 'src/locales';
-import { s } from '@fullcalendar/core/internal-common';
 
 // ----------------------------------------------------------------------
 

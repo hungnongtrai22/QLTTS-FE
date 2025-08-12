@@ -230,7 +230,7 @@ export default function InternByTradeUnionTableToolbar({
               const { data: newEvent } = await axios.get(
                 `${process.env.REACT_APP_HOST_API}/api/event/listAll`
               );
-              console.log('newEvent', newEvent);
+              // console.log('newEvent', newEvent);
               const blob = await pdf(
                 <AllAttendancePDF intern={interns} attendance={result} event={newEvent} />
               ).toBlob();

@@ -178,7 +178,7 @@ export default function DiaryListView() {
 
    const handleGetTradeUnion = useCallback(async () => {
     const {data} = await axios.get(`${process.env.REACT_APP_HOST_API}/api/diary/list`);
-    console.log(data.diaries);
+    // console.log(data.diaries);
     setTableData(data.diaries);
   }, []);
 

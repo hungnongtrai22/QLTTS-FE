@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
-import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
+import {  View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 // utils
 
-import { IInternItem } from 'src/types/user';
 
 // ----------------------------------------------------------------------
 
@@ -211,7 +210,7 @@ const changDateJP = (date: any) => {
 
 export default function InternPDFHomeNoScore({ invoice, startIndex = 0 }: Props) {
   // const { name } = invoice;
-  console.log("Interns", invoice);
+  // console.log("Interns", invoice);
 
   const styles = useStyles();
 

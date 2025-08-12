@@ -131,7 +131,7 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
 
   const onDeleteRow = useCallback(
     async (id: string) => {
-      console.log('DELETE', id);
+      // console.log('DELETE', id);
       const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/delete`, {
         id,
       });

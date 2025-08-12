@@ -1,7 +1,6 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 // config
-import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
 

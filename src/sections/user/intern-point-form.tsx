@@ -245,7 +245,7 @@ export default function InternPointForm({ internId }: Props) {
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
-        console.log('data', data);
+        // console.log('data', data);
         // console.log(currentStudy);
         if (data?._id !== '') {
           await editStudy(data);
@@ -285,7 +285,7 @@ export default function InternPointForm({ internId }: Props) {
       }
     );
 
-    console.log("NEW", newData)
+    // console.log("NEW", newData)
 
     if (data === null) {
       // console.log("SET NULL");

@@ -1,8 +1,7 @@
 /* eslint-disable no-empty */
 import merge from 'lodash/merge';
 import FullCalendar from '@fullcalendar/react';
-import { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
-import { EventResizeDoneArg } from '@fullcalendar/interaction';
+import { DateSelectArg } from '@fullcalendar/core';
 import { useState, useCallback, useRef, useEffect } from 'react';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
@@ -43,7 +42,7 @@ export default function useCalendar({ internId }: Props) {
 
   const [statistics, setStatistics] = useState(null);
 
-  console.log(currentEventId);
+  // console.log(currentEventId);
 
   const [view, setView] = useState<ICalendarView>(smUp ? 'dayGridMonth' : 'listWeek');
 
@@ -90,7 +89,7 @@ export default function useCalendar({ internId }: Props) {
     async (attendItem: any) => {
       // console.log('Month', new Date(attendItem.start).getMonth());
       // console.log("Year",date.getFullYear());
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/attendance/create`, {
+      await axios.post(`${process.env.REACT_APP_HOST_API}/api/attendance/create`, {
         internId,
         attendItem,
         month: new Date(attendItem.start).getMonth() + 1,
@@ -106,7 +105,7 @@ export default function useCalendar({ internId }: Props) {
     async (attendItem: any) => {
       // console.log("Month",date.getMonth());
       // console.log("Year",date.getFullYear());
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/event/create`, {
+     await axios.post(`${process.env.REACT_APP_HOST_API}/api/event/create`, {
         attendItem,
         month: date.getMonth() + 1,
         year: date.getFullYear(),
@@ -119,7 +118,7 @@ export default function useCalendar({ internId }: Props) {
 
   const editAttendHandler = useCallback(
     async (attendItem: any) => {
-      const { data } = await axios.put(
+      await axios.put(
         `${process.env.REACT_APP_HOST_API}/api/attendance/updateAttendItem`,
         {
           _id: attendItem.attendanceId,
@@ -135,7 +134,7 @@ export default function useCalendar({ internId }: Props) {
 
   const editEventHandler = useCallback(
     async (attendItem: any) => {
-      const { data } = await axios.put(
+       await axios.put(
         `${process.env.REACT_APP_HOST_API}/api/event/updateEventItem`,
         {
           _id: attendItem.attendanceId,
@@ -151,7 +150,7 @@ export default function useCalendar({ internId }: Props) {
 
   const removeAttendHandler = useCallback(
     async (eventId: any, attendanceId: any) => {
-      const { data } = await axios.put(
+      await axios.put(
         `${process.env.REACT_APP_HOST_API}/api/attendance/deleteAttendItem`,
         {
           _id: attendanceId,
@@ -166,7 +165,7 @@ export default function useCalendar({ internId }: Props) {
 
   const removeEventHandler = useCallback(
     async (eventId: any, attendanceId: any) => {
-      const { data } = await axios.put(
+      await axios.put(
         `${process.env.REACT_APP_HOST_API}/api/event/deleteEventItem`,
         {
           _id: attendanceId,

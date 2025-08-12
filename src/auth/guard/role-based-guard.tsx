@@ -4,7 +4,6 @@ import { Theme, SxProps } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 // assets
 import { ForbiddenIllustration } from 'src/assets/illustrations';
 // components

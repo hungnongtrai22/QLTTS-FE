@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary, no-restricted-syntax */
 
 import { useMemo } from 'react';
-import { Page, View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
+import {  View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 import InternPDFAttendanceItem from './view/intern-pdf-item';
 // utils
 
@@ -558,38 +558,9 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-type Props = {};
+// type Props = {};
 
-const changDateJP = (date: any) => {
-  const jsDate = new Date(date);
-  const formatted = jsDate.toLocaleDateString('ja-JP');
-  const parts = formatted.split('/');
-  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
-  return customFormat;
-};
 
-const changMonthYearJP = (date: any) => {
-  const jsDate = new Date(date);
-  if (date === null || date === '') {
-    return '';
-  }
-  const formatted = jsDate.toLocaleDateString('ja-JP');
-  const parts = formatted.split('/');
-  const customFormat = `${parts[0]}年${parts[1]}月`;
-  return customFormat;
-};
-
-function normalizeName(name: string): string {
-  return name
-    .normalize('NFD') // Tách dấu
-    .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
-    .replace(/đ/g, 'd') // đ -> d
-    .replace(/Đ/g, 'D') // Đ -> D
-    .replace(/[^A-Za-z\s]/g, '') // Loại bỏ ký tự không phải chữ cái hoặc khoảng trắng
-    .toUpperCase() // In hoa
-    .trim() // Bỏ khoảng trắng đầu cuối
-    .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
-}
 
 function getDaysInMonth(month: number, year: number): (number | '')[] {
   const days: (number | '')[] = [];

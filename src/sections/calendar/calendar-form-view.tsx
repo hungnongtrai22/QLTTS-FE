@@ -1,24 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Box from '@mui/material/Box';
+
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import DialogActions from '@mui/material/DialogActions';
+
 import { useLocales } from 'src/locales';
 
 // types
 import { ICalendarEvent } from 'src/types/calendar';
 // components
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { ColorPicker } from 'src/components/color-utils';
 import { isDateError } from 'src/components/custom-date-range-picker';
@@ -64,7 +59,7 @@ Props) {
   // const [am, setAM] = useState(false);
   // const [pm, setPM] = useState(false);
 
-  const { t, currentLang } = useLocales();
+  const { t } = useLocales();
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
@@ -76,14 +71,14 @@ Props) {
     defaultValues: event,
   });
 
-  const update = !!currentEventId && !!openForm;
+  // const update = !!currentEventId && !!openForm;
 
   const {
     reset,
     watch,
     control,
     handleSubmit,
-    formState: { isSubmitting },
+    // formState: { isSubmitting },
     setValue,
   } = methods;
 
@@ -132,20 +127,20 @@ Props) {
     [currentEventId, dateError, enqueueSnackbar, onClose, onCreateEvent, onUpdateEvent, reset]
   );
 
-  const onDelete = useCallback(() => {
-    try {
-      onClose();
-      if (event.color === '#FF5630') {
-        onDeleteNewEvent(`${event.id}`, event?.attendanceId || '');
-      } else {
-        onDeleteEvent(`${event.id}`, event?.attendanceId || '');
-      }
-      enqueueSnackbar('Delete success!');
-    } catch (error) {
-      console.error(error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // const onDelete = useCallback(() => {
+  //   try {
+  //     onClose();
+  //     if (event.color === '#FF5630') {
+  //       onDeleteNewEvent(`${event.id}`, event?.attendanceId || '');
+  //     } else {
+  //       onDeleteEvent(`${event.id}`, event?.attendanceId || '');
+  //     }
+  //     enqueueSnackbar('Delete success!');
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     const { am, pm, allDay, start } = values;

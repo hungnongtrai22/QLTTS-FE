@@ -162,7 +162,7 @@ export default function TradeUnionListView() {
 
    const handleGetTradeUnion = useCallback(async () => {
     const {data} = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
-    console.log(data.tradeUnions);
+    // console.log(data.tradeUnions);
     setTableData(data.tradeUnions);
   }, []);
 

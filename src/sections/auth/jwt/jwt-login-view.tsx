@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
-import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
@@ -13,7 +12,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 // routes
 import { paths } from 'src/routes/paths';
 import { useSearchParams } from 'src/routes/hook';
-import { RouterLink } from 'src/routes/components';
 // config
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 // hooks
@@ -33,7 +31,7 @@ type FormValuesProps = {
 };
 
 export default function JwtLoginView() {
-  const { login, user } = useAuthContext();
+  const { login } = useAuthContext();
 
   const [errorMsg, setErrorMsg] = useState('');
 

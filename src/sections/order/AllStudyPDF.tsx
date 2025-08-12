@@ -1,6 +1,5 @@
 import { Document, Page, View, StyleSheet } from '@react-pdf/renderer';
-import InternPDFAll from '../invoice/intern-pdf-all';
-import InternPDFHome from '../invoice/intern-pdf-home';
+
 import InternPDFStudy from '../invoice/intern-pdf-study';
 
 const styles = StyleSheet.create({
@@ -24,13 +23,7 @@ const styles = StyleSheet.create({
 });
 
 // Hàm chia mảng thành các nhóm 9 phần tử
-const chunkArray = (array: any[], size: number) => {
-  const result = [];
-  for (let i = 0; i < array.length; i += size) {
-    result.push(array.slice(i, i + size));
-  }
-  return result;
-};
+
 
 export default function AllStudyPDF({ intern, study }: any) {
   return (

@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
 // components
