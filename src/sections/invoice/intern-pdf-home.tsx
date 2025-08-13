@@ -222,7 +222,7 @@ export default function InternPDFHome({ invoice, startIndex = 0 }: Props) {
         <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
           {/* <Text style={styles.h3}>{currentStatus}</Text> */}
           <Text>NHAT TAN MANPOWER</Text>
-          <Text style={styles.subtitle4}>8 TX01, Thanh Xuan Ward, District 12, Ho Chi Minh City, Vietnam</Text>
+          <Text style={styles.subtitle4}>8 TX01, Thoi An Ward, Ho Chi Minh City, Vietnam</Text>
         </View>
       </View>
 
