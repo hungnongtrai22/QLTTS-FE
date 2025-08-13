@@ -81,6 +81,7 @@ export default function OrderTableRow({
     quantity,
     listIntern,
     _id,
+    createdAt,
   } = row;
 
   const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
@@ -141,6 +142,8 @@ export default function OrderTableRow({
           {status}
         </Label>
       </TableCell>
+
+      <TableCell>{changDateJP(createdAt)}</TableCell>
 
       <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
         <IconButton
@@ -303,7 +306,7 @@ export default function OrderTableRow({
           {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'}
         </MenuItem>
 
-          <MenuItem
+        <MenuItem
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);

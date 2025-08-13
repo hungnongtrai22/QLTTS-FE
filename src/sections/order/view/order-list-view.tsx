@@ -56,10 +56,12 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS]
 const TABLE_HEAD = [
   { id: 'orderNumber', label: 'Tên' },
   { id: 'name', label: 'Ưu tiên', width: 116 },
-  { id: 'createdAt', label: 'Ngày Phỏng Vấn', width: 160 },
+  { id: 'recruitmentDate', label: 'Ngày Phỏng Vấn', width: 160 },
   { id: 'totalQuantity', label: 'Phỏng Vấn', width: 120, align: 'center' },
   { id: 'totalAmount', label: 'Số Lượng', width: 120 },
   { id: 'status', label: 'Trạng Thái', width: 110 },
+  { id: 'createdAt', label: 'Ngày Tạo', width: 160 },
+
   { id: '', width: 88 },
 ];
 
@@ -150,7 +152,7 @@ export default function OrderListView() {
     [router]
   );
 
-    const handleEditRow = useCallback(
+  const handleEditRow = useCallback(
     (id: string) => {
       router.push(paths.dashboard.order.edit(id));
     },
@@ -412,9 +414,11 @@ function applyFilter({
   if (name) {
     inputData = inputData.filter(
       (order) =>
-        order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.email.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        order.name.toLowerCase().indexOf(name.toLowerCase())!== -1 
+      // ||
+      //   order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+      //   order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+      //   order.customer.email.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
