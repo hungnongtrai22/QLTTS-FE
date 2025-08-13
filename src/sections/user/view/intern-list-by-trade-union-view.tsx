@@ -272,16 +272,16 @@ export default function InternListByTradeUnionView() {
                       'default'
                     }
                   >
-                    {tab.value === 'all' && dataFiltered.length}
+                    {tab.value === 'all' && tableData.length}
                     {tab.value === 'study' &&
-                      dataFiltered.filter((intern) => intern.status === 'study').length}
+                      tableData.filter((intern) => intern.status === 'study').length}
 
                     {tab.value === 'pass' &&
-                      dataFiltered.filter((intern) => intern.status === 'pass').length}
+                      tableData.filter((intern) => intern.status === 'pass').length}
                     {tab.value === 'complete' &&
-                      dataFiltered.filter((intern) => intern.status === 'complete').length}
+                      tableData.filter((intern) => intern.status === 'complete').length}
                        {tab.value === 'soon' &&
-                      dataFiltered.filter((intern) => intern.status === 'soon').length}
+                      tableData.filter((intern) => intern.status === 'soon').length}
                     {/* {tab.value === 'rejected' &&
                                 dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>

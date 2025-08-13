@@ -317,16 +317,16 @@ export default function InternListView() {
                       'default'
                     }
                   >
-                    {tab.value === 'all' && dataFiltered.length}
+                    {tab.value === 'all' && tableData.length}
                     {tab.value === 'study' &&
-                      dataFiltered.filter((user) => user.status === 'study').length}
+                      tableData.filter((user) => user.status === 'study').length}
 
                     {tab.value === 'pass' &&
-                      dataFiltered.filter((user) => user.status === 'pass').length}
+                      tableData.filter((user) => user.status === 'pass').length}
                     {tab.value === 'complete' &&
-                      dataFiltered.filter((user) => user.status === 'complete').length}
+                      tableData.filter((user) => user.status === 'complete').length}
                     {tab.value === 'soon' &&
-                      dataFiltered.filter((user) => user.status === 'soon').length}
+                      tableData.filter((user) => user.status === 'soon').length}
                     {/* {tab.value === 'rejected' &&
                       dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
