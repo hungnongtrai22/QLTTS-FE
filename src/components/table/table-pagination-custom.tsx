@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TablePagination, { TablePaginationProps } from '@mui/material/TablePagination';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +34,7 @@ export default function TablePaginationCustom({
 
       {onChangeDense && (
         <FormControlLabel
-          label="Thu gọn"
+          label={t('compact')}
           control={<Switch checked={dense} onChange={onChangeDense} />}
           sx={{
             pl: 2,

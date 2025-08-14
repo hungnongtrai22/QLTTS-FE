@@ -187,7 +187,7 @@
   "allDay": "Cả ngày",
   "off": "Nghỉ học",
   "late": "Đến trễ",
-  "soon": "Về sớm",
+  "soon": "Về trước hạn",
   "submit": "Xác nhận",
   "cancel": "Hủy",
   "interviewDate": "Ngày phỏng vấn",
@@ -245,7 +245,9 @@
   "sub": " điểm so với tháng trước",
   "download": "Tải xuống",
     "teacher": "Giáo viên",
-
+    "intern_find": "thực tập sinh được tìm thấy",
+    "delete": "Xóa",
+    "compact": "Thu gọn",
   "demo": {
     "title": "Vietnamese"
   }

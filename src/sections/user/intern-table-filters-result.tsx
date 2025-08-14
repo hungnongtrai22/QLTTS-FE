@@ -8,6 +8,8 @@ import Stack, { StackProps } from '@mui/material/Stack';
 import { IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
+import { t } from 'i18next';
+import { useLocales } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +22,7 @@ type Props = StackProps & {
   results: number;
 };
 
-function changeTextStatus(value: any) {
+    function changeTextStatusVN(value: any) {
   if (value === 'study') {
     return 'Đang học';
   }
@@ -35,6 +37,25 @@ function changeTextStatus(value: any) {
   }
   return '';
 }
+  
+
+    function changeTextStatusJP(value: any) {
+  if (value === 'study') {
+    return '研修中';
+  }
+  if (value === 'pass') {
+    return '出国済み';
+  }
+  if (value === 'complete') {
+    return '契約満了';
+  }
+    if (value === 'soon') {
+    return '早退';
+  }
+  return '';
+}
+
+
 
 export default function InternTableFiltersResult({
   filters,
@@ -45,6 +66,9 @@ export default function InternTableFiltersResult({
   results,
   ...other
 }: Props) {
+    const { currentLang } = useLocales();
+
+
   const handleRemoveStatus = () => {
     onFilters('status', 'all');
   };
@@ -65,23 +89,23 @@ export default function InternTableFiltersResult({
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
           {' '}
-          thực tập sinh được tìm thấy
+          {t('intern_find')}
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.status !== 'all' && (
-          <Block label="Trạng thái:">
+          <Block label={t('status')}>
             <Chip
               size="small"
-              label={changeTextStatus(filters.status)}
+              label={currentLang.value === 'jp' ? changeTextStatusJP(filters.status) : changeTextStatusVN(filters.status)}
               onDelete={handleRemoveStatus}
             />
           </Block>
         )}
 
         {!!filters.tradeUnion.length && (
-          <Block label="Nghiệp đoàn:">
+          <Block label={t('trade_union')}>
             {filters.tradeUnion.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
             ))}
@@ -89,7 +113,7 @@ export default function InternTableFiltersResult({
         )}
 
         {!!filters.company?.length && (
-          <Block label="Công ty:">
+          <Block label={t('company_name')}>
             {filters.company.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveCompany(item)} />
             ))}
@@ -101,7 +125,7 @@ export default function InternTableFiltersResult({
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Xoá
+          {t('delete')}
         </Button>
       </Stack>
     </Stack>

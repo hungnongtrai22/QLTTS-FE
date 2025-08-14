@@ -134,7 +134,7 @@ export default function InternTableToolbarWithSource({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Nghiệp Đoàn</InputLabel>
+          <InputLabel>{t('trade_union')}</InputLabel>
 
           <Select
             multiple
@@ -167,7 +167,7 @@ export default function InternTableToolbarWithSource({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Công Ty</InputLabel>
+          <InputLabel>{t('company_name')}</InputLabel>
 
           <Select
             multiple
@@ -200,7 +200,7 @@ export default function InternTableToolbarWithSource({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Nguồn</InputLabel>
+          <InputLabel>{t('source')}</InputLabel>
 
           <Select
             multiple

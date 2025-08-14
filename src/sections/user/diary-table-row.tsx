@@ -91,7 +91,7 @@ export default function DiaryTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{intern.name}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{intern?.name}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {currentLang.value === 'jp' ? '実施済み' : status}
