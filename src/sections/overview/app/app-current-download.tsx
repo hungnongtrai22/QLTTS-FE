@@ -81,6 +81,7 @@ export default function AppCurrentDownload({ title, subheader, chart, ...other }
               formatter: (value: number | string) => fNumber(value),
             },
             total: {
+              label: 'Tổng cộng',
               formatter: (w: { globals: { seriesTotals: number[] } }) => {
                 const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
                 return fNumber(sum);

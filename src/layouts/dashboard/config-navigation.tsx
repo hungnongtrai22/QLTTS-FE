@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useMemo } from 'react';
 // routes
 import { paths } from 'src/routes/paths';
@@ -50,9 +52,17 @@ const ICONS = {
 
 export function useNavData() {
   const { t } = useLocales();
-    const { user } = useAuthContext();
-    console.log(user);
-  
+  const { user } = useAuthContext();
+
+  const transListInternPath = () => {
+    if (user?.role === 'tradeunion') {
+      return paths.dashboard.intern.listByTradeUnion;
+    } 
+     if (user?.role === 'source') {
+      return paths.dashboard.intern.listBySource;
+    }
+    return paths.dashboard.intern.root;
+  };
 
   const data = useMemo(
     () => [
@@ -78,7 +88,7 @@ export function useNavData() {
           // Intern
           {
             title: t('intern'),
-            path: paths.dashboard.intern.root,
+            path: transListInternPath(),
             icon: ICONS.user,
             children: [
               // { title: t('profile'), path: paths.dashboard.intern.root },
@@ -90,7 +100,7 @@ export function useNavData() {
                 path: paths.dashboard.intern.listByTradeUnion,
                 roles: ['tradeunion'],
               },
-                {
+              {
                 title: t('list'),
                 path: paths.dashboard.intern.listBySource,
                 roles: ['source'],
@@ -151,7 +161,7 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
-              // Source
+          // Source
           {
             title: t('source'),
             roles: ['admin'],
@@ -166,7 +176,7 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
-              {
+          {
             title: t('diary'),
             // roles: ['admin'],
             path: paths.dashboard.diary.root,
@@ -174,7 +184,7 @@ export function useNavData() {
             children: [
               // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
               // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
-              { title: t('list'), path: paths.dashboard.diary.list},
+              { title: t('list'), path: paths.dashboard.diary.list },
               { title: t('create'), path: paths.dashboard.diary.new, roles: ['admin'] },
               // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },

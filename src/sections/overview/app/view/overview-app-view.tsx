@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -13,6 +14,7 @@ import { useSettingsContext } from 'src/components/settings';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useAuthContext } from 'src/auth/hooks';
 import { t } from 'i18next';
+import axios from 'axios';
 
 //
 import AppWidget from '../app-widget';
@@ -30,11 +32,31 @@ import AppTopInstalledCountries from '../app-top-installed-countries';
 
 export default function OverviewAppView() {
   // const { user } = useMockedUser();
-   const { user } = useAuthContext();
+  const { user } = useAuthContext();
+
+  const [count, setCount] = useState();
+  const [countSource, setCountSource] = useState();
 
   const theme = useTheme();
 
   const settings = useSettingsContext();
+
+  const handleGetAllIntern = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/count`);
+    // console.log(data.interns);
+    setCount(data);
+  }, []);
+
+  const handleGetAllCountSource = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/countSource`);
+    // console.log(data.interns);
+    setCountSource(data);
+  }, []);
+
+  useEffect(() => {
+    handleGetAllIntern();
+    handleGetAllCountSource();
+  }, [handleGetAllIntern, handleGetAllCountSource]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -42,7 +64,7 @@ export default function OverviewAppView() {
         <Grid xs={12} md={8}>
           <AppWelcome
             title={`${t('welcome_back')} 👋 \n ${user?.name}`}
-            description={t('content') || ""}
+            description={t('content') || ''}
             img={<SeoIllustration />}
             action={
               <Button variant="contained" color="primary">
@@ -58,49 +80,53 @@ export default function OverviewAppView() {
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total Active Users"
+            title="Thực Tập Sinh Đang Học"
             percent={2.6}
-            total={18765}
+            total={(count as any)?.study?.total || 0}
             chart={{
-              series: [5, 18, 12, 51, 68, 11, 39, 37, 27, 20],
+              series: (count as any)?.study?.chart?.series || [],
             }}
           />
         </Grid>
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total Installed"
+            title="Thực Tập Sinh Đã Xuất Cảnh"
             percent={0.2}
-            total={4876}
+            total={(count as any)?.pass?.total || 0}
             chart={{
               colors: [theme.palette.info.light, theme.palette.info.main],
-              series: [20, 41, 63, 33, 28, 35, 50, 46, 11, 26],
+              series: (count as any)?.pass?.chart?.series || [],
             }}
           />
         </Grid>
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total Downloads"
+            title="Thực Tập Sinh Hoàn Thành Hoặc Về Sớm"
             percent={-0.1}
-            total={678}
+            total={(count as any)?.completeOrSoon?.total || 0}
             chart={{
               colors: [theme.palette.warning.light, theme.palette.warning.main],
-              series: [8, 9, 31, 8, 16, 37, 8, 33, 46, 31],
+              series: (count as any)?.completeOrSoon?.chart?.series || [],
             }}
           />
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
           <AppCurrentDownload
-            title="Current Download"
+            title="Thực Tập Sinh Đang Học"
             chart={{
-              series: [
-                { label: 'Mac', value: 12244 },
-                { label: 'Window', value: 53345 },
-                { label: 'iOS', value: 44313 },
-                { label: 'Android', value: 78343 },
-              ],
+              // series: [
+              //   { label: 'Mac', value: 12244 },
+              //   { label: 'Window', value: 53345 },
+              //   { label: 'iOS', value: 44313 },
+              //   { label: 'Android', value: 78343 },
+              // ],
+              series: (countSource as any)?.map((item: any) => ({
+                label: item.sourceName,
+                value: item.count,
+              })) || [],
             }}
           />
         </Grid>
