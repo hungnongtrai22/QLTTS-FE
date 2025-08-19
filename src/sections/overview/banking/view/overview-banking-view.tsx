@@ -88,7 +88,7 @@ export default function OverviewBankingView() {
 
         <Grid xs={12} md={8}>
           <Stack spacing={3}>
-            <BankingBalanceStatistics
+            {/* <BankingBalanceStatistics
               title="Balance Statistics"
               subheader="(+43% Income | +12% Expense) than last year"
               chart={{
@@ -117,7 +117,7 @@ export default function OverviewBankingView() {
                   },
                 ],
               }}
-            />
+            /> */}
 
             <BankingExpensesCategories
               title="Expenses Categories"

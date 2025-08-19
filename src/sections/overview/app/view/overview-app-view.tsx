@@ -27,8 +27,15 @@ import AppAreaInstalled from '../app-area-installed';
 import AppWidgetSummary from '../app-widget-summary';
 import AppCurrentDownload from '../app-current-download';
 import AppTopInstalledCountries from '../app-top-installed-countries';
+import BankingBalanceStatistics from '../../banking/banking-balance-statistics';
 
 // ----------------------------------------------------------------------
+function getDaysOfCurrentMonthJP() {
+  const today = new Date();
+  const day = today.getDate(); // ngày hiện tại trong tháng
+
+  return Array.from({ length: day }, (_, i) => `${i + 1}日`);
+}
 
 export default function OverviewAppView() {
   // const { user } = useMockedUser();
@@ -36,6 +43,8 @@ export default function OverviewAppView() {
 
   const [count, setCount] = useState();
   const [countSource, setCountSource] = useState();
+  const [countSourceByMonth, setCountSourceByMonth] = useState();
+  const [countSourceByWeek, setCountSourceByWeek] = useState();
 
   const theme = useTheme();
 
@@ -53,10 +62,31 @@ export default function OverviewAppView() {
     setCountSource(data);
   }, []);
 
+  const handleGetAllCountSourceByMonth = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/countByMonth`);
+    // console.log(data.interns);
+    setCountSourceByMonth(data);
+  }, []);
+
+  const handleGetAllCountSourceByWeek = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/countByWeek`);
+    // console.log(data.interns);
+    setCountSourceByWeek(data);
+  }, []);
+
   useEffect(() => {
     handleGetAllIntern();
     handleGetAllCountSource();
-  }, [handleGetAllIntern, handleGetAllCountSource]);
+    handleGetAllCountSourceByMonth();
+    handleGetAllCountSourceByWeek();
+  }, [
+    handleGetAllIntern,
+    handleGetAllCountSource,
+    handleGetAllCountSourceByMonth,
+    handleGetAllCountSourceByWeek,
+  ]);
+
+  console.log((countSourceByMonth as any)?.study?.chart?.series);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -123,15 +153,89 @@ export default function OverviewAppView() {
               //   { label: 'iOS', value: 44313 },
               //   { label: 'Android', value: 78343 },
               // ],
-              series: (countSource as any)?.map((item: any) => ({
-                label: item.sourceName,
-                value: item.count,
-              })) || [],
+              series:
+                (countSource as any)?.map((item: any) => ({
+                  label: item.sourceName,
+                  value: item.count,
+                })) || [],
             }}
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
+        <Grid xs={12} md={8}>
+          <Stack spacing={3}>
+            <BankingBalanceStatistics
+              title="Danh Sách Thực Tập Sinh"
+              subheader="(+43% Income | +12% Expense) than last year"
+              chart={{
+                series: [
+                  {
+                    type: 'Week',
+                    categories: [
+                      '月曜日',
+                      '火曜日',
+                      '水曜日',
+                      '木曜日',
+                      '金曜日',
+                      '土曜日',
+                      '日曜日',
+                    ],
+                    data: [
+                      { name: 'Đang Học', data: (countSourceByWeek as any)?.study?.chart?.series },
+                      { name: 'Đã Xuất Cảnh', data: (countSourceByWeek as any)?.study?.chart?.series },
+                      { name: 'Hoàn thành Hoặc Về Sớmh', data: (countSourceByWeek as any)?.study?.chart?.series },
+                    ],
+                  },
+                  {
+                    type: 'Month',
+                    categories: getDaysOfCurrentMonthJP(),
+                    data: [
+                      {
+                        name: 'Đang Học',
+                        data: (countSourceByMonth as any)?.study?.chart?.series.slice(0,new Date().getDate())
+                      },
+                      {
+                        name: 'Đã Xuất Cảnh',
+                        data: (countSourceByMonth as any)?.pass?.chart?.series.slice(0,new Date().getDate()),
+                      },
+                      {
+                        name: 'Hoàn thành Hoặc Về Sớm',
+                        data: (countSourceByMonth as any)?.completeOrSoon?.chart?.series.slice(0,new Date().getDate()),
+                      },
+                    ],
+                  },
+                  {
+                    type: 'Year',
+                    categories: [
+                      '1月',
+                      '2月',
+                      '3月',
+                      '4月',
+                      '5月',
+                      '6月',
+                      '7月',
+                      '8月',
+                      '9月',
+                      '10月',
+                      '11月',
+                      '12月',
+                    ],
+                    data: [
+                      { name: 'Đang Học', data: (count as any)?.study?.chart?.series },
+                      { name: 'Đã Xuất Cảnh', data: (count as any)?.pass?.chart?.series },
+                      {
+                        name: 'Hoàn thành Hoặc Về Sớm',
+                        data: (count as any)?.completeOrSoon?.chart?.series,
+                      },
+                    ],
+                  },
+                ],
+              }}
+            />
+          </Stack>
+        </Grid>
+
+        {/* <Grid xs={12} md={6} lg={8}>
           <AppAreaInstalled
             title="Area Installed"
             subheader="(+43%) than last year"
@@ -180,7 +284,7 @@ export default function OverviewAppView() {
               ],
             }}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12} lg={8}>
           <AppNewInvoice

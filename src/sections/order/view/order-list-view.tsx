@@ -51,8 +51,14 @@ import OrderTableFiltersResult from '../order-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS];
-
+// const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'Tất Cả' },
+  { value: 'Đang tuyển', label: 'Đang Tuyển' },
+  { value: 'Đã tuyển đủ', label: 'Đã Tuyển Đủ' },
+  { value: 'Tạm ngưng tuyển', label: 'Tạm Ngưng Tuyển' },
+  { value: 'Không tuyển nữa', label: 'Không Tuyển Nữa' },
+];
 const TABLE_HEAD = [
   { id: 'orderNumber', label: 'Tên' },
   { id: 'name', label: 'Ưu tiên', width: 116 },
@@ -236,22 +242,22 @@ export default function OrderListView() {
                       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
                     }
                     color={
-                      (tab.value === 'completed' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'cancelled' && 'error') ||
+                      (tab.value === 'Đang tuyển' && 'success') ||
+                      (tab.value === 'Đã tuyển đủ' && 'warning') ||
+                      (tab.value === 'Tạm ngưng tuyển' && 'error') ||
                       'default'
                     }
                   >
-                    {tab.value === 'all' && _orders.length}
-                    {tab.value === 'completed' &&
-                      _orders.filter((order) => order.status === 'completed').length}
+                    {tab.value === 'all' && tableData.length}
+                    {tab.value === 'Đang tuyển' &&
+                      tableData.filter((order : any) => order.status === 'Đang tuyển').length}
 
-                    {tab.value === 'pending' &&
-                      _orders.filter((order) => order.status === 'pending').length}
-                    {tab.value === 'cancelled' &&
-                      _orders.filter((order) => order.status === 'cancelled').length}
-                    {tab.value === 'refunded' &&
-                      _orders.filter((order) => order.status === 'refunded').length}
+                    {tab.value === 'Đã tuyển đủ' &&
+                      tableData.filter((order : any) => order.status === 'Đã tuyển đủ').length}
+                    {tab.value === 'Tạm ngưng tuyển' &&
+                      tableData.filter((order : any) => order.status === 'Tạm ngưng tuyển').length}
+                    {tab.value === 'Không tuyển nữa' &&
+                      tableData.filter((order : any) => order.status === 'Không tuyển nữa').length}
                   </Label>
                 }
               />
@@ -413,8 +419,7 @@ function applyFilter({
 
   if (name) {
     inputData = inputData.filter(
-      (order) =>
-        order.name.toLowerCase().indexOf(name.toLowerCase())!== -1 
+      (order) => order.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
       // ||
       //   order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
       //   order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||

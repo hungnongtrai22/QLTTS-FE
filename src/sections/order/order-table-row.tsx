@@ -104,13 +104,13 @@ export default function OrderTableRow({
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         {/* <Avatar alt={customer?.name} src={customer?.avatarUrl} sx={{ mr: 2 }} /> */}
         <Box
-          onClick={onViewRow}
-          sx={{
-            cursor: 'pointer',
-            '&:hover': {
-              textDecoration: 'underline',
-            },
-          }}
+          // onClick={onViewRow}
+          // sx={{
+          //   cursor: 'pointer',
+          //   '&:hover': {
+          //     textDecoration: 'underline',
+          //   },
+          // }}
         >
           <ListItemText
             primary={name}
@@ -213,7 +213,7 @@ export default function OrderTableRow({
                 />
                 {/* </Box> */}
 
-                {item && (
+                {/* {item && (
                   <PDFDownloadLink
                     document={<InternPDF invoice={item} />}
                     fileName={item.name}
@@ -231,7 +231,7 @@ export default function OrderTableRow({
                       </Tooltip>
                     )}
                   </PDFDownloadLink>
-                )}
+                )} */}
 
                 {item && (
                   <Tooltip title="Đổi Số Thự Tự" placement="top" arrow>

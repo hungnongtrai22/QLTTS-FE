@@ -17,10 +17,10 @@ interface Props extends CardProps {
   title?: string;
   subheader?: string;
   chart: {
-    categories?: string[];
     colors?: string[];
     series: {
       type: string;
+      categories: string[]; // mỗi loại có categories riêng
       data: {
         name: string;
         data: number[];
@@ -31,12 +31,17 @@ interface Props extends CardProps {
 }
 
 export default function BankingBalanceStatistics({ title, subheader, chart, ...other }: Props) {
-  const { categories, colors, series, options } = chart;
+  const { colors, series, options } = chart;
 
   const popover = usePopover();
 
-  const [seriesData, setSeriesData] = useState('Year');
+  // mặc định chọn loại đầu tiên (Week)
+  const [seriesData, setSeriesData] = useState(series[0]?.type || '');
 
+  // lấy ra nhóm dữ liệu đang được chọn
+  const activeSeries = series.find((item) => item.type === seriesData);
+
+  // cấu hình chart với categories theo nhóm được chọn
   const chartOptions = useChart({
     colors,
     stroke: {
@@ -45,11 +50,11 @@ export default function BankingBalanceStatistics({ title, subheader, chart, ...o
       colors: ['transparent'],
     },
     xaxis: {
-      categories,
+      categories: activeSeries?.categories || [],
     },
     tooltip: {
       y: {
-        formatter: (value: number) => `$${value}`,
+        formatter: (value: number) => `${value}`,
       },
     },
     ...options,
@@ -82,7 +87,6 @@ export default function BankingBalanceStatistics({ title, subheader, chart, ...o
               }}
             >
               {seriesData}
-
               <Iconify
                 width={16}
                 icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
@@ -92,13 +96,17 @@ export default function BankingBalanceStatistics({ title, subheader, chart, ...o
           }
         />
 
-        {series.map((item) => (
-          <Box key={item.type} sx={{ mt: 3, mx: 3 }}>
-            {item.type === seriesData && (
-              <Chart dir="ltr" type="bar" series={item.data} options={chartOptions} height={364} />
-            )}
-          </Box>
-        ))}
+        <Box sx={{ mt: 3, mx: 3 }}>
+          {activeSeries && (
+            <Chart
+              dir="ltr"
+              type="bar"
+              series={activeSeries.data}
+              options={chartOptions}
+              height={364}
+            />
+          )}
+        </Box>
       </Card>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 140 }}>
