@@ -3,6 +3,10 @@ export const statusIntern = [
     label: 'Đang học',
     value: 'study',
   },
+   {
+    label: 'Phỏng vấn',
+    value: 'interview',
+  },
   {
     label: 'Đã xuất cảnh',
     value: 'pass',

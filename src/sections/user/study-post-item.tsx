@@ -174,7 +174,7 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
         </Box>
       }
       action={
-        user?.role === 'admin' && (
+         (
           <IconButton>
             <Iconify icon="eva:more-vertical-fill" onClick={popover.onOpen} />
           </IconButton>

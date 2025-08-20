@@ -22,7 +22,7 @@ type Props = StackProps & {
   results: number;
 };
 
-    function changeTextStatusVN(value: any) {
+function changeTextStatusVN(value: any) {
   if (value === 'study') {
     return 'Đang học';
   }
@@ -32,14 +32,16 @@ type Props = StackProps & {
   if (value === 'complete') {
     return 'Hoàn thành hợp đồng';
   }
-    if (value === 'soon') {
+  if (value === 'soon') {
     return 'Về trước hạn';
+  }
+  if (value === 'interview') {
+    return 'Phỏng Vấn';
   }
   return '';
 }
-  
 
-    function changeTextStatusJP(value: any) {
+function changeTextStatusJP(value: any) {
   if (value === 'study') {
     return '研修中';
   }
@@ -49,13 +51,14 @@ type Props = StackProps & {
   if (value === 'complete') {
     return '契約満了';
   }
-    if (value === 'soon') {
+  if (value === 'soon') {
     return '早退';
+  }
+  if (value === 'interview') {
+    return '面接';
   }
   return '';
 }
-
-
 
 export default function InternTableFiltersResult({
   filters,
@@ -66,8 +69,7 @@ export default function InternTableFiltersResult({
   results,
   ...other
 }: Props) {
-    const { currentLang } = useLocales();
-
+  const { currentLang } = useLocales();
 
   const handleRemoveStatus = () => {
     onFilters('status', 'all');
@@ -98,7 +100,11 @@ export default function InternTableFiltersResult({
           <Block label={t('status')}>
             <Chip
               size="small"
-              label={currentLang.value === 'jp' ? changeTextStatusJP(filters.status) : changeTextStatusVN(filters.status)}
+              label={
+                currentLang.value === 'jp'
+                  ? changeTextStatusJP(filters.status)
+                  : changeTextStatusVN(filters.status)
+              }
               onDelete={handleRemoveStatus}
             />
           </Block>
@@ -115,7 +121,12 @@ export default function InternTableFiltersResult({
         {!!filters.company?.length && (
           <Block label={t('company_name')}>
             {filters.company.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveCompany(item)} />
+              <Chip
+                key={item}
+                label={item}
+                size="small"
+                onDelete={() => handleRemoveCompany(item)}
+              />
             ))}
           </Block>
         )}

@@ -92,6 +92,7 @@ export default function InternListView() {
 
   const STATUS_OPTIONS = [
     { value: 'all', label: t('all') },
+        { value: 'interview', label: t('interview') },
     { value: 'study', label: t('studying') },
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
@@ -320,7 +321,8 @@ export default function InternListView() {
                     {tab.value === 'all' && tableData.length}
                     {tab.value === 'study' &&
                       tableData.filter((user) => user.status === 'study').length}
-
+  {tab.value === 'interview' &&
+                      tableData.filter((user) => user.status === 'interview').length}
                     {tab.value === 'pass' &&
                       tableData.filter((user) => user.status === 'pass').length}
                     {tab.value === 'complete' &&
