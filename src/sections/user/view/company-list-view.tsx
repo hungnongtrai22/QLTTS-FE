@@ -40,6 +40,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 import axios from 'axios';
+import { t } from 'i18next';
 
 //
 import CompanyTableRow from '../company-table-row';
@@ -179,20 +180,20 @@ export default function CompanyListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t('list') || ""}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
-            { name: 'List' },
+            { name: t('dashboard') || "", href: paths.dashboard.root },
+            { name: t('company_name') || "", href: paths.dashboard.company.root },
+            { name: t('list') || ""},
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.user.new}
+              href={paths.dashboard.company.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New User
+              {t('company_add')}
             </Button>
           }
           sx={{

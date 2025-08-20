@@ -66,6 +66,14 @@ export default function AnalyticsCurrentSubject({ title, subheader, chart, ...ot
         },
       },
     },
+    yaxis: {
+      max: 100, // Giới hạn tối đa = 100
+      min: 0, // Bắt đầu từ 0
+      tickAmount: 5, // Chia thành 5 khoảng => 0, 20, 40, 60, 80, 100
+      // labels: {
+      //   formatter: (val: number) => `${val}`, // Nếu muốn thêm "%" thì để `${val}%`
+      // },
+    },
     ...options,
   });
 

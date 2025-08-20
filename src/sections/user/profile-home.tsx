@@ -39,6 +39,7 @@ import ProfilePostItem from './profile-post-item';
 import StudyPostItem from './study-post-item';
 import AllStudyPDF from '../order/AllStudyPDF';
 import AppAreaInstalled from '../overview/app/app-area-installed';
+import AnalyticsCurrentSubject from '../overview/analytics/analytics-current-subject';
 
 // ----------------------------------------------------------------------
 
@@ -300,79 +301,98 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
     </Card>
   );
 
-  // console.log("sd", study);
-  const studyCate = study.map((item : any)=>item.time).reverse();
-    const studyTotal = study.map((item : any)=>item.total).reverse();
-    const studyListen = study.map((item : any)=>item.listen).reverse();
-    const studyRead = study.map((item : any)=>item.read).reverse();
-    const studySpeak = study.map((item : any)=>item.speak).reverse();
-    const studyWrite = study.map((item : any)=>item.write).reverse();
-    let result = 0;
-    if(studyTotal.length >= 2){
-      result = studyTotal[studyTotal.length - 1] - studyTotal[studyTotal.length - 1 - 1];
-    }
+  const newStudy = study.slice(0,3).map((item:any)=>({
+    name: `${item.time}ヶ月`,
+    data: [item.write, item.read, item.listen, item.speak, item.health, item.attend]
+  }));
+    console.log("sd", newStudy);
+
+  const studyCate = study.map((item: any) => item.time).reverse();
+  const studyTotal = study.map((item: any) => item.total).reverse();
+  const studyListen = study.map((item: any) => item.listen).reverse();
+  const studyRead = study.map((item: any) => item.read).reverse();
+  const studySpeak = study.map((item: any) => item.speak).reverse();
+  const studyWrite = study.map((item: any) => item.write).reverse();
+  let result = 0;
+  if (studyTotal.length >= 2) {
+    result = studyTotal[studyTotal.length - 1] - studyTotal[studyTotal.length - 1 - 1];
+  }
 
   return (
     <Grid container spacing={3}>
-          <Grid xs={24} md={24} lg={24}>
-          <AppAreaInstalled
-            title={t('learning_ability') || ""}
-            subheader={`${result >= 0 ? t('increase') : t('decrease')}${Math.abs(result)}${t('sub')}`}
-            chart={{
-              // categories: [
-              //   '一月',
-              //   '二月',
-              //   '三月',
-              //   '四月	',
-              //   '五月',
-              //   '六月	',
-              //   '七月',
-              //   '八月',
-              //   '九月',
-              //   '十月	',
-              //   '十一月	',
-              //   '十二月	',
-              // ]
-              categories: studyCate,
-              series: [
-                {
-                  year: t('learn_total'),
-                  data: [
-                    {
-                      name: t('learn_total'),
-                      data: studyTotal,
-                    },
-                    // {
-                    //   name: 'America',
-                    //   data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
-                    // },
-                  ],
-                },
-                {
-                  year: t('learn_part'),
-                  data: [
-                    {
-                      name: t('learn_listen'),
-                      data: studyListen,
-                    },
-                    {
-                      name: t('learn_read'),
-                      data: studyRead,
-                    },
-                      {
-                      name: t('learn_speak'),
-                      data: studySpeak,
-                    },
-                      {
-                      name: t('learn_write'),
-                      data: studyWrite,
-                    },
-                  ],
-                },
-              ],
-            }}
-          />
-        </Grid>
+      <Grid xs={8} md={8} lg={8}>
+        <AppAreaInstalled
+          title={t('learning_ability') || ''}
+          subheader={`${result >= 0 ? t('increase') : t('decrease')}${Math.abs(result)}${t('sub')}`}
+          chart={{
+            // categories: [
+            //   '一月',
+            //   '二月',
+            //   '三月',
+            //   '四月	',
+            //   '五月',
+            //   '六月	',
+            //   '七月',
+            //   '八月',
+            //   '九月',
+            //   '十月	',
+            //   '十一月	',
+            //   '十二月	',
+            // ]
+            categories: studyCate,
+            series: [
+              {
+                year: t('learn_total'),
+                data: [
+                  {
+                    name: t('learn_total'),
+                    data: studyTotal,
+                  },
+                  // {
+                  //   name: 'America',
+                  //   data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
+                  // },
+                ],
+              },
+              {
+                year: t('learn_part'),
+                data: [
+                  {
+                    name: t('learn_listen'),
+                    data: studyListen,
+                  },
+                  {
+                    name: t('learn_read'),
+                    data: studyRead,
+                  },
+                  {
+                    name: t('learn_speak'),
+                    data: studySpeak,
+                  },
+                  {
+                    name: t('learn_write'),
+                    data: studyWrite,
+                  },
+                ],
+              },
+            ],
+          }}
+        />
+      </Grid>
+      <Grid xs={4} md={4} lg={4}>
+        <AnalyticsCurrentSubject
+          title="日本語能力"
+          chart={{
+            categories: ['筆記力', '読解力', '聴解力', '会話力', '健康状態', '出席状況'],
+            // series: [
+            //   { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
+            //   { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
+            //   { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
+            // ],
+             series: newStudy || [],
+          }}
+        />
+      </Grid>
 
       {user?.role === 'admin' && (
         <Grid xs={12} md={4}>
@@ -398,7 +418,12 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
           {/* {renderFollows} */}
 
           {study.map((item) => (
-            <StudyPostItem key={item._id} study={item} intern={currentIntern || null} onRemove={handleRemoveStudy}/>
+            <StudyPostItem
+              key={item._id}
+              study={item}
+              intern={currentIntern || null}
+              onRemove={handleRemoveStudy}
+            />
           ))}
         </Stack>
       </Grid>
