@@ -204,17 +204,17 @@ export default function OrderListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Danh Sách"
           links={[
             {
-              name: 'Dashboard',
+              name: 'Bảng Điều Khiển',
               href: paths.dashboard.root,
             },
             {
-              name: 'Order',
+              name: 'Đơn Hàng',
               href: paths.dashboard.order.root,
             },
-            { name: 'List' },
+            { name: 'Danh Sách' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },

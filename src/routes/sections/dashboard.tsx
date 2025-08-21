@@ -17,6 +17,7 @@ import DiaryListPage from 'src/pages/dashboard/diary/list';
 import DiaryCreatePage from 'src/pages/dashboard/diary/new';
 import DiaryEditPage from 'src/pages/dashboard/diary/edit';
 import DiaryProfileView from 'src/sections/user/view/diary-profile-view';
+import InternListPointPage from 'src/pages/dashboard/intern/listPoint';
 
 // ----------------------------------------------------------------------
 
@@ -140,6 +141,14 @@ export const dashboardRoutes = [
             element: (
               <RoleBasedGuard hasContent roles={['admin']}>
                 <InternListPage />
+              </RoleBasedGuard>
+            ),
+          },
+           {
+            path: 'listPoint',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternListPointPage />
               </RoleBasedGuard>
             ),
           },

@@ -244,6 +244,8 @@
   "delete": "消去",
   "compact": "折りたたむ",
   "interview": "面接",
+  "listPoint": "成績入力一覧",
+  "edit_order": "注文を更新",
   "demo": {
     "title": "英語"
   }

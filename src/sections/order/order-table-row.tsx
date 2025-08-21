@@ -133,9 +133,9 @@ export default function OrderTableRow({
         <Label
           variant="soft"
           color={
-            (status === 'completed' && 'success') ||
-            (status === 'pending' && 'warning') ||
-            (status === 'cancelled' && 'error') ||
+            (status === 'Đang tuyển' && 'success') ||
+            (status === 'Đã tuyển đủ' && 'warning') ||
+            (status === 'Tạm ngưng tuyển' && 'error') ||
             'default'
           }
         >

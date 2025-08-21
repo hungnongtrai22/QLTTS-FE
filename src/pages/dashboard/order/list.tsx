@@ -8,7 +8,7 @@ export default function OrderListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Order List</title>
+        <title> Bảng Điều Khiển: Danh sách đơn hàng</title>
       </Helmet>
 
       <OrderListView />

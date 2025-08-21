@@ -249,6 +249,9 @@
     "delete": "Xóa",
     "compact": "Thu gọn",
     "interview": "Phỏng vấn",
+    "listPoint": "Danh Sách Nhập Điểm",
+        "edit_order": "Cập nhập đơn hàng",
+
   "demo": {
     "title": "Vietnamese"
   }

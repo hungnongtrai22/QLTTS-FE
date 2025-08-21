@@ -64,15 +64,15 @@ export default function UserTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <FormControl
+         {/* <FormControl
           sx={{
             flexShrink: 0,
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Role</InputLabel>
+          <InputLabel>Role</InputLabel> 
 
-          <Select
+           <Select
             multiple
             value={filters.role}
             onChange={handleFilterRole}
@@ -90,15 +90,15 @@ export default function UserTableToolbar({
                 {option}
               </MenuItem>
             ))}
-          </Select>
-        </FormControl>
+          </Select> 
+        </FormControl> */}
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

@@ -85,7 +85,7 @@ export default function InternListBySource() {
   const STATUS_OPTIONS = [
     { value: 'all', label: t('all') },
     { value: 'study', label: t('studying') },
-            { value: 'interview', label: t('interview') },
+    { value: 'interview', label: t('interview') },
 
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
@@ -270,7 +270,7 @@ export default function InternListBySource() {
                     {tab.value === 'all' && tableData.length}
                     {tab.value === 'study' &&
                       tableData.filter((intern) => intern.status === 'study').length}
-{tab.value === 'interview' &&
+                    {tab.value === 'interview' &&
                       tableData.filter((intern) => intern.status === 'interview').length}
                     {tab.value === 'pass' &&
                       tableData.filter((intern) => intern.status === 'pass').length}

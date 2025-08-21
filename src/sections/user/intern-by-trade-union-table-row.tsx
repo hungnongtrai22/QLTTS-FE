@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+
 // @mui
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -31,25 +33,29 @@ type Props = {
 };
 
 const changDateJP = (date: any) => {
-  if(date === null){
-    return "";
-  }
+  if (!date) return "";
+
   const jsDate = new Date(date);
-  const formatted = jsDate.toLocaleDateString('ja-JP');
-  const parts = formatted.split('/');
-  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
-  return customFormat;
+  if (isNaN(jsDate.getTime())) return "";
+
+  const formatted = jsDate.toLocaleDateString("ja-JP");
+  const parts = formatted.split("/");
+  if (parts.length < 3) return "";
+
+  return `${parts[0]}年${parts[1]}月${parts[2]}日`;
 };
 
 const changMonthJP = (date: any) => {
-  if(date === null){
-    return "";
-  }
+  if (!date) return "";
+
   const jsDate = new Date(date);
-  const formatted = jsDate.toLocaleDateString('ja-JP');
-  const parts = formatted.split('/');
-  const customFormat = `${parts[0]}年${parts[1]}月`;
-  return customFormat;
+  if (isNaN(jsDate.getTime())) return "";
+
+  const formatted = jsDate.toLocaleDateString("ja-JP");
+  const parts = formatted.split("/");
+  if (parts.length < 2) return "";
+
+  return `${parts[0]}年${parts[1]}月`;
 };
 
 export default function InternByTradeUnionTableRow({
