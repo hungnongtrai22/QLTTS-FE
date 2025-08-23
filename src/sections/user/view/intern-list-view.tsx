@@ -92,7 +92,7 @@ export default function InternListView() {
 
   const STATUS_OPTIONS = [
     { value: 'all', label: t('all') },
-        { value: 'interview', label: t('interview') },
+    { value: 'interview', label: t('interview') },
     { value: 'study', label: t('studying') },
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
@@ -321,7 +321,7 @@ export default function InternListView() {
                     {tab.value === 'all' && tableData.length}
                     {tab.value === 'study' &&
                       tableData.filter((user) => user.status === 'study').length}
-  {tab.value === 'interview' &&
+                    {tab.value === 'interview' &&
                       tableData.filter((user) => user.status === 'interview').length}
                     {tab.value === 'pass' &&
                       tableData.filter((user) => user.status === 'pass').length}
@@ -501,10 +501,18 @@ function applyFilter({
 
   inputData = stabilizedThis.map((el) => el[0]);
 
+  function removeVietnameseTones(str: string): string {
+    return str
+      .normalize('NFD') // Tách dấu
+      .replace(/[\u0300-\u036f]/g, '') // Xóa các dấu
+      .replace(/đ/g, 'd') // Đ -> d
+      .replace(/Đ/g, 'd') // Đ -> d
+      .toLowerCase(); // Chuyển về chữ thường
+  }
+
   if (name) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
+    const search = removeVietnameseTones(name);
+    inputData = inputData.filter((user) => removeVietnameseTones(user.name).includes(search));
   }
 
   if (status !== 'all') {

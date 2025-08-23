@@ -434,10 +434,18 @@ function applyFilter({
 
   inputData = stabilizedThis.map((el) => el[0]);
 
+   function removeVietnameseTones(str: string): string {
+    return str
+      .normalize('NFD') // Tách dấu
+      .replace(/[\u0300-\u036f]/g, '') // Xóa các dấu
+      .replace(/đ/g, 'd') // Đ -> d
+      .replace(/Đ/g, 'd') // Đ -> d
+      .toLowerCase(); // Chuyển về chữ thường
+  }
+
   if (name) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
+    const search = removeVietnameseTones(name);
+    inputData = inputData.filter((user) => removeVietnameseTones(user.name).includes(search));
   }
 
   if (status !== 'all') {

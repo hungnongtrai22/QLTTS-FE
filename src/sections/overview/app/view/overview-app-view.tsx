@@ -86,7 +86,7 @@ export default function OverviewAppView() {
     handleGetAllCountSourceByWeek,
   ]);
 
-  console.log((countSourceByMonth as any)?.study?.chart?.series);
+  // console.log((countSourceByMonth as any)?.study?.chart?.series);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
