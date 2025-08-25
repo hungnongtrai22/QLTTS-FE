@@ -28,6 +28,7 @@ import AppWidgetSummary from '../app-widget-summary';
 import AppCurrentDownload from '../app-current-download';
 import AppTopInstalledCountries from '../app-top-installed-countries';
 import BankingBalanceStatistics from '../../banking/banking-balance-statistics';
+import AnalyticsConversionRates from '../../analytics/analytics-conversion-rates';
 
 // ----------------------------------------------------------------------
 function getDaysOfCurrentMonthJP() {
@@ -45,6 +46,9 @@ export default function OverviewAppView() {
   const [countSource, setCountSource] = useState();
   const [countSourceByMonth, setCountSourceByMonth] = useState();
   const [countSourceByWeek, setCountSourceByWeek] = useState();
+    const [topStudy, setTopStudy] = useState();
+    const [avgSource, setAvgSource] = useState([]);
+
 
   const theme = useTheme();
 
@@ -74,16 +78,32 @@ export default function OverviewAppView() {
     setCountSourceByWeek(data);
   }, []);
 
+  const handleGetTopStudy = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/topStudy`);
+    // console.log(data);
+    setTopStudy(data);
+  }, []);
+
+    const handleGetAvgSource = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/avgSource`);
+    console.log(data?.stats);
+    setAvgSource(data?.stats);
+  }, []);
+
   useEffect(() => {
     handleGetAllIntern();
     handleGetAllCountSource();
     handleGetAllCountSourceByMonth();
     handleGetAllCountSourceByWeek();
+    handleGetTopStudy();
+    handleGetAvgSource();
   }, [
     handleGetAllIntern,
     handleGetAllCountSource,
     handleGetAllCountSourceByMonth,
     handleGetAllCountSourceByWeek,
+    handleGetTopStudy,
+    handleGetAvgSource
   ]);
 
   // console.log((countSourceByMonth as any)?.study?.chart?.series);
@@ -166,11 +186,11 @@ export default function OverviewAppView() {
           <Stack spacing={3}>
             <BankingBalanceStatistics
               title="Danh Sách Thực Tập Sinh"
-              subheader="(+43% Income | +12% Expense) than last year"
+              // subheader="(+43% Income | +12% Expense) than last year"
               chart={{
                 series: [
                   {
-                    type: 'Week',
+                    type: 'Tuần',
                     categories: [
                       '月曜日',
                       '火曜日',
@@ -187,7 +207,7 @@ export default function OverviewAppView() {
                     ],
                   },
                   {
-                    type: 'Month',
+                    type: 'Tháng',
                     categories: getDaysOfCurrentMonthJP(),
                     data: [
                       {
@@ -205,7 +225,7 @@ export default function OverviewAppView() {
                     ],
                   },
                   {
-                    type: 'Year',
+                    type: 'Năm',
                     categories: [
                       '1月',
                       '2月',
@@ -286,7 +306,7 @@ export default function OverviewAppView() {
           />
         </Grid> */}
 
-        <Grid xs={12} lg={8}>
+        {/* <Grid xs={12} lg={8}>
           <AppNewInvoice
             title="New Invoice"
             tableData={_appInvoices}
@@ -298,21 +318,51 @@ export default function OverviewAppView() {
               { id: '' },
             ]}
           />
-        </Grid>
+        </Grid> */}
+
+         <Grid xs={12} md={6} lg={8}>
+                  <AnalyticsConversionRates
+                    title={`Điểm trung bình từng nguồn ${new Date().getMonth()}`}
+                    // subheader="(+43%) than last year"
+                    chart={{
+                      // series: [
+                      //   { label: 'Italy', value: 400 },
+                      //   { label: 'Japan', value: 430 },
+                      //   { label: 'China', value: 448 },
+                      //   { label: 'Canada', value: 470 },
+                      //   { label: 'France', value: 540 },
+                      //   { label: 'Germany', value: 580 },
+                      //   { label: 'South Korea', value: 690 },
+                      //   { label: 'Netherlands', value: 1100 },
+                      //   { label: 'United States', value: 1200 },
+                      //   { label: 'United Kingdom', value: 1380 },
+                      // ],
+                        series: avgSource?.map((item : any)=> ({ label: item?.sourceName, value: item?.averageScore?.toFixed(0) })) || [],
+                    }}
+                  />
+                </Grid>
 
         <Grid xs={12} md={6} lg={4}>
+          <AppTopAuthors title={`Bảng xếp hạng thực tập sinh tháng ${new Date().getMonth()}`} list={topStudy} />
+        </Grid>
+
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppTopRelated title="Top Related Applications" list={_appRelated} />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppTopInstalledCountries title="Top Installed Countries" list={_appInstalled} />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={4}>
-          <AppTopAuthors title="Top Authors" list={_appAuthors} />
-        </Grid>
+        {/* <Grid xs={12} md={6} lg={4}>
+          <AppTopAuthors title={`Bảng xếp hạng thực tập sinh tháng ${new Date().getMonth()}`} list={_appAuthors} />
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
+          <AppTopRelated title="Top Related Applications" list={_appRelated} />
+        </Grid> */}
+
+        {/* <Grid xs={12} md={6} lg={4}>
           <Stack spacing={3}>
             <AppWidget
               title="Conversion"
@@ -333,7 +383,7 @@ export default function OverviewAppView() {
               }}
             />
           </Stack>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );

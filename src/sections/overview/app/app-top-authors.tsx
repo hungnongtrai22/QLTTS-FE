@@ -24,7 +24,7 @@ type ItemProps = {
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
-  list: ItemProps[];
+  list: any;
 }
 
 export default function AppTopAuthors({ title, subheader, list, ...other }: Props) {
@@ -34,7 +34,7 @@ export default function AppTopAuthors({ title, subheader, list, ...other }: Prop
 
       <Stack spacing={3} sx={{ p: 3 }}>
         {orderBy(list, ['totalFavorites'], ['desc']).map((author, index) => (
-          <AuthorItem key={author.id} author={author} index={index} />
+          <AuthorItem key={author.internId} author={author} index={index} />
         ))}
       </Stack>
     </Card>
@@ -48,13 +48,13 @@ type AuthorItemProps = {
   index: number;
 };
 
-function AuthorItem({ author, index }: AuthorItemProps) {
+function AuthorItem({ author, index }: any) {
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
-      <Avatar alt={author.name} src={author.avatarUrl} />
+      <Avatar alt={author.internName} src={author.internAvatar} />
 
       <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="subtitle2">{author.name}</Typography>
+        <Typography variant="subtitle2">{author.internName}</Typography>
 
         <Typography
           variant="caption"
@@ -65,30 +65,43 @@ function AuthorItem({ author, index }: AuthorItemProps) {
             color: 'text.secondary',
           }}
         >
-          <Iconify icon="solar:heart-bold" width={14} sx={{ mr: 0.5 }} />
-          {fShortenNumber(author.totalFavorites)}
+          <Iconify icon="basil:bag-solid" width={14} sx={{ mr: 0.5 }} />
+          {fShortenNumber(author.totalScore)}
         </Typography>
       </Box>
 
       <Iconify
-        icon="solar:cup-star-bold"
-        sx={{
-          p: 1,
-          width: 40,
-          height: 40,
-          borderRadius: '50%',
-          color: 'primary.main',
-          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-          ...(index === 1 && {
-            color: 'info.main',
-            bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
-          }),
-          ...(index === 2 && {
-            color: 'error.main',
-            bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
-          }),
-        }}
-      />
+  icon="solar:cup-star-bold"
+  sx={{
+    p: 1,
+    width: 40,
+    height: 40,
+    borderRadius: '50%',
+    color: 'primary.main',
+    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+    ...(index === 1 && {
+      color: 'info.main',
+      bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
+    }),
+    ...(index === 2 && {
+      color: 'error.main',
+      bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+    }),
+    ...(index === 3 && {
+      color: 'success.main',
+      bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
+    }),
+    ...(index === 4 && {
+      color: 'warning.main',
+      bgcolor: (theme) => alpha(theme.palette.warning.main, 0.08),
+    }),
+    ...(index === 5 && {
+      color: 'secondary.main',
+      bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+    }),
+  }}
+/>
+
     </Stack>
   );
 }
