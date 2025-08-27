@@ -177,20 +177,20 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
-          {
-            title: t('diary'),
-            // roles: ['admin'],
-            path: paths.dashboard.diary.root,
-            icon: ICONS.user,
-            children: [
-              // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
-              // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
-              { title: t('list'), path: paths.dashboard.diary.list },
-              { title: t('create'), path: paths.dashboard.diary.new, roles: ['admin'] },
-              // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
-              // { title: t('account'), path: paths.dashboard.tradeUnion.account },
-            ],
-          },
+          // {
+          //   title: t('diary'),
+          //   // roles: ['admin'],
+          //   path: paths.dashboard.diary.root,
+          //   icon: ICONS.user,
+          //   children: [
+          //     // { title: t('profile'), path: paths.dashboard.tradeUnion.root },
+          //     // { title: t('cards'), path: paths.dashboard.tradeUnion.cards },
+          //     { title: t('list'), path: paths.dashboard.diary.list },
+          //     { title: t('create'), path: paths.dashboard.diary.new, roles: ['admin'] },
+          //     // { title: t('edit'), path: paths.dashboard.tradeUnion.demo.edit },
+          //     // { title: t('account'), path: paths.dashboard.tradeUnion.account },
+          //   ],
+          // },
           // USER
           // {
           //   title: t('user'),

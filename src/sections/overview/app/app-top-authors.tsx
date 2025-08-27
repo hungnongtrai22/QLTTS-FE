@@ -71,37 +71,36 @@ function AuthorItem({ author, index }: any) {
       </Box>
 
       <Iconify
-  icon="solar:cup-star-bold"
-  sx={{
-    p: 1,
-    width: 40,
-    height: 40,
-    borderRadius: '50%',
-    color: 'primary.main',
-    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-    ...(index === 1 && {
-      color: 'info.main',
-      bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
-    }),
-    ...(index === 2 && {
-      color: 'error.main',
-      bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
-    }),
-    ...(index === 3 && {
-      color: 'success.main',
-      bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
-    }),
-    ...(index === 4 && {
-      color: 'warning.main',
-      bgcolor: (theme) => alpha(theme.palette.warning.main, 0.08),
-    }),
-    ...(index === 5 && {
-      color: 'secondary.main',
-      bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-    }),
-  }}
-/>
-
+        icon="solar:cup-star-bold"
+        sx={{
+          p: 1,
+          width: 40,
+          height: 40,
+          borderRadius: '50%',
+          color: 'primary.main',
+          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+          ...(index === 1 && {
+            color: 'info.main',
+            bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
+          }),
+          ...(index === 2 && {
+            color: 'error.main',
+            bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+          }),
+          ...(index === 3 && {
+            color: 'success.main',
+            bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
+          }),
+          ...(index === 4 && {
+            color: 'warning.main',
+            bgcolor: (theme) => alpha(theme.palette.warning.main, 0.08),
+          }),
+          ...(index === 5 && {
+            color: 'secondary.main',
+            bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+          }),
+        }}
+      />
     </Stack>
   );
 }

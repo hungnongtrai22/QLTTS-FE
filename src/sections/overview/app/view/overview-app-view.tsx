@@ -325,18 +325,6 @@ export default function OverviewAppView() {
                     title={`Điểm trung bình từng nguồn ${new Date().getMonth()}`}
                     // subheader="(+43%) than last year"
                     chart={{
-                      // series: [
-                      //   { label: 'Italy', value: 400 },
-                      //   { label: 'Japan', value: 430 },
-                      //   { label: 'China', value: 448 },
-                      //   { label: 'Canada', value: 470 },
-                      //   { label: 'France', value: 540 },
-                      //   { label: 'Germany', value: 580 },
-                      //   { label: 'South Korea', value: 690 },
-                      //   { label: 'Netherlands', value: 1100 },
-                      //   { label: 'United States', value: 1200 },
-                      //   { label: 'United Kingdom', value: 1380 },
-                      // ],
                         series: avgSource?.map((item : any)=> ({ label: item?.sourceName, value: item?.averageScore?.toFixed(0) })) || [],
                     }}
                   />
