@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable */
+
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -69,7 +71,7 @@ interface FormValuesProps extends Omit<IStudyItem, 'avatarUrl'> {
   totalReadingAndListening: number;
   learningProcess: string;
   characteristic: string;
-    teacher: string;
+  teacher: string;
 
   comment: string;
   createdAt: any;
@@ -96,8 +98,7 @@ export default function InternPointForm({ internId }: Props) {
   const [monthSelect, setMonthSelect] = useState<Date | null>(null);
 
   const NewUserSchema = Yup.object().shape({
-    monthSelect: Yup.date()
-      .required('Tháng không được để trống'),
+    monthSelect: Yup.date().required('Tháng không được để trống'),
     health: Yup.number()
       .min(0, 'Tình trạng sức khỏe phải lớn hơn hoặc bằng 0')
       .max(100, 'Tình trạng sức khỏe phải bé hơn hoặc bằng 100')
@@ -131,10 +132,10 @@ export default function InternPointForm({ internId }: Props) {
       .max(100, 'Kỹ năng đọc hiểu phải bé hơn hoặc bằng 100')
       .required('Kỹ năng đọc hiểu không được để trống')
       .test(
-    'is-divisible-by-10',
-    'Kỹ năng đọc hiểu phải chia hết cho 10',
-    (value) => value === undefined || value % 10 === 0
-  ),
+        'is-divisible-by-10',
+        'Kỹ năng đọc hiểu phải chia hết cho 10',
+        (value) => value === undefined || value % 10 === 0
+      ),
     listen: Yup.number()
       .min(0, 'Kỹ năng nghe hiểu phải lớn hơn hoặc bằng 0')
       .max(100, 'Kỹ năng nghe hiểu phải bé hơn hoặc bằng 100')
@@ -143,6 +144,15 @@ export default function InternPointForm({ internId }: Props) {
       .min(0, 'Kỹ năng giao tiếp phải lớn hơn hoặc bằng 0')
       .max(100, 'Kỹ năng giao tiếp phải bé hơn hoặc bằng 100')
       .required('Kỹ năng giao tiếp không được để trống'),
+    kanji: Yup.number()
+      .min(0, 'Từ vựng / ngữ pháp phải lớn hơn hoặc bằng 0')
+      .max(60, 'Từ vựng / ngữ pháp phải bé hơn hoặc bằng 60'),
+    grammarAndReading: Yup.number()
+      .min(0, 'Ngữ pháp / đọc hiểu phải lớn hơn hoặc bằng 0')
+      .max(60, 'Ngữ pháp / đọc hiểu phải bé hơn hoặc bằng 60'),
+      listeningComprehension: Yup.number()
+      .min(0, 'Nghe hiểu phải lớn hơn hoặc bằng 0')
+      .max(60, 'Nghe hiểu phải bé hơn hoặc bằng 60'),
     level: Yup.string().required('Trình độ không được để trống'),
     time: Yup.string().required('Thời gian học không được để trống'),
     learningProcess: Yup.string().required('Tiến trình học tập không được để trống'),
@@ -174,7 +184,7 @@ export default function InternPointForm({ internId }: Props) {
       totalReadingAndListening: undefined,
       learningProcess: '',
       characteristic: '',
-            teacher: '',
+      teacher: '',
 
       comment: '',
       createdAt: '',
@@ -278,7 +288,7 @@ export default function InternPointForm({ internId }: Props) {
       }
     );
 
-     const { data: newData } = await axios.post(
+    const { data: newData } = await axios.post(
       `${process.env.REACT_APP_HOST_API}/api/study/getByInternId`,
       {
         internId,
@@ -311,8 +321,8 @@ export default function InternPointForm({ internId }: Props) {
         listeningComprehension: undefined,
         totalReadingAndListening: undefined,
         learningProcess: '',
-        characteristic: newData?.study?.characteristic ||'',
-                teacher: newData?.study?.teacher ||'',
+        characteristic: newData?.study?.characteristic || '',
+        teacher: newData?.study?.teacher || '',
 
         comment: '',
         createdAt: '',
@@ -356,18 +366,14 @@ export default function InternPointForm({ internId }: Props) {
         ? Number(data.study.totalReadingAndListening)
         : undefined,
       learningProcess: data.study?.learningProcess || '',
-      characteristic: data?.study?.characteristic || newData?.study?.characteristic ||'',
-            teacher: data?.study?.teacher || newData?.study?.teacher ||'',
+      characteristic: data?.study?.characteristic || newData?.study?.characteristic || '',
+      teacher: data?.study?.teacher || newData?.study?.teacher || '',
 
       comment: data.study?.comment || '',
       createdAt: data.study?.createdAt || '',
       monthSelect: data.study?.monthAndYear || '',
     });
-
-
   }, [monthSelect, internId, reset, defaultValues]);
-
-
 
   useEffect(() => {
     handleGetStudyByMonth();
@@ -676,6 +682,15 @@ export default function InternPointForm({ internId }: Props) {
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
                     label={t('time')}
+                    onFocus={(event) =>
+                      event.target.addEventListener(
+                        'wheel',
+                        function (e) {
+                          e.preventDefault();
+                        },
+                        { passive: false }
+                      )
+                    }
                   />
                 )}
               />
@@ -788,7 +803,7 @@ export default function InternPointForm({ internId }: Props) {
                   </li>
                 )}
               />
-                <RHFAutocomplete
+              <RHFAutocomplete
                 name="teacher"
                 label={t('teacher') || ''}
                 disablePortal
