@@ -52,13 +52,13 @@ interface Props {
 
 const changDateJP = (date: any) => {
   const jsDate = new Date(date);
-  const formatted = jsDate.toLocaleDateString('ja-JP');
-  const parts = formatted.split('/');
-  // const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
-  const customFormat = `${parts[0]}年${parts[1]}月`;
 
-  return customFormat;
+  const year = jsDate.getFullYear();
+  const month = jsDate.getMonth() + 1; // JS month bắt đầu từ 0
+
+  return `${year}年${month}月`;
 };
+
 const transPointToSharp = (point: number): string => {
   if (point < 50) return '×';
   if (point < 70) return '△';

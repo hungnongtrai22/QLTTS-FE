@@ -150,7 +150,7 @@ export default function InternPointForm({ internId }: Props) {
     grammarAndReading: Yup.number()
       .min(0, 'Ngữ pháp / đọc hiểu phải lớn hơn hoặc bằng 0')
       .max(60, 'Ngữ pháp / đọc hiểu phải bé hơn hoặc bằng 60'),
-      listeningComprehension: Yup.number()
+    listeningComprehension: Yup.number()
       .min(0, 'Nghe hiểu phải lớn hơn hoặc bằng 0')
       .max(60, 'Nghe hiểu phải bé hơn hoặc bằng 60'),
     level: Yup.string().required('Trình độ không được để trống'),
@@ -210,6 +210,18 @@ export default function InternPointForm({ internId }: Props) {
 
   const values = watch();
 
+  const normalizeDate = (date: any) => {
+    const jsDate = new Date(date);
+
+    // Lấy năm, tháng, ngày
+    const year = jsDate.getUTCFullYear();
+    const month = jsDate.getUTCMonth(); // 0-11
+    const day = jsDate.getUTCDate();
+
+    // Tạo lại date mới nhưng fix giờ 17:00:00 UTC
+    return new Date(Date.UTC(year, month, day, 17, 0, 0, 0));
+  };
+
   const createNewStudy = useCallback(async (study: any) => {
     const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/create`, {
       ...study,
@@ -226,7 +238,7 @@ export default function InternPointForm({ internId }: Props) {
         study.speak,
       average: (study.write + study.read + study.listen + study.speak) / 4,
       internId,
-      monthAndYear: study.monthSelect,
+      monthAndYear: normalizeDate(study.monthSelect),
     });
     return data;
   }, []);
@@ -247,7 +259,7 @@ export default function InternPointForm({ internId }: Props) {
         study.speak,
       average: (study.write + study.read + study.listen + study.speak) / 4,
       internId,
-      monthAndYear: study.monthSelect,
+      monthAndYear: normalizeDate(study.monthSelect),
     });
     return data;
   }, []);
@@ -268,6 +280,12 @@ export default function InternPointForm({ internId }: Props) {
 
           // console.log('create', data);
         }
+
+        // Reset toàn bộ form về trạng thái ban đầu (trống)
+        reset(defaultValues);
+
+        // Nếu muốn reset cả monthSelect state
+        setMonthSelect(null);
       } catch (error) {
         console.error(error);
       }
