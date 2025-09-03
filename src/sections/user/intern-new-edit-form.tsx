@@ -857,7 +857,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 label={t('blood')}
                 PaperPropsSx={{ textTransform: 'capitalize' }}
               >
-                {['A型', 'B型', 'AB型', 'O型', 'A+型', 'B+型','未検査'].map((option) => (
+                {['A型', 'B型', 'AB型', 'O型', 'O+型', 'A+型', 'B+型','未検査'].map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
                   </MenuItem>

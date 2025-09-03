@@ -1,8 +1,17 @@
+/* eslint-disable prefer-template */
+/* eslint-disable arrow-body-style */
+
 import { useMemo } from 'react';
 import { View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
-// utils
-
 import { htmlToText } from 'html-to-text';
+
+const hyphenationCallback = (word: string) => {
+  // Trả về từng ký tự, để khi xuống dòng không thêm dấu "-"
+  return word.split('');
+};
+
+
+Font.registerHyphenationCallback(hyphenationCallback);
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +29,8 @@ Font.register({
   family: 'Kosugi Maru',
   fonts: [{ src: '/fonts/KosugiMaru-Regular.ttf' }],
 });
+
+// const clean = (s?: string) => (s || '').replace(/\u00AD/g, '');
 
 const useStyles = () =>
   useMemo(
@@ -41,8 +52,8 @@ const useStyles = () =>
         body1: { fontSize: 10 },
         body2: { fontSize: 9 },
         subtitle1: { fontSize: 12, fontWeight: 700 },
-        subtitle2: { fontSize: 9, fontWeight: 700, textAlign: 'center' },
-        subtitle3: { fontSize: 12, fontWeight: 700, textAlign: 'center' },
+        subtitle2: { fontSize: 9, fontWeight: 700, textAlign: 'left' },
+        subtitle3: { fontSize: 12, fontWeight: 700, textAlign: 'left' },
         subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
           // backgroundColor: '#D8DEE9',
@@ -551,7 +562,7 @@ const useStyles = () =>
         },
 
         logoImage: {
-          borderRadius: '50%',
+          // borderRadius: '50%',
           opacity: 0.05, // Giảm độ trong suốt để tạo hiệu ứng mờ
         },
       }),
@@ -565,6 +576,51 @@ const changDateJP = (date: any) => {
 
   const formatted = jsDate.toLocaleDateString('ja-JP');
   const parts = formatted.split('/');
+  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  return customFormat;
+};
+
+// TypeScript
+export const changDateJPEndOfMonth = (date: any): string => {
+  // Chuyển input sang Date
+  let jsDate: Date;
+
+  if (date instanceof Date) {
+    jsDate = new Date(date.getTime());
+  } else if (typeof date === 'string') {
+    // Nếu input là "YYYY-MM", new Date("YYYY-MM") có thể gây timezone issue,
+    // nên parse thủ công về Date(year, monthIndex, 1)
+    const yyyymm = /^\d{4}-\d{1,2}$/.test(date);
+    if (yyyymm) {
+      const [yStr, mStr] = date.split('-');
+      const y = Number(yStr);
+      const m = Number(mStr);
+      if (Number.isFinite(y) && Number.isFinite(m)) {
+        jsDate = new Date(y, m - 1, 1);
+      } else {
+        return '';
+      }
+    } else {
+      jsDate = new Date(date);
+    }
+  } else if (typeof date === 'number') {
+    jsDate = new Date(date);
+  } else {
+    return '';
+  }
+
+  if (Number.isNaN(jsDate.getTime())) return '';
+
+  // Lấy năm và tháng hiện tại từ jsDate
+  const year = jsDate.getFullYear();
+  const monthIndex = jsDate.getMonth(); // 0-based
+
+  // Tạo Date cho ngày 0 của tháng kế tiếp => ngày cuối cùng của tháng hiện tại
+  const lastDayDate = new Date(year, monthIndex + 1, 0);
+
+  // Dùng toLocaleDateString('ja-JP') giống logic gốc để đảm bảo format locale
+  const formatted = lastDayDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/'); // ["YYYY","M","D"] hoặc tương tự
   const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
   return customFormat;
 };
@@ -772,8 +828,9 @@ export default function InternPDFStudy({ item, intern }: any) {
                   marginLeft: '40px',
                   // height: '111.5px',
                   // height: '80%',
-                  border: 1,
+                  // border: 1,
                   // borderRight: 1,
+                  borderWidth: 1,
                   borderStyle: 'solid',
                   borderColor: '#BCCCDC',
                   display: 'flex',
@@ -803,7 +860,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                     </View>
 
                     <View style={[styles.tableCell_11, styles.textCenter]}>
-                      <Text style={styles.altFont}>{changDateJP(item.monthAndYear)}</Text>
+                      <Text style={styles.altFont}>{changDateJPEndOfMonth(item.monthAndYear)}</Text>
                     </View>
                   </View>
                   <View style={styles.tableRow}>
@@ -992,7 +1049,13 @@ export default function InternPDFStudy({ item, intern }: any) {
                 <View>
                   <View style={[styles.tableRow, { height: '40px' }]}>
                     <View style={[styles.tableCell_14, styles.titleNoBackground]}>
-                      <Text style={[styles.subtitle2, styles.altFont]}>{item.characteristic}</Text>
+                      <Text
+                        style={[styles.subtitle2, styles.altFont]}
+                        hyphenationCallback={(word) => [word]}
+                      >
+                        {/* 穏やかで、少し気が弱い */}
+                        {item.characteristic}
+                      </Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>
                       <Text style={styles.subtitle2}>{transPointToSharp(item.health)}</Text>
@@ -1106,10 +1169,15 @@ export default function InternPDFStudy({ item, intern }: any) {
                   <View style={[styles.tableRow, { borderTopWidth: '1px' }]}>
                     <View style={[styles.tableCell_13, styles.titleNoBackground]}>
                       <Text style={[styles.subtitle2, styles.altFont]}>
-                        {htmlToText(item.comment, {
-                          wordwrap: false,
-                          preserveNewlines: true,
-                        })}
+                        {htmlToText(
+                          item.comment.length > 300
+                            ? item.comment.substring(0, 300) + '...'
+                            : item.comment,
+                          {
+                            wordwrap: false,
+                            preserveNewlines: true,
+                          }
+                        )}
                       </Text>
                     </View>
                   </View>

@@ -1,8 +1,16 @@
-import { Document, Page, View, StyleSheet } from '@react-pdf/renderer';
+/* eslint-disable arrow-body-style */
 
+import { Document, Page, View, StyleSheet, Font } from '@react-pdf/renderer';
 import InternPDFStudy from '../invoice/intern-pdf-study';
 
-const styles = StyleSheet.create({
+
+const hyphenationCallback = (word: string) => {
+  return [word];
+};
+
+Font.registerHyphenationCallback(hyphenationCallback);
+
+const styles = StyleSheet.create({  
   page: {
     fontSize: 9,
     lineHeight: 1.6,
