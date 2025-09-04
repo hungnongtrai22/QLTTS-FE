@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   logoImage: {
-    borderRadius: '50%',
+    // borderRadius: '50%',
         zIndex: 9999,
 
     // opacity: 0.1, // Giảm độ trong suốt để tạo hiệu ứng mờ

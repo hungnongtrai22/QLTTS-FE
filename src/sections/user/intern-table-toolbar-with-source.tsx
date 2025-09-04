@@ -298,10 +298,10 @@ export default function InternTableToolbarWithSource({
           }}
         >
           <Iconify icon="solar:printer-minimalistic-bold" />
-          {loadingDownloadAll ? 'Đang tải xuống...' : 'Tải xuống tất cả'}
+          {loadingDownloadAll ? t('loading_attendance') : t('download_attendance')}
         </MenuItem>
 
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             popover.onClose();
           }}
@@ -317,7 +317,7 @@ export default function InternTableToolbarWithSource({
         >
           <Iconify icon="solar:export-bold" />
           Export
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
     </>
   );
