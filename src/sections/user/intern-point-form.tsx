@@ -157,7 +157,7 @@ export default function InternPointForm({ internId }: Props) {
     time: Yup.string().required('Thời gian học không được để trống'),
     learningProcess: Yup.string().required('Tiến trình học tập không được để trống'),
     characteristic: Yup.string().required('Tính cách không được để trống'),
-    comment: Yup.string().required('Nhận xét không được để trống'),
+    comment: Yup.string().required('Nhận xét không được để trống').max(300, 'Nhận xét không được vượt quá 300 ký tự'),
   });
 
   const defaultValues = useMemo(

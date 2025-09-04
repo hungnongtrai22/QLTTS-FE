@@ -1173,7 +1173,7 @@ export default function InternPDFStudy({ item, intern }: any) {
                       <Text style={[styles.subtitle2, styles.altFont]}>
                         {htmlToText(
                           item.comment.length > 300
-                            ? item.comment.substring(0, 300) + '...'
+                            ? item.comment.substring(0, 300)
                             : item.comment,
                           {
                             wordwrap: false,
