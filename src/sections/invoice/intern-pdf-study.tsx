@@ -1,17 +1,16 @@
 /* eslint-disable prefer-template */
 /* eslint-disable arrow-body-style */
+/* eslint-disable react/jsx-no-comment-textnodes */
 
 import { useMemo } from 'react';
 import { View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 import { htmlToText } from 'html-to-text';
 
-const hyphenationCallback = (word: string) => {
-  // Trả về từng ký tự, để khi xuống dòng không thêm dấu "-"
-  return word.split('');
-};
-
-
-Font.registerHyphenationCallback(hyphenationCallback);
+Font.registerHyphenationCallback((word) => {
+  // Trả về toàn bộ từ như một đơn vị duy nhất
+  // => không bao giờ chèn "-"
+  return [word];
+});
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +51,7 @@ const useStyles = () =>
         body1: { fontSize: 10 },
         body2: { fontSize: 9 },
         subtitle1: { fontSize: 12, fontWeight: 700 },
-        subtitle2: { fontSize: 9, fontWeight: 700, textAlign: 'left' },
+        subtitle2: { fontSize: 9, fontWeight: 700, textAlign: 'center' },
         subtitle3: { fontSize: 12, fontWeight: 700, textAlign: 'left' },
         subtitle4: { fontSize: 5, color: '#919EAB' },
         titleBackground: {
@@ -1051,10 +1050,13 @@ export default function InternPDFStudy({ item, intern }: any) {
                     <View style={[styles.tableCell_14, styles.titleNoBackground]}>
                       <Text
                         style={[styles.subtitle2, styles.altFont]}
-                        hyphenationCallback={(word) => [word]}
+                        wrap
+                        hyphenationCallback={(word) => [word]} // coi cả từ là 1 block, không chèn "-"
                       >
-                        {/* 穏やかで、少し気が弱い */}
-                        {item.characteristic}
+                        {String(item.characteristic ?? '')
+                          .replace(/\u00AD/g, '') // loại bỏ soft hyphen
+                          .replace(/-/g, '')}{' '}
+                       
                       </Text>
                     </View>
                     <View style={[styles.tableCell_4, styles.titleNoBackground]}>

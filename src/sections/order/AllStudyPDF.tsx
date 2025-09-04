@@ -4,11 +4,11 @@ import { Document, Page, View, StyleSheet, Font } from '@react-pdf/renderer';
 import InternPDFStudy from '../invoice/intern-pdf-study';
 
 
-const hyphenationCallback = (word: string) => {
+Font.registerHyphenationCallback(word => {
+  // Trả về toàn bộ từ như một đơn vị duy nhất
+  // => không bao giờ chèn "-"
   return [word];
-};
-
-Font.registerHyphenationCallback(hyphenationCallback);
+});
 
 const styles = StyleSheet.create({  
   page: {
