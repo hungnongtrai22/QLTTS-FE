@@ -324,7 +324,7 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
           p: (theme) => theme.spacing(3, 3, 2, 3),
         }}
       >
-        学習期間: {study.time}
+        学習期間 (ヶ月): {study.time}
       </Typography>
 
       <Box sx={{ p: 1 }}>
