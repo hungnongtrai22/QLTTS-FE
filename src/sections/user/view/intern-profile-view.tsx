@@ -33,6 +33,7 @@ import InternOtherForm from '../intern-other-form';
 import InternPointForm from '../intern-point-form';
 import InternStatusForm from '../intern-status-form';
 import InternCompanyTradeUnionForm from '../intern-company-trade-union-form';
+import InternGalleryForm from '../intern-gallery-form';
 
 // ----------------------------------------------------------------------
 
@@ -214,6 +215,8 @@ const TABSTRADEUNION = [
           <InternStatusForm internId={intern?._id} currentStatus={intern?.status} />
 
           <InternCompanyTradeUnionForm currentIntern={intern} />
+
+          <InternGalleryForm currentIntern={intern} />
 
           <InternOtherForm currentIntern={intern} />
         </>

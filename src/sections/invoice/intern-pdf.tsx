@@ -508,7 +508,7 @@ export default function InternPDF({ invoice }: Props) {
                 src={avatar}
                 style={{
                   width: '100%',
-                  height: '111px',
+                  height: address.length > 21 ? '111px' : '106px',
                   objectFit: 'contain',
                 }}
               />

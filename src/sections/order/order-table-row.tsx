@@ -37,6 +37,7 @@ import InternPDF from '../invoice/intern-pdf';
 import AllInternsPDF from './AllInternsPDF';
 import SwapForm from '../user/swap-form';
 import AllInternsPDFNoScore from './AllInternsPDFNoScore';
+import AllInternsPDFNoScoreKraepelin from './AllInternsPDFNoScoreKraepelin';
 
 // ----------------------------------------------------------------------
 
@@ -322,6 +323,24 @@ export default function OrderTableRow({
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
           {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV không có điểm'}
+        </MenuItem>
+
+          <MenuItem
+          onClick={async () => {
+            try {
+              setLoadingDownloadAll(true);
+              const blob = await pdf(<AllInternsPDFNoScoreKraepelin interns={listIntern} />).toBlob();
+              saveAs(blob, `All_CVs_${name}.pdf`);
+            } catch (error) {
+              console.error('Lỗi khi tạo PDF:', error);
+            } finally {
+              setLoadingDownloadAll(false);
+              popover.onClose();
+            }
+          }}
+        >
+          <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV không có điểm cộng dồn'}
         </MenuItem>
 
         <ExportInternsWithAvatar interns={listIntern} name={name} />

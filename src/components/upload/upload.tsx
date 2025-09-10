@@ -51,9 +51,9 @@ export default function Upload({
     <Stack spacing={3} alignItems="center" justifyContent="center" flexWrap="wrap">
       <UploadIllustration sx={{ width: 1, maxWidth: 200 }} />
       <Stack spacing={1} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6">Drop or Select file</Typography>
+        <Typography variant="h6">Thả hoặc chọn tệp</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Drop files here or click
+          Thả tệp vào đây hoặc nhấp vào
           <Box
             component="span"
             sx={{
@@ -62,9 +62,9 @@ export default function Upload({
               textDecoration: 'underline',
             }}
           >
-            browse
+            duyệt
           </Box>
-          thorough your machine
+          để tìm trên máy của bạn.
         </Typography>
       </Stack>
     </Stack>

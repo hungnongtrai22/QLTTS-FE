@@ -95,3 +95,48 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
     />
   );
 }
+
+export function RHFUploadVideo({ name, multiple, helperText, ...other }: Props) {
+  const { control } = useFormContext();
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) =>
+        multiple ? (
+          <Upload
+            multiple
+            // Cho phép cả ảnh và video
+            accept={{ 'image/*': [], 'video/*': [] }}
+            files={field.value}
+            error={!!error}
+            helperText={
+              (!!error || helperText) && (
+                <FormHelperText error={!!error} sx={{ px: 2 }}>
+                  {error ? error?.message : helperText}
+                </FormHelperText>
+              )
+            }
+            {...other}
+          />
+        ) : (
+          <Upload
+            // Cho phép cả ảnh và video
+            accept={{ 'image/*': [], 'video/*': [] }}
+            file={field.value}
+            error={!!error}
+            helperText={
+              (!!error || helperText) && (
+                <FormHelperText error={!!error} sx={{ px: 2 }}>
+                  {error ? error?.message : helperText}
+                </FormHelperText>
+              )
+            }
+            {...other}
+          />
+        )
+      }
+    />
+  );
+}
