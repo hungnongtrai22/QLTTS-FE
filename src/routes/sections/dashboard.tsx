@@ -18,6 +18,7 @@ import DiaryCreatePage from 'src/pages/dashboard/diary/new';
 import DiaryEditPage from 'src/pages/dashboard/diary/edit';
 import DiaryProfileView from 'src/sections/user/view/diary-profile-view';
 import InternListPointPage from 'src/pages/dashboard/intern/listPoint';
+import TourDetailsPage from 'src/pages/dashboard/tour/details';
 
 // ----------------------------------------------------------------------
 
@@ -339,6 +340,41 @@ export const dashboardRoutes = [
             ),
           },
                     { path: ':id/profile', element: <DiaryProfileView /> },
+
+          // { path: 'account', element: <InternAccountPage /> },
+        ],
+      },
+       {
+        path: 'gallery',
+        children: [
+          // { element: <InternProfilePage />, index: true },
+          // { path: 'profile', element: <InternProfilePage /> },
+          // { path: 'cards', element: <InternCardsPage /> },
+          // {
+          //   path: 'list',
+          //   element: (
+          //     <RoleBasedGuard hasContent>
+          //       <DiaryListPage />
+          //     </RoleBasedGuard>
+          //   ),
+          // },
+          // {
+          //   path: 'new',
+          //   element: (
+          //     <RoleBasedGuard hasContent roles={['admin']}>
+          //       <DiaryCreatePage />{' '}
+          //     </RoleBasedGuard>
+          //   ),
+          // },
+          // {
+          //   path: ':id/edit',
+          //   element: (
+          //     <RoleBasedGuard hasContent roles={['admin']}>
+          //       <DiaryEditPage />
+          //     </RoleBasedGuard>
+          //   ),
+          // },
+                    { path: ':id/profile', element: <TourDetailsPage /> },
 
           // { path: 'account', element: <InternAccountPage /> },
         ],

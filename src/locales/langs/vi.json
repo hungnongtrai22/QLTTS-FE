@@ -244,14 +244,14 @@
   "decrease": "Giảm ",
   "sub": " điểm so với tháng trước",
   "download": "Tải xuống",
-    "teacher": "Giáo viên",
-    "intern_find": "thực tập sinh được tìm thấy",
-    "delete": "Xóa",
-    "compact": "Thu gọn",
-    "interview": "Phỏng vấn",
-    "listPoint": "Danh Sách Nhập Điểm",
-        "edit_order": "Cập nhập đơn hàng",
-
+  "teacher": "Giáo viên",
+  "intern_find": "thực tập sinh được tìm thấy",
+  "delete": "Xóa",
+  "compact": "Thu gọn",
+  "interview": "Phỏng vấn",
+  "listPoint": "Danh Sách Nhập Điểm",
+  "edit_order": "Cập nhập đơn hàng",
+  "gallery": "Thư viện ảnh",
   "demo": {
     "title": "Vietnamese"
   }

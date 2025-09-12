@@ -37,7 +37,6 @@ import InternGalleryForm from '../intern-gallery-form';
 
 // ----------------------------------------------------------------------
 
-
 // ----------------------------------------------------------------------
 
 export default function InternProfileView() {
@@ -47,32 +46,37 @@ export default function InternProfileView() {
   const { user } = useAuthContext();
 
   const TABS = [
-  {
-    value: 'profile',
-    label: t('info_study'),
-    icon: <Iconify icon="solar:user-id-bold" width={24} />,
-  },
-  {
-    value: 'followers',
-    label: t('info'),
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-  },
-  {
-    value: 'friends',
-    label: t('other_info'),
-    icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
-  },
-  {
-    value: 'gallery',
-    label: t('point'),
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
-  {
-    value: 'attendance',
-    label: t('attendance'),
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
-];
+    {
+      value: 'profile',
+      label: t('info_study'),
+      icon: <Iconify icon="solar:user-id-bold" width={24} />,
+    },
+    {
+      value: 'followers',
+      label: t('info'),
+      icon: <Iconify icon="solar:heart-bold" width={24} />,
+    },
+    {
+      value: 'friends',
+      label: t('other_info'),
+      icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
+    },
+    {
+      value: 'gallery',
+      label: t('point'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
+    {
+      value: 'attendance',
+      label: t('attendance'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
+    {
+      value: 'image',
+      label: t('gallery'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
+  ];
 
   const TABS_SOURCE = [
     {
@@ -95,29 +99,40 @@ export default function InternProfileView() {
       label: t('attendance'),
       icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
     },
+    {
+      value: 'image',
+      label: t('gallery'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
   ];
 
-const TABSTRADEUNION = [
-  {
-    value: 'profile',
-    label: t('info_study'),
-    icon: <Iconify icon="solar:user-id-bold" width={24} />,
-  },
-  {
-    value: 'followers',
-    label: t('info'),
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-  },
-  {
-    value: 'attendance',
-    label: t('attendance'),
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
-];
+  const TABSTRADEUNION = [
+    {
+      value: 'profile',
+      label: t('info_study'),
+      icon: <Iconify icon="solar:user-id-bold" width={24} />,
+    },
+    {
+      value: 'followers',
+      label: t('info'),
+      icon: <Iconify icon="solar:heart-bold" width={24} />,
+    },
+    {
+      value: 'attendance',
+      label: t('attendance'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
+    {
+      value: 'image',
+      label: t('gallery'),
+      icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+    },
+  ];
 
   const { id } = params;
 
   const [intern, setIntern] = useState<IInternItem>();
+  const [galleries, setGalleries] = useState([]);
 
   const [searchFriends, setSearchFriends] = useState('');
 
@@ -136,17 +151,23 @@ const TABSTRADEUNION = [
     setIntern(data.intern);
   }, [id]);
 
+  const handleGetGalleryByInternId = useCallback(async () => {
+    const { data } = await axios(`${process.env.REACT_APP_HOST_API}/api/gallery/listByInternId?internId=${id}`);
+    setGalleries(data.galleries);
+  }, [id]);
+
   useEffect(() => {
     handleGetInternById();
-  }, [handleGetInternById]);
+    handleGetGalleryByInternId();
+  }, [handleGetInternById, handleGetGalleryByInternId]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t('profile') || ""}
+        heading={t('profile') || ''}
         links={[
-          { name: t('dashboard') || "", href: paths.dashboard.root },
-          { name: t('intern') || "", href: paths.dashboard.user.root },
+          { name: t('dashboard') || '', href: paths.dashboard.root },
+          { name: t('intern') || '', href: paths.dashboard.user.root },
           { name: intern?.namejp },
         ]}
         sx={{
@@ -189,11 +210,12 @@ const TABSTRADEUNION = [
           {user?.role === 'tradeunion'
             ? TABSTRADEUNION.map((tab) => (
                 <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-              )) :
-            user?.role === 'source'
-              ? TABS_SOURCE.map((tab) => (
+              ))
+            : user?.role === 'source'
+            ? TABS_SOURCE.map((tab) => (
                 <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-              )) : TABS.map((tab) => (
+              ))
+            : TABS.map((tab) => (
                 <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
               ))}
         </Tabs>
@@ -232,6 +254,8 @@ const TABSTRADEUNION = [
         ) : (
           <CalendarViewPage intern={intern} />
         ))}
+
+      {currentTab === 'image' && <ProfileGallery gallery={galleries} />}
     </Container>
   );
 }

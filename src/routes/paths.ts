@@ -123,6 +123,18 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/intern/${MOCK_ID}/edit`,
       },
     },
+     gallery: {
+      root: `${ROOTS.DASHBOARD}/gallery/list`,
+      new: `${ROOTS.DASHBOARD}/gallery/new`,
+      list: `${ROOTS.DASHBOARD}/gallery/list`,
+      cards: `${ROOTS.DASHBOARD}/gallery/cards`,
+      profile: (id: string) => `${ROOTS.DASHBOARD}/gallery/${id}/profile`,
+      account: `${ROOTS.DASHBOARD}/gallery/account`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/gallery/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/gallery/${MOCK_ID}/edit`,
+      },
+    },
     tradeUnion: {
       root: `${ROOTS.DASHBOARD}/tradeUnion/list`,
       new: `${ROOTS.DASHBOARD}/tradeUnion/new`,

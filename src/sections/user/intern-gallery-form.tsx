@@ -83,14 +83,11 @@ export default function InternGalleryForm({ currentIntern }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      name: currentIntern?.name || '',
-      tradeUnion: currentIntern?.tradeUnion || null,
-      company: currentIntern?.companySelect || null,
-      job: currentIntern?.job || '',
-      interviewDate: currentIntern?.interviewDate || null,
-      studyDate: currentIntern?.studyDate || null,
-      startDate: currentIntern?.startDate || null,
-      source: currentIntern?.source || null,
+      title: '',
+      postedAt: new Date(),
+      status: 'Cá nhân',
+      description: '',
+      images: null,
     }),
     [currentIntern]
   );
@@ -111,20 +108,18 @@ export default function InternGalleryForm({ currentIntern }: Props) {
 
   const values = watch();
 
-  const editIntern = useCallback(
+  const addInternGallery = useCallback(
     async (value: any) => {
       // console.log(currentIntern?._id, tradeUnionSelect, companySelect);
-      const { data } = await axios.put(
-        `${process.env.REACT_APP_HOST_API}/api/user/updateTradeUnion`,
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/gallery/create`,
         {
-          _id: currentIntern?._id,
-          tradeUnion: tradeUnionSelect,
-          companySelect,
-          job: value?.job,
-          interviewDate: value?.interviewDate,
-          studyDate: value?.studyDate,
-          startDate: value?.startDate,
-          source: sourceSelect,
+          internId: currentIntern?._id,
+          postedAt: value.postedAt,
+          title: value.title,
+          imageUrl: value.images,
+          description: value.description,
+          status: value?.status,
         }
       );
       return data;
@@ -132,50 +127,51 @@ export default function InternGalleryForm({ currentIntern }: Props) {
     [currentIntern, tradeUnionSelect, companySelect, sourceSelect]
   );
 
-const CLOUD_NAME = "dj4gvts4q"; // thay bằng cloud_name của bạn
-const UPLOAD_PRESET = "rijfgtqn"; // tạo trong Cloudinary dashboard
+  const CLOUD_NAME = 'dj4gvts4q'; // thay bằng cloud_name của bạn
+  const UPLOAD_PRESET = 'rijfgtqn'; // tạo trong Cloudinary dashboard
 
-// Hàm gọi trực tiếp Cloudinary
-const uploadImages = async (formData: FormData) => {
-  const res = await axios.post(
-    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
-  return [res.data]; // để giữ nguyên format cũ (mảng)
-};
+  // Hàm gọi trực tiếp Cloudinary
+  const uploadImages = async (formData: FormData) => {
+    const res = await axios.post(
+      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return [res.data]; // để giữ nguyên format cũ (mảng)
+  };
 
-// Hàm upload 1 ảnh/video
-const uploadImageToCloud = useCallback(async (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", UPLOAD_PRESET); // preset của Cloudinary
-  // Nếu muốn lưu vào folder "dashboard"
-  formData.append("folder", "dashboard");
+  // Hàm upload 1 ảnh/video
+  const uploadImageToCloud = useCallback(async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET); // preset của Cloudinary
+    // Nếu muốn lưu vào folder "dashboard"
+    formData.append('folder', 'dashboard');
 
-  const uploaded = await uploadImages(formData);
-  return uploaded[0].secure_url; // dùng secure_url thay vì url
-}, []);
+    const uploaded = await uploadImages(formData);
+    return uploaded[0].secure_url; // dùng secure_url thay vì url
+  }, []);
 
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
         // const images = await uploadImageToCloud(data.avatar);
-        // console.log(data);
+        console.log(data);
         const images = [];
-        for(const item of data.images){
+        for (const item of data.images) {
           const image = await uploadImageToCloud(item);
           images.push(image);
         }
-        console.log("images",images);
-        // await editIntern(data);
-        // reset();
-        enqueueSnackbar('Update success!');
+        console.log('images', images);
+        data.images = images;
+        await addInternGallery(data);
+        reset();
+        enqueueSnackbar('Tạo thành công!');
       } catch (error) {
         console.error(error);
       }
@@ -279,21 +275,18 @@ const uploadImageToCloud = useCallback(async (file: File) => {
                 )}
               />
 
-               <RHFSelect
-                              fullWidth
-                              name="status"
-                              label="Trạng thái"
-                              PaperPropsSx={{ textTransform: 'capitalize' }}
-                            >
-                              {['Cá nhân', 'Tất cả'].map((option) => (
-                                <MenuItem key={option} value={option}>
-                                  {option}
-                                </MenuItem>
-                              ))}
-                            </RHFSelect>
-
-             
-             
+              <RHFSelect
+                fullWidth
+                name="status"
+                label="Trạng thái"
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {['Cá nhân', 'Tất cả'].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
 
               {/* <Controller
                 name="startDate"
@@ -343,7 +336,11 @@ const uploadImageToCloud = useCallback(async (file: File) => {
               )} */}
             </Box>
 
-            <Stack spacing={1.5} sx={{mt: 3, mb: 3}}>
+             <Box sx={{ pt: 3 }}>
+              <RHFEditor simple name="description" />
+            </Box>
+
+            <Stack spacing={1.5} sx={{ mt: 3, mb: 3 }}>
               {/* <Typography variant="subtitle2">Images</Typography> */}
               <RHFUploadVideo
                 multiple
@@ -356,6 +353,8 @@ const uploadImageToCloud = useCallback(async (file: File) => {
                 onUpload={() => console.info('ON UPLOAD')}
               />
             </Stack>
+
+           
 
             <Stack alignItems="flex-end" spacing={1.5}>
               {/* <Button

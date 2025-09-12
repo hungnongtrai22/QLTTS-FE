@@ -22,6 +22,7 @@ export default function TourDetailsView() {
   const settings = useSettingsContext();
 
   const params = useParams();
+  console.log("_tours", _tours)
 
   const { id } = params;
 
