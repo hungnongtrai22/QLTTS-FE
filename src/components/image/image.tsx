@@ -37,6 +37,8 @@ const Image = forwardRef<HTMLSpanElement, ImageProps>(
   ) => {
     const theme = useTheme();
 
+    const isVideo = src?.match(/\.(mp4|webm|ogg)$/i);
+
     const overlayStyles = !!overlay && {
       '&:before': {
         content: "''",
@@ -55,7 +57,7 @@ const Image = forwardRef<HTMLSpanElement, ImageProps>(
         component={LazyLoadImage}
         //
         alt={alt}
-        src={src}
+        src={isVideo ? '/assets/images/video.webp' : src}
         afterLoad={afterLoad}
         delayTime={delayTime}
         threshold={threshold}

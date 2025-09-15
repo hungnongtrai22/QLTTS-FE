@@ -20,17 +20,27 @@ import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
 import { varTranHover } from 'src/components/animate';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  tour: ITourItem;
+  tour: any;
+};
+
+const changDateJP = (date: any) => {
+  const jsDate = new Date(date);
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
+  const customFormat = `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  return customFormat;
 };
 
 export default function TourDetailsContent({ tour }: Props) {
   const {
-    name,
-    images,
+    title,
+    imageUrl,
+    postedAt,
     content,
     services,
     tourGuides,
@@ -38,11 +48,32 @@ export default function TourDetailsContent({ tour }: Props) {
     durations,
     destination,
     ratingNumber,
+    description
   } = tour;
 
-  const slides = images.map((slide) => ({
-    src: slide,
-  }));
+  const slides = imageUrl.map((slide : any) => {
+    const url = slide // chỉ lấy phần tử đầu tiên
+
+    if (url.includes('/video/')) {
+      return {
+        type: 'video' as const, // 👈 ép literal type
+        sources: [
+          {
+            src: url,
+            type: 'video/mp4',
+          },
+        ],
+        poster: url,
+        src: url,
+        width: 1280,
+        height: 720,
+      };
+    }
+
+    return {
+      src: url,
+    };
+  });
 
   const {
     selected: selectedImage,
@@ -82,7 +113,7 @@ export default function TourDetailsContent({ tour }: Props) {
         </m.div>
 
         <Box gap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)">
-          {slides.slice(1, 5).map((slide) => (
+          {slides.slice(1, 5).map((slide : any) => (
             <m.div
               key={slide.src}
               whileHover="hover"
@@ -116,7 +147,7 @@ export default function TourDetailsContent({ tour }: Props) {
     <>
       <Stack direction="row" sx={{ mb: 3 }}>
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          {name}
+          {title}
         </Typography>
 
         <IconButton>
@@ -131,7 +162,7 @@ export default function TourDetailsContent({ tour }: Props) {
         />
       </Stack>
 
-      <Stack spacing={3} direction="row" flexWrap="wrap" alignItems="center">
+      {/* <Stack spacing={3} direction="row" flexWrap="wrap" alignItems="center">
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
           <Iconify icon="eva:star-fill" sx={{ color: 'warning.main' }} />
           <Box component="span" sx={{ typography: 'subtitle2' }}>
@@ -150,9 +181,9 @@ export default function TourDetailsContent({ tour }: Props) {
           <Box component="span" sx={{ typography: 'body2', color: 'text.secondary' }}>
             Guide by
           </Box>
-          {tourGuides.map((tourGuide) => tourGuide.name).join(', ')}
+          {tourGuides?.map((tourGuide : any) => tourGuide.name).join(', ')}
         </Stack>
-      </Stack>
+      </Stack> */}
     </>
   );
 
@@ -167,26 +198,26 @@ export default function TourDetailsContent({ tour }: Props) {
     >
       {[
         {
-          label: 'Available',
-          value: `${fDate(available.startDate)} - ${fDate(available.endDate)}`,
+          label: t('date'),
+          value: `${changDateJP(postedAt)}`,
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
-        {
-          label: 'Contact name',
-          value: tourGuides.map((tourGuide) => tourGuide.phoneNumber).join(', '),
-          icon: <Iconify icon="solar:user-rounded-bold" />,
-        },
-        {
-          label: 'Durations',
-          value: durations,
-          icon: <Iconify icon="solar:clock-circle-bold" />,
-        },
-        {
-          label: 'Contact phone',
-          value: tourGuides.map((tourGuide) => tourGuide.name).join(', '),
-          icon: <Iconify icon="solar:phone-bold" />,
-        },
-      ].map((item) => (
+        // {
+        //   label: 'Contact name',
+        //   value: tourGuides?.map((tourGuide : any) => tourGuide.phoneNumber).join(', '),
+        //   icon: <Iconify icon="solar:user-rounded-bold" />,
+        // },
+        // {
+        //   label: 'Durations',
+        //   value: durations,
+        //   icon: <Iconify icon="solar:clock-circle-bold" />,
+        // },
+        // {
+        //   label: 'Contact phone',
+        //   value: tourGuides?.map((tourGuide : any) => tourGuide.name).join(', '),
+        //   icon: <Iconify icon="solar:phone-bold" />,
+        // },
+      ]?.map((item) => (
         <Stack key={item.label} spacing={1.5} direction="row">
           {item.icon}
           <ListItemText
@@ -210,10 +241,10 @@ export default function TourDetailsContent({ tour }: Props) {
 
   const renderContent = (
     <>
-      <Markdown children={content} />
+      <Markdown children={description} />
 
       <Stack spacing={2}>
-        <Typography variant="h6"> Services</Typography>
+        {/* <Typography variant="h6"> Services</Typography> */}
 
         <Box
           rowGap={2}
@@ -223,14 +254,14 @@ export default function TourDetailsContent({ tour }: Props) {
             md: 'repeat(2, 1fr)',
           }}
         >
-          {TOUR_SERVICE_OPTIONS.map((benefit) => (
+          {/* {TOUR_SERVICE_OPTIONS?.map((benefit) => (
             <Stack
               key={benefit.label}
               spacing={1}
               direction="row"
               alignItems="center"
               sx={{
-                ...(services.includes(benefit.label) && {
+                ...(services?.includes(benefit.label) && {
                   color: 'text.disabled',
                 }),
               }}
@@ -239,14 +270,14 @@ export default function TourDetailsContent({ tour }: Props) {
                 icon="eva:checkmark-circle-2-outline"
                 sx={{
                   color: 'primary.main',
-                  ...(services.includes(benefit.label) && {
+                  ...(services?.includes(benefit.label) && {
                     color: 'text.disabled',
                   }),
                 }}
               />
               {benefit.label}
             </Stack>
-          ))}
+          ))} */}
         </Box>
       </Stack>
     </>

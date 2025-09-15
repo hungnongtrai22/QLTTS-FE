@@ -41,9 +41,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { CustomFile } from 'src/components/upload';
 
 import LoadingButton from '@mui/lab/LoadingButton';
-import { characteristicList } from 'src/utils/characteristic';
-import { statusIntern } from 'src/utils/status';
-import RHFAutocompleteNew from 'src/components/hook-form/rhf-autocomplete-new';
+
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -55,20 +53,15 @@ interface FormValuesProps extends Omit<any, 'avatarUrl'> {
 
 type Props = {
   currentIntern?: IInternItem;
+  currentGallery?: any;
 };
 
 dayjs.locale('vi');
 
-export default function InternGalleryForm({ currentIntern }: Props) {
+export default function InternGalleryForm({ currentIntern, currentGallery }: Props) {
   // const router = useRouter();
 
-  const [tradeUnion, setTradeUnion] = useState([]);
-  const [tradeUnionSelect, setTradeUnionSelect] = useState(currentIntern?.tradeUnion);
-  const [company, setCompany] = useState([]);
-  const [companySelect, setCompanySelect] = useState(currentIntern?.companySelect || '');
 
-  const [source, setSource] = useState([]);
-  const [sourceSelect, setSourceSelect] = useState(currentIntern?.source);
 
   const { t, currentLang } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
@@ -83,11 +76,11 @@ export default function InternGalleryForm({ currentIntern }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      title: '',
-      postedAt: new Date(),
-      status: 'Cá nhân',
-      description: '',
-      images: null,
+      title: currentGallery?.title || '',
+      postedAt: currentGallery?.postedAt || new Date(),
+      status:  currentGallery?.status || 'Cá nhân',
+      description: currentGallery?.description || '',
+      images: currentGallery?.imageUrl || null,
     }),
     [currentIntern]
   );
@@ -124,7 +117,7 @@ export default function InternGalleryForm({ currentIntern }: Props) {
       );
       return data;
     },
-    [currentIntern, tradeUnionSelect, companySelect, sourceSelect]
+    [currentIntern]
   );
 
   const CLOUD_NAME = 'dj4gvts4q'; // thay bằng cloud_name của bạn
@@ -156,28 +149,65 @@ export default function InternGalleryForm({ currentIntern }: Props) {
     return uploaded[0].secure_url; // dùng secure_url thay vì url
   }, []);
 
-  const onSubmit = useCallback(
-    async (data: FormValuesProps) => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        // const images = await uploadImageToCloud(data.avatar);
-        console.log(data);
-        const images = [];
+const onSubmit = useCallback(
+  async (data: FormValuesProps) => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const images: string[] = [];
+
+      // Nếu có currentGallery -> edit
+      if (currentGallery) {
         for (const item of data.images) {
-          const image = await uploadImageToCloud(item);
-          images.push(image);
+          if (typeof item === 'string') {
+            // ảnh cũ: giữ nguyên
+            images.push(item);
+          } else {
+            // ảnh mới (File): upload lên Cloudinary
+            const uploadedUrl = await uploadImageToCloud(item as File);
+            images.push(uploadedUrl);
+          }
         }
-        console.log('images', images);
-        data.images = images;
-        await addInternGallery(data);
-        reset();
+
+        // gọi API update
+        await axios.put(
+          `${process.env.REACT_APP_HOST_API}/api/gallery/edit`,
+          {
+            _id: currentGallery._id,
+            internId: currentIntern?._id,
+            postedAt: data.postedAt,
+            title: data.title,
+            imageUrl: images,
+            description: data.description,
+            status: data?.status,
+          }
+        );
+
+        enqueueSnackbar('Cập nhật thành công!');
+      } else {
+        // Trường hợp tạo mới
+        for (const item of data.images) {
+          const uploadedUrl = await uploadImageToCloud(item as File);
+          images.push(uploadedUrl);
+        }
+
+        await addInternGallery({
+          ...data,
+          images,
+        });
+      reset();
+
         enqueueSnackbar('Tạo thành công!');
-      } catch (error) {
-        console.error(error);
       }
-    },
-    [enqueueSnackbar, reset]
-  );
+
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar('Có lỗi xảy ra!', { variant: 'error' });
+    }
+  },
+  [enqueueSnackbar, reset, currentGallery, currentIntern, addInternGallery, uploadImageToCloud]
+);
+
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {

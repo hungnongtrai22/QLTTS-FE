@@ -158,6 +158,19 @@ export default function ProfileGallery({ gallery }: Props) {
           Xem chi tiết
         </MenuItem>
 
+         <MenuItem
+          onClick={async () => {
+            if (idSelect) {
+              const url = paths.dashboard.gallery.edit(idSelect);
+              window.open(url);
+            }
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="fa7-solid:edit" />
+          Chỉnh Sửa
+        </MenuItem>
+
         <MenuItem onClick={() => {}}>
           <Iconify icon="material-symbols:delete" />
           Xóa

@@ -10,6 +10,7 @@ import Stack, { StackProps } from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ export default function TourDetailsToolbar({
           href={backLink}
           startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
         >
-          Back
+          {t('back')}
         </Button>
 
         <Box sx={{ flexGrow: 1 }} />
@@ -66,13 +67,13 @@ export default function TourDetailsToolbar({
           </Tooltip>
         )}
 
-        <Tooltip title="Edit">
+        {/* <Tooltip title="Edit">
           <IconButton component={RouterLink} href={editLink}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
 
-        <LoadingButton
+        {/* <LoadingButton
           color="inherit"
           variant="contained"
           loading={!publish}
@@ -82,7 +83,7 @@ export default function TourDetailsToolbar({
           sx={{ textTransform: 'capitalize' }}
         >
           {publish}
-        </LoadingButton>
+        </LoadingButton> */}
       </Stack>
 
       <CustomPopover

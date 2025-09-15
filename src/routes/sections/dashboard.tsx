@@ -19,6 +19,7 @@ import DiaryEditPage from 'src/pages/dashboard/diary/edit';
 import DiaryProfileView from 'src/sections/user/view/diary-profile-view';
 import InternListPointPage from 'src/pages/dashboard/intern/listPoint';
 import TourDetailsPage from 'src/pages/dashboard/tour/details';
+import GalleryEditPage from 'src/pages/dashboard/gallery/edit';
 
 // ----------------------------------------------------------------------
 
@@ -366,14 +367,14 @@ export const dashboardRoutes = [
           //     </RoleBasedGuard>
           //   ),
           // },
-          // {
-          //   path: ':id/edit',
-          //   element: (
-          //     <RoleBasedGuard hasContent roles={['admin']}>
-          //       <DiaryEditPage />
-          //     </RoleBasedGuard>
-          //   ),
-          // },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <GalleryEditPage />
+              </RoleBasedGuard>
+            ),
+          },
                     { path: ':id/profile', element: <TourDetailsPage /> },
 
           // { path: 'account', element: <InternAccountPage /> },
