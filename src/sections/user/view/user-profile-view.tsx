@@ -128,7 +128,7 @@ export default function UserProfileView() {
         />
       )}
 
-      {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}
+      {/* {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
     </Container>
   );
 }

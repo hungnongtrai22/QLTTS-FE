@@ -111,6 +111,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/intern/list`,
       new: `${ROOTS.DASHBOARD}/intern/new`,
       list: `${ROOTS.DASHBOARD}/intern/list`,
+      compare: `${ROOTS.DASHBOARD}/intern/compare`,
       listPoint: `${ROOTS.DASHBOARD}/intern/listPoint`,
       listByTradeUnion: `${ROOTS.DASHBOARD}/intern/listByTradeUnion`,
       listBySource: `${ROOTS.DASHBOARD}/intern/listBySource`,

@@ -42,6 +42,7 @@ import {
 import { useAuthContext } from 'src/auth/hooks';
 import axios from 'axios';
 import { t } from 'i18next';
+import { useSnackbar } from 'src/components/snackbar';
 
 //
 import InternTableFiltersResult from '../intern-table-filters-result';
@@ -50,15 +51,12 @@ import InternByTradeUnionTableRow from '../intern-by-trade-union-table-row';
 
 // ----------------------------------------------------------------------
 
-
-
 const defaultFilters = {
   name: '',
   // role: [],
   tradeUnion: [],
   status: 'all',
-    company: [],
-
+  company: [],
 };
 
 // ----------------------------------------------------------------------
@@ -85,18 +83,17 @@ export default function InternListByTradeUnionView() {
   ];
 
   const STATUS_OPTIONS = [
-  { value: 'all', label: t('all') },
-  { value: 'study', label: t('studying') },
-  { value: 'pass', label: t('pass') },
-  { value: 'complete', label: t('complete') },
+    { value: 'all', label: t('all') },
+    { value: 'study', label: t('studying') },
+    { value: 'pass', label: t('pass') },
+    { value: 'complete', label: t('complete') },
     { value: 'soon', label: t('soon') },
-
-];
+  ];
 
   const [tableData, setTableData] = useState<IInternItem[]>([]);
   const [tradeUnion, setTradeUnion] = useState([]);
-    const [company, setCompany] = useState([]);
-  
+  const [company, setCompany] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -138,6 +135,18 @@ export default function InternListByTradeUnionView() {
     [dataInPage.length, table, tableData]
   );
 
+  const handleAddInternIntoCompare = useCallback(async () => {
+    // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
+
+    const listIntern = table.selected;
+    await axios.put(`${process.env.REACT_APP_HOST_API}/api/compare/updateListIntern`, {
+      accountId: user?._id,
+      listIntern,
+    });
+    // console.log('TEST', user, listIntern);
+    enqueueSnackbar('Thêm thực tập sinh vào đơn hàng thành công!');
+  }, [table, enqueueSnackbar, user]);
+
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !table.selected.includes(row._id));
     setTableData(deleteRows);
@@ -156,15 +165,10 @@ export default function InternListByTradeUnionView() {
     [router]
   );
 
-  
-
-   const handleViewRow = useCallback(
-    (id: string) => {
-      const url = paths.dashboard.intern.profile(id);
-      window.open(url, '_blank');
-    },
-    []
-  );
+  const handleViewRow = useCallback((id: string) => {
+    const url = paths.dashboard.intern.profile(id);
+    window.open(url, '_blank');
+  }, []);
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
@@ -193,26 +197,23 @@ export default function InternListByTradeUnionView() {
     // console.log(data.tradeUnions);
   }, []);
 
-   const handleGetCompany = useCallback(
-      async () => {
-        // const { data: newData } = await axios.get(
-        //   `${process.env.REACT_APP_HOST_API}/api/tradeUnion/${tradeUnion}`
-        // );
-  
-        // const tradeUnionId = await newData.tradeUnion._id;
-  
-        const { data } = await axios.post(
-          `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
-          {
-            tradeUnion: user?.tradeUnion,
-          }
-        );
-  
-        setCompany(data.companies.map((item: any) => item.name));
-        // console.log('Company', data.companies);
-      },
-      [user]
+  const handleGetCompany = useCallback(async () => {
+    // const { data: newData } = await axios.get(
+    //   `${process.env.REACT_APP_HOST_API}/api/tradeUnion/${tradeUnion}`
+    // );
+
+    // const tradeUnionId = await newData.tradeUnion._id;
+
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
+      {
+        tradeUnion: user?.tradeUnion,
+      }
     );
+
+    setCompany(data.companies.map((item: any) => item.name));
+    // console.log('Company', data.companies);
+  }, [user]);
 
   useEffect(() => {
     handleGetAllIntern();
@@ -280,7 +281,7 @@ export default function InternListByTradeUnionView() {
                       tableData.filter((intern) => intern.status === 'pass').length}
                     {tab.value === 'complete' &&
                       tableData.filter((intern) => intern.status === 'complete').length}
-                       {tab.value === 'soon' &&
+                    {tab.value === 'soon' &&
                       tableData.filter((intern) => intern.status === 'soon').length}
                     {/* {tab.value === 'rejected' &&
                                 dataFiltered.filter((user) => user.status === 'rejected').length} */}
@@ -295,7 +296,7 @@ export default function InternListByTradeUnionView() {
             onFilters={handleFilters}
             roleOptions={tradeUnion}
             companyOptions={company}
-              interns={dataFiltered}
+            interns={dataFiltered}
           />
 
           {canReset && (
@@ -329,6 +330,25 @@ export default function InternListByTradeUnionView() {
                 </Tooltip>
               }
             /> */}
+
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  tableData.map((row) => row._id)
+                )
+              }
+              action={
+                <Tooltip title="Thêm vào danh sách so sánh">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="streamline-ultimate:job-responsibility-bag-hand-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
 
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -392,22 +412,22 @@ export default function InternListByTradeUnionView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title={t('title_compare')}
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+            {t('text1')} <strong> {table.selected.length} </strong> {t('text2')}
           </>
         }
         action={
           <Button
             variant="contained"
-            color="error"
+            color="success"
             onClick={() => {
-              handleDeleteRows();
+              handleAddInternIntoCompare();
               confirm.onFalse();
             }}
           >
-            Delete
+            {t('confirm')}
           </Button>
         }
       />
@@ -438,7 +458,7 @@ function applyFilter({
 
   inputData = stabilizedThis.map((el) => el[0]);
 
- function removeVietnameseTones(str: string): string {
+  function removeVietnameseTones(str: string): string {
     return str
       .normalize('NFD') // Tách dấu
       .replace(/[\u0300-\u036f]/g, '') // Xóa các dấu

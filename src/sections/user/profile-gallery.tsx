@@ -1,30 +1,32 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-// @mui
 import { alpha, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
-// utils
-import { fDate } from 'src/utils/format-time';
+import { MenuItem } from '@mui/material';
+import { useCallback, useState } from 'react';
+import { t } from 'i18next';
+
 // types
 import { IUserProfileGallery } from 'src/types/user';
+// utils
+import { fDate } from 'src/utils/format-time';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
-import { t } from 'i18next';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { MenuItem } from '@mui/material';
 import { paths } from 'src/routes/paths';
-import { useState } from 'react';
-
+import axios from 'axios';
+import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 type Props = {
   gallery: any[];
+  onRefresh: any;
 };
 
 const changDateJP = (date: any) => {
@@ -35,38 +37,29 @@ const changDateJP = (date: any) => {
   return customFormat;
 };
 
-export default function ProfileGallery({ gallery }: Props) {
+export default function ProfileGallery({ gallery, onRefresh }: Props) {
   const theme = useTheme();
 
-  const slides = gallery.map((slide) => {
-    const url = slide.imageUrl[0]; // chỉ lấy phần tử đầu tiên
-
-    if (url.includes('/video/')) {
-      return {
-        type: 'video' as const, // 👈 ép literal type
-        sources: [
-          {
-            src: url,
-            type: 'video/mp4',
-          },
-        ],
-        poster: url,
-        src: url,
-        width: 1280,
-        height: 720,
-      };
-    }
-
-    return {
-      src: url,
-    };
-  });
-
+  const [indexSelect, setIndexSelect] = useState(0);
+  const [slides, setSlides] = useState<any[]>([]);
   const lightbox = useLightBox(slides);
-  const popover = usePopover();
-  const [idSelect, setIdSelect] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
-  console.log('gallery', slides);
+  const popover = usePopover();
+  const [idSelect, setIdSelect] = useState<string | null>(null);
+
+  const handleDeleteGallery = useCallback(async (id : any) => {
+      // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
+  setLoading(true);
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/gallery/delete`,{
+        _id: id
+      });
+      // console.log('TEST', user, listIntern);
+      await onRefresh();
+      enqueueSnackbar('Xóa ảnh thành công thành công!');
+      setLoading(false);
+    }, [enqueueSnackbar, onRefresh]);
 
   return (
     <>
@@ -83,22 +76,18 @@ export default function ProfileGallery({ gallery }: Props) {
           md: 'repeat(3, 1fr)',
         }}
       >
-        {gallery.map((image) => (
+        {gallery.map((image, index) => (
           <Card key={image.id} sx={{ cursor: 'pointer', color: 'common.white' }}>
             <IconButton
               color={popover.open ? 'inherit' : 'default'}
-              // onClick={() => {
-              //   setIdSelect(image?._id);
-              //   popover.onOpen;
-              // }}
-
               onClick={popover.onOpen}
               sx={{ position: 'absolute', top: 8, right: 8, zIndex: 9 }}
             >
-              <Iconify icon="eva:more-vertical-fill" 
-              onClick={() => {
-                setIdSelect(image?._id);
-              }}
+              <Iconify
+                icon="eva:more-vertical-fill"
+                onClick={() => {
+                  setIdSelect(image?._id);
+                }}
               />
             </IconButton>
 
@@ -130,7 +119,25 @@ export default function ProfileGallery({ gallery }: Props) {
               alt="gallery"
               ratio="1/1"
               src={image.imageUrl[0]}
-              onClick={() => lightbox.onOpen(image.imageUrl[0])}
+              onClick={() => {
+                // Tạo slides trực tiếp từ image đang click
+                const newSlides = image.imageUrl.map((url: string) =>
+                  url.includes('/video/')
+                    ? {
+                        type: 'video' as const,
+                        sources: [{ src: url, type: 'video/mp4' }],
+                        poster: url,
+                        src: url,
+                        width: 1280,
+                        height: 720,
+                      }
+                    : { src: url }
+                );
+
+                setSlides(newSlides); // cập nhật slides
+                setIndexSelect(index); // lưu index
+                lightbox.onOpen(newSlides[0].src); // mở lightbox ngay
+              }}
               overlay={`linear-gradient(to bottom, ${alpha(theme.palette.grey[900], 0)} 0%, ${
                 theme.palette.grey[900]
               } 75%)`}
@@ -158,7 +165,7 @@ export default function ProfileGallery({ gallery }: Props) {
           Xem chi tiết
         </MenuItem>
 
-         <MenuItem
+        <MenuItem
           onClick={async () => {
             if (idSelect) {
               const url = paths.dashboard.gallery.edit(idSelect);
@@ -171,30 +178,14 @@ export default function ProfileGallery({ gallery }: Props) {
           Chỉnh Sửa
         </MenuItem>
 
-        <MenuItem onClick={() => {}}>
+        <MenuItem onClick={() => {
+          console.log("IdSelect", idSelect);
+          handleDeleteGallery(idSelect);
+          setIdSelect(null);
+        }}>
           <Iconify icon="material-symbols:delete" />
-          Xóa
+          {loading ? "Đang xóa..." : "Xóa"}
         </MenuItem>
-        {/* <MenuItem
-                onClick={() => {
-                  confirm.onTrue();
-                  popover.onClose();
-                }}
-                sx={{ color: 'error.main' }}
-              >
-                <Iconify icon="solar:trash-bin-trash-bold" />
-                Delete
-              </MenuItem>
-      
-              <MenuItem
-                onClick={() => {
-                  onViewRow();
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="solar:eye-bold" />
-                View
-              </MenuItem> */}
       </CustomPopover>
 
       <Lightbox

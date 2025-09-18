@@ -249,6 +249,10 @@
   "gallery": "ギャラリ",
   "date": "日付",
   "back": "戻る",
+  "title_compare": "比較リストに追加",
+  "text1": "追加しますか？",
+  "text2": "技能実習生を比較リストに",
+  "confirm": "確認",
   "demo": {
     "title": "英語"
   }

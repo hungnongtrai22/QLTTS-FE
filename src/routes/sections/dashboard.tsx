@@ -20,6 +20,7 @@ import DiaryProfileView from 'src/sections/user/view/diary-profile-view';
 import InternListPointPage from 'src/pages/dashboard/intern/listPoint';
 import TourDetailsPage from 'src/pages/dashboard/tour/details';
 import GalleryEditPage from 'src/pages/dashboard/gallery/edit';
+import ComparePage from 'src/pages/dashboard/intern/compare';
 
 // ----------------------------------------------------------------------
 
@@ -155,6 +156,7 @@ export const dashboardRoutes = [
             ),
           },
           { path: 'listByTradeUnion', element: <InternListByTradeUnionPage /> },
+          { path: 'compare', element: <ComparePage /> },
           { path: 'listBySource', element: <InternListBySource /> },
 
           { path: 'listByDongThap', element: <InternListByDongThapPage /> },

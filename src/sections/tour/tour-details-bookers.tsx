@@ -12,14 +12,19 @@ import ListItemText from '@mui/material/ListItemText';
 import { ITourBooker } from 'src/types/tour';
 // components
 import Iconify from 'src/components/iconify';
+import { t } from 'i18next';
+import axios from 'axios';
+import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  bookers: ITourBooker[];
+  bookers: any;
+  onRefresh: any;
 };
 
-export default function TourDetailsBookers({ bookers }: Props) {
+export default function TourDetailsBookers({ bookers, onRefresh }: Props) {
+  console.log(bookers);
   const [approved, setApproved] = useState<string[]>([]);
 
   const handleClick = useCallback(
@@ -43,12 +48,14 @@ export default function TourDetailsBookers({ bookers }: Props) {
         md: 'repeat(3, 1fr)',
       }}
     >
-      {bookers.map((booker) => (
+      {bookers?.listIntern?.map((booker: any) => (
         <BookerItem
-          key={booker.id}
+          key={booker._id}
+          compareId={bookers._id}
           booker={booker}
           selected={approved.includes(booker.id)}
           onSelected={() => handleClick(booker.id)}
+          onRefresh={onRefresh}
         />
       ))}
     </Box>
@@ -59,22 +66,39 @@ export default function TourDetailsBookers({ bookers }: Props) {
 
 type BookerItemProps = {
   selected: boolean;
-  booker: ITourBooker;
+  booker: any;
   onSelected: VoidFunction;
+  compareId: any;
+  onRefresh: any;
 };
 
-function BookerItem({ booker, selected, onSelected }: BookerItemProps) {
+function BookerItem({ booker, selected, onSelected, compareId, onRefresh }: BookerItemProps) {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleRemoveInternIntoCompare = useCallback(async () => {
+    // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
+
+    await axios.put(`${process.env.REACT_APP_HOST_API}/api/compare/removeInternFromAll`, {
+      compareId,
+      internId: booker?._id,
+    });
+    // console.log('TEST', user, listIntern);
+    await onRefresh();
+
+    enqueueSnackbar('Xóa thực tập sinh thành công!');
+  }, [enqueueSnackbar, compareId, booker, onRefresh]);
   return (
     <Stack component={Card} direction="row" spacing={2} key={booker.id} sx={{ p: 3 }}>
-      <Avatar alt={booker.name} src={booker.avatarUrl} sx={{ width: 48, height: 48 }} />
+      <Avatar alt={booker.name} src={booker.avatar} sx={{ width: 48, height: 48 }} />
 
       <Stack spacing={2} flexGrow={1}>
         <ListItemText
           primary={booker.name}
           secondary={
             <Stack direction="row" alignItems="center" spacing={0.5}>
-              <Iconify icon="solar:users-group-rounded-bold" width={16} />
-              {booker.guests} guests
+              {/* <Iconify icon="solar:users-group-rounded-bold" width={16} /> */}
+              {/* {booker.guests} guests */}
+              {booker?.namejp}
             </Stack>
           }
           secondaryTypographyProps={{
@@ -85,7 +109,7 @@ function BookerItem({ booker, selected, onSelected }: BookerItemProps) {
           }}
         />
 
-        <Stack spacing={1} direction="row">
+        {/* <Stack spacing={1} direction="row">
           <IconButton
             size="small"
             color="error"
@@ -127,19 +151,19 @@ function BookerItem({ booker, selected, onSelected }: BookerItemProps) {
           >
             <Iconify width={18} icon="fluent:mail-24-filled" />
           </IconButton>
-        </Stack>
+        </Stack> */}
       </Stack>
 
       <Button
         size="small"
-        variant={selected ? 'text' : 'outlined'}
-        color={selected ? 'success' : 'inherit'}
+        variant="outlined"
+        color="error"
         startIcon={
           selected ? <Iconify width={18} icon="eva:checkmark-fill" sx={{ mr: -0.75 }} /> : null
         }
-        onClick={onSelected}
+        onClick={() => handleRemoveInternIntoCompare()}
       >
-        {selected ? 'Approved' : 'Approve'}
+        {t('delete')}
       </Button>
     </Stack>
   );

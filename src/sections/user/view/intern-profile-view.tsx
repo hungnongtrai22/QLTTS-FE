@@ -255,7 +255,7 @@ export default function InternProfileView() {
           <CalendarViewPage intern={intern} />
         ))}
 
-      {currentTab === 'image' && <ProfileGallery gallery={galleries} />}
+      {currentTab === 'image' && <ProfileGallery gallery={galleries} onRefresh={handleGetGalleryByInternId}/>}
     </Container>
   );
 }

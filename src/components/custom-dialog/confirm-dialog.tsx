@@ -5,6 +5,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 //
+import { t } from 'i18next';
+
 import { ConfirmDialogProps } from './types';
 
 // ----------------------------------------------------------------------
@@ -27,7 +29,7 @@ export default function ConfirmDialog({
         {action}
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Hủy
+          {t("cancel")}
         </Button>
       </DialogActions>
     </Dialog>

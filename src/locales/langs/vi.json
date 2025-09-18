@@ -254,6 +254,10 @@
   "gallery": "Thư viện ảnh",
   "date": "Ngày",
   "back": "Quay trở lại",
+  "title_compare": "Thêm vào danh sách so sánh",
+  "text1": "Bạn có muốn thêm",
+  "text2": "thực tập sinh vào danh sách so sánh",
+  "confirm": "Xác nhận",
   "demo": {
     "title": "Vietnamese"
   }
