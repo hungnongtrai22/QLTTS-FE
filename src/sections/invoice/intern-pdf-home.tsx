@@ -208,6 +208,18 @@ const changDateJP = (date: any) => {
   return customFormat;
 };
 
+function normalizeName(name: string): string {
+  return name
+    .normalize('NFD') // Tách dấu
+    .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+    .replace(/đ/g, 'd') // đ -> d
+    .replace(/Đ/g, 'D') // Đ -> D
+    .replace(/[^A-Za-z\s]/g, '') // Loại bỏ ký tự không phải chữ cái hoặc khoảng trắng
+    .toUpperCase() // In hoa
+    .trim() // Bỏ khoảng trắng đầu cuối
+    .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
+}
+
 export default function InternPDFHome({ invoice, startIndex = 0 }: Props) {
   // const { name } = invoice;
   // console.log("Interns", invoice);
@@ -285,7 +297,7 @@ export default function InternPDFHome({ invoice, startIndex = 0 }: Props) {
               </View>
 
               <View style={[styles.tableCell_5, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{intern.name}</Text>
+                <Text style={styles.subtitle3}>{normalizeName(intern.name)}</Text>
                 <Text style={styles.subtitle3}>{intern.namejp}</Text>
               </View>
 

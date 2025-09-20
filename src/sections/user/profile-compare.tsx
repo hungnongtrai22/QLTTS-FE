@@ -1,3 +1,6 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -56,7 +59,8 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
 
   const [contact, setContact] = useState<IContactItem>();
   const [study, setStudy] = useState<IStudyItem[]>([]);
-    const [compare, setCompare] = useState();
+  const [studies, setStudies] = useState([]);
+  const [compare, setCompare] = useState();
 
   const { user } = useAuthContext();
 
@@ -74,21 +78,33 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
     setContact(data.contact);
   }, [currentIntern]);
 
-    const handleGetCompareByAccountId = useCallback(async () => {
+  const handleGetCompareByAccountId = useCallback(async () => {
     const { data } = await axios.post(
       `${process.env.REACT_APP_HOST_API}/api/compare/getByAccountId`,
       { accountId: user?._id }
     );
     setCompare(data.compare);
+    console.log('Compare', data.compare);
+    const tempStudies = [];
+    for (const intern of data.compare.listIntern) {
+      const { data: tempData } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
+        { internId: intern._id }
+      );
+      // tempStudies
+      console.log('Study', tempData.studies);
+    }
+
+    // setStudy(tempData.studies);
   }, [user]);
 
-  const handleGetByInternId = useCallback(async () => {
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
-      { internId: currentIntern?._id }
-    );
-    setStudy(data.studies);
-  }, [currentIntern]);
+  // const handleGetByInternId = useCallback(async (internId) => {
+  //   const { data } = await axios.post(
+  //     `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
+  //     { internId: currentIntern?._id }
+  //   );
+  //   setStudy(data.studies);
+  // }, [currentIntern]);
 
   const handleRemoveStudy = useCallback(async (id: any) => {
     setStudy((pre: any) => pre.filter((item: any) => item._id !== id));
@@ -96,8 +112,8 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
 
   useEffect(() => {
     handleGetCompareByAccountId();
-    handleGetByInternId();
-  }, [handleGetCompareByAccountId, handleGetByInternId]);
+    // handleGetByInternId();
+  }, [handleGetCompareByAccountId]);
 
   const renderFollows = (
     <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
@@ -145,8 +161,6 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
       </Stack>
     </Card>
   );
-
-  
 
   const renderPostInput = (
     <Card sx={{ p: 3 }}>
@@ -215,11 +229,11 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
     </Card>
   );
 
-  const newStudy = study.slice(0,3).map((item:any)=>({
+  const newStudy = study.slice(0, 3).map((item: any) => ({
     name: `${item.time}ヶ月`,
-    data: [item.write, item.read, item.listen, item.speak, item.health, item.attend]
+    data: [item.write, item.read, item.listen, item.speak, item.health, item.attend],
   }));
-    console.log("sd", newStudy);
+  console.log('sd', newStudy);
 
   const studyCate = study.map((item: any) => item.time).reverse();
   const studyTotal = study.map((item: any) => item.total).reverse();
@@ -235,7 +249,7 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
   return (
     <Grid container spacing={3}>
       <Grid xs={12} md={12} lg={12}>
-      <TourDetailsBookers bookers={compare || []} onRefresh={handleGetCompareByAccountId}/>
+        <TourDetailsBookers bookers={compare || []} onRefresh={handleGetCompareByAccountId} />
       </Grid>
       <Grid xs={8} md={8} lg={8}>
         <AppAreaInstalled
@@ -306,7 +320,7 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
             //   { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
             //   { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
             // ],
-             series: newStudy || [],
+            series: newStudy || [],
           }}
         />
       </Grid>
@@ -315,7 +329,6 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
         <Grid xs={12} md={4}>
           <Stack spacing={3}>
             {renderFollows}
-
 
             {/* {renderSocials} */}
           </Stack>
