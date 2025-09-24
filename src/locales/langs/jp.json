@@ -152,6 +152,10 @@
   "write": "筆記力/仮名読む試験",
   "read": "読解力/数字試験",
   "listen": "聴解力/単語筆記試験",
+  "listen_point": "聴解力",
+  "read_point": "読解力",
+  "speak_point": "会話力",
+  "write_point": "筆記力",
   "speak": "会話力/自己紹介",
   "total": "総合評価",
   "average": "平均点数",
@@ -253,6 +257,7 @@
   "text1": "追加しますか？",
   "text2": "技能実習生を比較リストに",
   "confirm": "確認",
+  "listCompare": "比較リスト",
   "demo": {
     "title": "英語"
   }

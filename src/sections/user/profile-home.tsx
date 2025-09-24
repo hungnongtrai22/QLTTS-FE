@@ -176,7 +176,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
           <Link variant="subtitle2" color="inherit">
-            {currentIntern?.family?.find((item: any) => item.relationship === '姉')?.name}
+            {currentIntern?.family?.find((item: any) => item.relationship === '父')?.name}
           </Link>
         </Stack>
 
@@ -207,7 +207,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
           <Link variant="subtitle2" color="inherit">
-            {currentIntern?.family?.find((item: any) => item.relationship === '兄')?.name}
+            {currentIntern?.family?.find((item: any) => item.relationship === '母')?.name}
           </Link>
         </Stack>
 

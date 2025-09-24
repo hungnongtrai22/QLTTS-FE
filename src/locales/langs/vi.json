@@ -154,6 +154,10 @@
   "read": "Kỹ năng đọc hiểu / Bài kiểm tra số",
   "listen": "Kỹ năng nghe hiểu / Bài kiểm tra viết từ",
   "speak": "Kỹ năng giao tiếp / Tự giới thiệu",
+  "listen_point": "Kỹ năng nghe hiểu",
+  "read_point": "Kỹ năng đọc hiểu",
+  "speak_point": "Kỹ năng giao tiếp",
+  "write_point": "Kỹ năng viết",
   "total": "Đánh giá tổng hợp",
   "average": "Điểm trung bình",
   "level": "Trình độ",
@@ -258,6 +262,7 @@
   "text1": "Bạn có muốn thêm",
   "text2": "thực tập sinh vào danh sách so sánh",
   "confirm": "Xác nhận",
+  "listCompare": "Danh sách so sánh",
   "demo": {
     "title": "Vietnamese"
   }

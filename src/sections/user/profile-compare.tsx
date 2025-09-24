@@ -45,6 +45,7 @@ import AllStudyPDF from '../order/AllStudyPDF';
 import AppAreaInstalled from '../overview/app/app-area-installed';
 import AnalyticsCurrentSubject from '../overview/analytics/analytics-current-subject';
 import TourDetailsBookers from '../tour/tour-details-bookers';
+import StudyMultiplePostItem from './study-multiple-post-item ';
 
 // ----------------------------------------------------------------------
 
@@ -92,11 +93,11 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
         `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
         { internId: intern._id }
       );
-      tempStudies.push(tempData);
+      tempStudies.push({ name: intern.namejp, studies: tempData.studies.map((it : any) => ({...it, name: intern.namejp})) });
       // console.log('Study', tempData.studies);
     }
     setStudies(tempStudies);
-    console.log("NEW",tempStudies);
+    console.log('NEW', tempStudies);
     // setStudy(tempData.studies);
   }, [user]);
 
@@ -248,12 +249,22 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
     result = studyTotal[studyTotal.length - 1] - studyTotal[studyTotal.length - 1 - 1];
   }
 
+  const maxLen = Math.max(...studies.map((item: any) => item.studies.length));
+
+  const merged = Array.from({ length: maxLen }, (_, i) =>
+    studies
+      .map((item: any) => item.studies[item.studies.length - 1 - i]) // lấy từ cuối
+      .filter(Boolean)
+  );
+
+  console.log('Merged', merged);
+
   return (
     <Grid container spacing={3}>
       <Grid xs={12} md={12} lg={12}>
         <TourDetailsBookers bookers={compare || []} onRefresh={handleGetCompareByAccountId} />
       </Grid>
-      <Grid xs={8} md={8} lg={8}>
+      <Grid xs={12} md={12} lg={12}>
         <AppAreaInstalled
           title={t('learning_ability') || ''}
           subheader={`${result >= 0 ? t('increase') : t('decrease')}${Math.abs(result)}${t('sub')}`}
@@ -290,39 +301,54 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
                 //   //   data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
                 //   // },
                 // ],
-                data: studies.map((item : any) => {
+                data: studies.map((item: any) => {
                   return {
-                    name: 'Test',
-                    data: []
-                  }
-                }) 
+                    name: item.name,
+                    data: item.studies.map((it: any) => it.total),
+                  };
+                }),
               },
               {
-                year: t('learn_part'),
-                data: [
-                  {
-                    name: t('learn_listen'),
-                    data: studyListen,
-                  },
-                  {
-                    name: t('learn_read'),
-                    data: studyRead,
-                  },
-                  {
-                    name: t('learn_speak'),
-                    data: studySpeak,
-                  },
-                  {
-                    name: t('learn_write'),
-                    data: studyWrite,
-                  },
-                ],
+                year: t('listen_point'),
+                data: studies.map((item: any) => {
+                  return {
+                    name: item.name,
+                    data: item.studies.map((it: any) => it.listen),
+                  };
+                }),
+              },
+              {
+                year: t('read_point'),
+                data: studies.map((item: any) => {
+                  return {
+                    name: item.name,
+                    data: item.studies.map((it: any) => it.read),
+                  };
+                }),
+              },
+              {
+                year: t('write_point'),
+                data: studies.map((item: any) => {
+                  return {
+                    name: item.name,
+                    data: item.studies.map((it: any) => it.write),
+                  };
+                }),
+              },
+              {
+                year: t('speak_point'),
+                data: studies.map((item: any) => {
+                  return {
+                    name: item.name,
+                    data: item.studies.map((it: any) => it.speak),
+                  };
+                }),
               },
             ],
           }}
         />
       </Grid>
-      <Grid xs={4} md={4} lg={4}>
+      {/* <Grid xs={4} md={4} lg={4}>
         <AnalyticsCurrentSubject
           title="日本語能力"
           chart={{
@@ -335,14 +361,13 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
             series: newStudy || [],
           }}
         />
-      </Grid>
+      </Grid> */}
 
-      {user?.role === 'admin' && (
+      {/* {user?.role === 'admin' && (
         <Grid xs={12} md={4}>
           <Stack spacing={3}>
             {renderFollows}
 
-            {/* {renderSocials} */}
           </Stack>
         </Grid>
       )}
@@ -351,17 +376,17 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
         <Grid xs={24} md={24} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Stack spacing={3}>{renderFollows}</Stack>
         </Grid>
-      )}
+      )} */}
 
       <Grid xs={user?.role === 'admin' ? 12 : 24} md={user?.role === 'admin' ? 8 : 24}>
         <Stack spacing={3}>
           {/* {renderPostInput} */}
           {/* {renderFollows} */}
 
-          {study.map((item) => (
-            <StudyPostItem
+          {merged.map((item) => (
+            <StudyMultiplePostItem
               key={item._id}
-              study={item}
+              studies={item}
               intern={currentIntern || null}
               onRemove={handleRemoveStudy}
             />
