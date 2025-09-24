@@ -95,7 +95,9 @@ export function useNavData() {
               // { title: t('cards'), path: paths.dashboard.intern.cards },
 
               { title: t('list'), path: paths.dashboard.intern.list, roles: ['admin'] },
-              { title: t('listCompare'), path: paths.dashboard.intern.compare, roles: ['admin', 'tradeunion'] },
+              // { title: t('listCompare'), path: paths.dashboard.intern.compare, roles: ['admin', 'tradeunion'] },
+                            { title: t('listCompare'), path: paths.dashboard.intern.compare, roles: ['admin'] },
+
               { title: t('listPoint'), path: paths.dashboard.intern.listPoint, roles: ['admin'] },
               {
                 title: t('intern_by_trade_union'),

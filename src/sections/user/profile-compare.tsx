@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
+/* eslint-disable arrow-body-style */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 // @mui
@@ -59,7 +60,7 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
 
   const [contact, setContact] = useState<IContactItem>();
   const [study, setStudy] = useState<IStudyItem[]>([]);
-  const [studies, setStudies] = useState([]);
+  const [studies, setStudies] = useState<any>([]);
   const [compare, setCompare] = useState();
 
   const { user } = useAuthContext();
@@ -91,10 +92,11 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
         `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
         { internId: intern._id }
       );
-      // tempStudies
-      console.log('Study', tempData.studies);
+      tempStudies.push(tempData);
+      // console.log('Study', tempData.studies);
     }
-
+    setStudies(tempStudies);
+    console.log("NEW",tempStudies);
     // setStudy(tempData.studies);
   }, [user]);
 
@@ -274,16 +276,26 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
             series: [
               {
                 year: t('learn_total'),
-                data: [
-                  {
-                    name: t('learn_total'),
-                    data: studyTotal,
-                  },
-                  // {
-                  //   name: 'America',
-                  //   data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
-                  // },
-                ],
+                // data: [
+                //   // {
+                //   //   name: t('learn_total'),
+                //   //   data: studyTotal,
+                //   // },
+                //   {
+                //     name: t('learn_total'),
+                //     data: studyTotal,
+                //   },
+                //   // {
+                //   //   name: 'America',
+                //   //   data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
+                //   // },
+                // ],
+                data: studies.map((item : any) => {
+                  return {
+                    name: 'Test',
+                    data: []
+                  }
+                }) 
               },
               {
                 year: t('learn_part'),
