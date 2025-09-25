@@ -331,11 +331,10 @@ export default function StudyMultiplePostItem({ studies, intern, onRemove }: Pro
         <table className={styles.table}>
           <thead className={styles.thead}>
             <tr className={styles.tr}>
-
-               <th className={styles.th} rowSpan={3}>
+              <th className={styles.th} rowSpan={3}>
                 名前
               </th>
-             
+
               <th className={styles.th} colSpan={7}>
                 （B）一般評価
               </th>
@@ -349,7 +348,7 @@ export default function StudyMultiplePostItem({ studies, intern, onRemove }: Pro
                 学習進捗
               </th>
             </tr>
-            
+
             <tr className={styles.tr}>
               <th className={styles.th} rowSpan={2}>
                 性格
@@ -393,7 +392,6 @@ export default function StudyMultiplePostItem({ studies, intern, onRemove }: Pro
           </thead>
           {studies.map((study: any) => (
             <tbody className={styles.tbody}>
-              
               <tr className={styles.tr}>
                 <td className={styles.td}>{study.name}</td>
                 <td className={styles.td}>{study.characteristic}</td>
@@ -507,6 +505,50 @@ export default function StudyMultiplePostItem({ studies, intern, onRemove }: Pro
       {/* {renderActions} */}
 
       {/* {renderCommentList} */}
+      {studies.map((study: any) => (
+        <Stack spacing={1.5} sx={{ px: 3, pb: 2 }}>
+          <Stack direction="row" spacing={2}>
+            <Avatar alt="das" src="/assets/logo.png" />
+
+            <Paper
+              sx={{
+                p: 1.5,
+                flexGrow: 1,
+                bgcolor: 'background.neutral',
+              }}
+            >
+              <Stack
+                sx={{ mb: 0.5 }}
+                alignItems={{ sm: 'center' }}
+                justifyContent="space-between"
+                direction={{ xs: 'column', sm: 'row' }}
+              >
+                <Box sx={{ typography: 'subtitle2' }}>コメント ({study.name})</Box>
+
+                {/* <Box sx={{ typography: 'caption', color: 'text.disabled' }}>担当教師</Box> */}
+              </Stack>
+
+              <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
+                {/* {study.comment} */}
+                <Markdown children={study.comment} />
+              </Box>
+
+              <Stack
+                // sx={{ mb: 0.5 }}
+                alignItems="flex-end"
+                // justifyContent="space-between"
+                // direction={{ xs: 'column', sm: 'row' }}
+              >
+                {/* <Box sx={{ typography: 'subtitle2' }}>コメント</Box> */}
+
+                <Box sx={{ typography: 'caption', color: 'text.disabled' }}>
+                  担当教師: {study?.teacher}
+                </Box>
+              </Stack>
+            </Paper>
+          </Stack>
+        </Stack>
+      ))}
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ p: 1 }}>
           {/* <Image alt={post.media} src={post.media} ratio="16/9" sx={{ borderRadius: 1.5 }} /> */}
