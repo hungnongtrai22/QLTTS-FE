@@ -86,7 +86,7 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
       { accountId: user?._id }
     );
     setCompare(data.compare);
-    console.log('Compare', data.compare);
+    // console.log('Compare', data.compare);
     const tempStudies = [];
     for (const intern of data.compare.listIntern) {
       const { data: tempData } = await axios.post(
@@ -97,7 +97,7 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
       // console.log('Study', tempData.studies);
     }
     setStudies(tempStudies);
-    console.log('NEW', tempStudies);
+    // console.log('NEW', tempStudies);
     // setStudy(tempData.studies);
   }, [user]);
 

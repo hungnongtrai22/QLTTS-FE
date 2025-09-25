@@ -263,6 +263,8 @@
   "text2": "thực tập sinh vào danh sách so sánh",
   "confirm": "Xác nhận",
   "listCompare": "Danh sách so sánh",
+  "text_compare": "Thêm thực tập sinh vào danh sách so sánh thành công",
+  "delete_compare": "Xóa thực tập sinh thành công",
   "demo": {
     "title": "Vietnamese"
   }

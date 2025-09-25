@@ -202,7 +202,7 @@ export default function CompanyListView() {
         />
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={filters.status}
             onChange={handleFilterStatus}
             sx={{
@@ -242,7 +242,7 @@ export default function CompanyListView() {
                 }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
           <CompanyTableToolbar
             filters={filters}

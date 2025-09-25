@@ -85,7 +85,7 @@ function BookerItem({ booker, selected, onSelected, compareId, onRefresh }: Book
     // console.log('TEST', user, listIntern);
     await onRefresh();
 
-    enqueueSnackbar('Xóa thực tập sinh thành công!');
+    enqueueSnackbar(t('delete_compare'));
   }, [enqueueSnackbar, compareId, booker, onRefresh]);
   return (
     <Stack component={Card} direction="row" spacing={2} key={booker.id} sx={{ p: 3 }}>

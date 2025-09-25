@@ -144,7 +144,7 @@ export default function InternListByTradeUnionView() {
       listIntern,
     });
     // console.log('TEST', user, listIntern);
-    enqueueSnackbar('Thêm thực tập sinh vào đơn hàng thành công!');
+    enqueueSnackbar(t('text_compare'));
   }, [table, enqueueSnackbar, user]);
 
   const handleDeleteRows = useCallback(() => {

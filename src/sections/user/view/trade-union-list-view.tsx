@@ -198,7 +198,7 @@ export default function TradeUnionListView() {
         />
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={filters.status}
             onChange={handleFilterStatus}
             sx={{
@@ -238,7 +238,7 @@ export default function TradeUnionListView() {
                 }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
           <UserTableToolbar
             filters={filters}

@@ -258,6 +258,8 @@
   "text2": "技能実習生を比較リストに",
   "confirm": "確認",
   "listCompare": "比較リスト",
+  "text_compare": "実習生を比較リストに追加しました",
+  "delete_compare": "実習生を正常に削除しました",
   "demo": {
     "title": "英語"
   }
