@@ -360,6 +360,24 @@ export default function InternListView() {
           )}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+            {/* <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  tableData.map((row) => row._id)
+                )
+              }
+              action={
+                <Tooltip title="Thêm vào danh sách so sánh">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="streamline-ultimate:ranking-people-first-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
+            /> */}
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}

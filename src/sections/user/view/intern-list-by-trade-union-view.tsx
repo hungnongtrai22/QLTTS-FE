@@ -344,7 +344,7 @@ export default function InternListByTradeUnionView() {
               action={
                 <Tooltip title="Thêm vào danh sách so sánh">
                   <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="streamline-ultimate:job-responsibility-bag-hand-bold" />
+                    <Iconify icon="streamline-ultimate:ranking-people-first-bold" />
                   </IconButton>
                 </Tooltip>
               }

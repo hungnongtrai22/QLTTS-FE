@@ -600,7 +600,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                     </View>
                   ))}
 
-                  {Array.from({ length: 4 - school.length }).map((_, idx) => (
+                  {/* {Array.from({ length: 4 - school.length }).map((_, idx) => (
                     <View style={styles.tableRow} key={`empty-${idx}`}>
                       <View style={[styles.tableCell_6, styles.textCenter]}>
                         <Text> </Text>
@@ -618,7 +618,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                         <Text> </Text>
                       </View>
                     </View>
-                  ))}
+                  ))} */}
                 </View>
 
                 <View>
@@ -691,7 +691,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                     </View>
                   ))}
 
-                  {Array.from({ length: Math.max(0, 3 - company.length) }).map((_, idx) => (
+                  {/* {Array.from({ length: Math.max(0, 3 - company.length) }).map((_, idx) => (
                     <View style={styles.tableRow} key={`empty-company-${idx}`}>
                       <View style={[styles.tableCell_6, styles.textCenter]}>
                         <Text> </Text>
@@ -705,7 +705,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                         <Text> </Text>
                       </View>
                     </View>
-                  ))}
+                  ))} */}
                 </View>
               </View>
             </View>
@@ -759,7 +759,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                     </View>
                   ))}
 
-                  {Array.from({ length: Math.max(0, 5 - family.length) }).map((_, idx) => (
+                  {/* {Array.from({ length: Math.max(0, 5 - family.length) }).map((_, idx) => (
                     <View style={styles.tableRow} key={`empty-family-${idx}`}>
                       <View style={[styles.tableCell_4, styles.textCenter]}>
                         <Text> </Text>
@@ -781,7 +781,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                         <Text> </Text>
                       </View>
                     </View>
-                  ))}
+                  ))} */}
                 </View>
               </View>
             </View>

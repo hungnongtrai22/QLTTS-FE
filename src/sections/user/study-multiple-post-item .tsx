@@ -508,7 +508,8 @@ export default function StudyMultiplePostItem({ studies, intern, onRemove }: Pro
       {studies.map((study: any) => (
         <Stack spacing={1.5} sx={{ px: 3, pb: 2 }}>
           <Stack direction="row" spacing={2}>
-            <Avatar alt="das" src="/assets/logo.png" />
+            {/* <Avatar alt="das" src="/assets/logo.png" /> */}
+            <Avatar alt="das" src={study.avatar} />
 
             <Paper
               sx={{

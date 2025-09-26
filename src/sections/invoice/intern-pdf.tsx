@@ -562,7 +562,7 @@ export default function InternPDF({ invoice }: Props) {
                   </View>
                 ))}
 
-                {Array.from({ length: 4 - school.length }).map((_, idx) => (
+                {/* {Array.from({ length: 4 - school.length }).map((_, idx) => (
                   <View style={styles.tableRow} key={`empty-${idx}`}>
                     <View style={[styles.tableCell_6, styles.textCenter]}>
                       <Text> </Text>
@@ -580,7 +580,7 @@ export default function InternPDF({ invoice }: Props) {
                       <Text> </Text>
                     </View>
                   </View>
-                ))}
+                ))} */}
               </View>
 
               <View>
@@ -651,7 +651,7 @@ export default function InternPDF({ invoice }: Props) {
                   </View>
                 ))}
 
-                {Array.from({ length: Math.max(0, 3 - company.length) }).map((_, idx) => (
+                {/* {Array.from({ length: Math.max(0, 3 - company.length) }).map((_, idx) => (
                   <View style={styles.tableRow} key={`empty-company-${idx}`}>
                     <View style={[styles.tableCell_6, styles.textCenter]}>
                       <Text> </Text>
@@ -665,7 +665,7 @@ export default function InternPDF({ invoice }: Props) {
                       <Text> </Text>
                     </View>
                   </View>
-                ))}
+                ))} */}
               </View>
             </View>
           </View>

@@ -93,7 +93,12 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
         `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
         { internId: intern._id }
       );
-      tempStudies.push({ name: intern.namejp, studies: tempData.studies.map((it : any) => ({...it, name: intern.namejp})) });
+          console.log('Compare', intern);
+      tempStudies.push({
+        name: intern.namejp,
+        
+        studies: tempData.studies.map((it: any) => ({ ...it, name: intern.namejp, avatar: intern.avatar })),
+      });
       // console.log('Study', tempData.studies);
     }
     setStudies(tempStudies);
@@ -378,7 +383,7 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
         </Grid>
       )} */}
 
-      <Grid xs={user?.role === 'admin' ? 12 : 24} md={user?.role === 'admin' ? 8 : 24}>
+      <Grid xs={24} md={24}>
         <Stack spacing={3}>
           {/* {renderPostInput} */}
           {/* {renderFollows} */}

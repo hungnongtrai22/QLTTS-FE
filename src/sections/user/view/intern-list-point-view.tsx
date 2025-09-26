@@ -42,6 +42,7 @@ import {
 import { useAuthContext } from 'src/auth/hooks';
 import axios from 'axios';
 import { t } from 'i18next';
+import { useSnackbar } from 'src/components/snackbar';
 
 //
 import InternTableFiltersResult from '../intern-table-filters-result';
@@ -60,7 +61,6 @@ const defaultFilters = {
   status: 'all',
 };
 
-
 // ----------------------------------------------------------------------
 
 export default function InternListPointView() {
@@ -68,7 +68,7 @@ export default function InternListPointView() {
 
   const settings = useSettingsContext();
 
-  // const { user } = useAuthContext();
+  const { user } = useAuthContext();
 
   const router = useRouter();
 
@@ -93,6 +93,9 @@ export default function InternListPointView() {
     { value: 'soon', label: t('soon') },
   ];
 
+    const { enqueueSnackbar } = useSnackbar();
+  
+
   const [tableData, setTableData] = useState<IInternItem[]>([]);
   const [tradeUnion, setTradeUnion] = useState([]);
   const [company, setCompany] = useState([]);
@@ -106,7 +109,7 @@ export default function InternListPointView() {
     filters,
   });
 
-  console.log("Order", table.order, table.orderBy)
+  console.log('Order', table.order, table.orderBy);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -153,6 +156,18 @@ export default function InternListPointView() {
     },
     [table, handleGetCompany]
   );
+
+  const handleAddInternIntoCompare = useCallback(async () => {
+      // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
+  
+      const listIntern = table.selected;
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/compare/updateListIntern`, {
+        accountId: user?._id,
+        listIntern,
+      });
+      // console.log('TEST', user, listIntern);
+      enqueueSnackbar(t('text_compare'));
+    }, [table, enqueueSnackbar, user]);
 
   const handleDeleteRow = useCallback(
     (id: string) => {
@@ -222,7 +237,7 @@ export default function InternListPointView() {
     handleGetSource();
   }, [handleGetAllIntern, handleGetTradeUnion, handleGetSource]);
 
-  console.log("sd",dataFiltered)
+  console.log('sd', dataFiltered);
 
   return (
     <>
@@ -281,7 +296,7 @@ export default function InternListPointView() {
                     {tab.value === 'study' &&
                       tableData.filter((intern) => intern.status === 'study').length}
                     {tab.value === 'interview' &&
-                      tableData.filter((user) => user.status === 'interview').length}
+                      tableData.filter((intern) => intern.status === 'interview').length}
                     {tab.value === 'pass' &&
                       tableData.filter((intern) => intern.status === 'pass').length}
                     {tab.value === 'complete' &&
@@ -304,15 +319,15 @@ export default function InternListPointView() {
             interns={dataFiltered}
           /> */}
 
-            <InternTableToolbarWithSource
-                      filters={filters}
-                      onFilters={handleFilters}
-                      //
-                      roleOptions={tradeUnion}
-                      companyOptions={company}
-                      sources={source}
-                      interns={dataFiltered}
-                    />
+          <InternTableToolbarWithSource
+            filters={filters}
+            onFilters={handleFilters}
+            //
+            roleOptions={tradeUnion}
+            companyOptions={company}
+            sources={source}
+            interns={dataFiltered}
+          />
 
           {canReset && (
             <InternTableFiltersResult
@@ -345,6 +360,25 @@ export default function InternListPointView() {
                 </Tooltip>
               }
             /> */}
+
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  tableData.map((row) => row._id)
+                )
+              }
+              action={
+                <Tooltip title="Thêm vào danh sách so sánh">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="streamline-ultimate:ranking-people-first-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
 
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -408,22 +442,22 @@ export default function InternListPointView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title={t('title_compare')}
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+            {t('text1')} <strong> {table.selected.length} </strong> {t('text2')}
           </>
         }
         action={
           <Button
             variant="contained"
-            color="error"
+            color="success"
             onClick={() => {
-              handleDeleteRows();
+              handleAddInternIntoCompare();
               confirm.onFalse();
             }}
           >
-            Delete
+            {t('confirm')}
           </Button>
         }
       />
@@ -442,13 +476,13 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IInternTableFilters;
 }) {
-  const { name, tradeUnion, company, status, source} = filters;
+  const { name, tradeUnion, company, status, source } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
-      // console.log("A", a[0], b[0])
+    // console.log("A", a[0], b[0])
 
     if (order !== 0) return order;
     return a[1] - b[1];
@@ -485,7 +519,6 @@ function applyFilter({
   if (source?.length) {
     inputData = inputData.filter((user) => source.includes(user?.source?.name));
   }
-
 
   return inputData;
 }
