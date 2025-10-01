@@ -250,9 +250,9 @@ const onSubmit = useCallback(
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-            {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-              Family:
-            </Typography> */}
+            <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
+              Nhập ảnh:
+            </Typography>
             <Box
               rowGap={3}
               columnGap={3}

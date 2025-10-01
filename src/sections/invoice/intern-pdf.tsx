@@ -688,7 +688,7 @@ export default function InternPDF({ invoice }: Props) {
                       <Text style={styles.subtitle2}>生年</Text>
                     </View>
                     <View style={[styles.tableCell_8, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>会社名(場所)</Text>
+                      <Text style={styles.subtitle2}>現住所</Text>
                     </View>
                     <View style={[styles.tableCell_8, styles.titleBackground]}>
                       <Text style={styles.subtitle2}>職業</Text>

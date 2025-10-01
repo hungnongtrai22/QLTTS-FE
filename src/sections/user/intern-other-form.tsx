@@ -135,9 +135,9 @@ export default function InternOtherForm({ currentIntern }: Props) {
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-            {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-              Family:
-            </Typography> */}
+            <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
+              Nhập điểm kiểm tra (IQ, toán, cộng dồn):
+            </Typography>
             <Box
               rowGap={3}
               columnGap={3}

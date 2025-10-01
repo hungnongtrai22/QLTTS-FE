@@ -1,4 +1,5 @@
 const vietToKatakanaMap: Record<string, string> = {
+  a: 'アー',
   an: 'アン',
   anh: 'アイン',
   ba: 'バ',
@@ -101,6 +102,7 @@ const vietToKatakanaMap: Record<string, string> = {
   khanh: 'カイン',
   khien: 'キエン',
   khoa: 'コア',
+  khoi: 'コア',
   khuc: 'クーク',
   khuong: 'クオン',
   kien: 'キエン',
@@ -147,6 +149,7 @@ const vietToKatakanaMap: Record<string, string> = {
   mi: 'ミー',
   na: 'ナ',
   ni: 'ニー',
+  nie: '二エ',
   nam: 'ナム',
   nang: 'ナン',
   nga: 'ガー',

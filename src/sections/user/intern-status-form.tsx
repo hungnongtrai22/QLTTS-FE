@@ -22,7 +22,7 @@ import FormProvider, {
   RHFAutocomplete,
   RHFEditor,
 } from 'src/components/hook-form';
-import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui/material';
+import { CircularProgress, IconButton, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
@@ -141,9 +141,9 @@ export default function InternStatusForm({ internId, currentStatus }: Props) {
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-            {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-              Family:
-            </Typography> */}
+            <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
+              Trạng Thái:
+            </Typography>
             <Box
               rowGap={3}
               columnGap={3}

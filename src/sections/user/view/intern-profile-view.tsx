@@ -152,7 +152,9 @@ export default function InternProfileView() {
   }, [id]);
 
   const handleGetGalleryByInternId = useCallback(async () => {
-    const { data } = await axios(`${process.env.REACT_APP_HOST_API}/api/gallery/listByInternId?internId=${id}`);
+    const { data } = await axios(
+      `${process.env.REACT_APP_HOST_API}/api/gallery/listByInternId?internId=${id}`
+    );
     setGalleries(data.galleries);
   }, [id]);
 
@@ -208,7 +210,7 @@ export default function InternProfileView() {
         >
           {/* eslint-disable-next-line no-nested-ternary */}
           {user?.role === 'tradeunion'
-            ? TABSTRADEUNION.map((tab) => (
+            ? TABSTRADEUNION.map((tab) => ( 
                 <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
               ))
             : user?.role === 'source'
@@ -237,10 +239,10 @@ export default function InternProfileView() {
           <InternStatusForm internId={intern?._id} currentStatus={intern?.status} />
 
           <InternCompanyTradeUnionForm currentIntern={intern} />
+        
+          <InternOtherForm currentIntern={intern} />
 
           <InternGalleryForm currentIntern={intern} />
-
-          <InternOtherForm currentIntern={intern} />
         </>
       )}
 
@@ -255,7 +257,9 @@ export default function InternProfileView() {
           <CalendarViewPage intern={intern} />
         ))}
 
-      {currentTab === 'image' && <ProfileGallery gallery={galleries} onRefresh={handleGetGalleryByInternId}/>}
+      {currentTab === 'image' && (
+        <ProfileGallery gallery={galleries} onRefresh={handleGetGalleryByInternId} />
+      )}
     </Container>
   );
 }
