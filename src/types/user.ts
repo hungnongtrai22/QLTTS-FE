@@ -225,6 +225,7 @@ export type IInternItem = {
   interviewDate: any;
   studyDate: any;
   startDate: any;
+  departureDate: any;
 };
 
 export type ITradeUnionItem = {

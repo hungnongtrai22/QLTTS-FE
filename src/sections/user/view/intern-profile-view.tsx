@@ -236,7 +236,7 @@ export default function InternProfileView() {
         //   onSearchFriends={handleSearchFriends}
         // />
         <>
-          <InternStatusForm internId={intern?._id} currentStatus={intern?.status} />
+          <InternStatusForm internId={intern?._id} currentStatus={intern?.status} currentDepartureDate={intern?.departureDate}/>
 
           <InternCompanyTradeUnionForm currentIntern={intern} />
         

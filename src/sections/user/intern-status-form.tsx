@@ -32,24 +32,31 @@ import { useSnackbar } from 'src/components/snackbar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { characteristicList } from 'src/utils/characteristic';
 import { statusIntern } from 'src/utils/status';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { viVN } from '@mui/x-date-pickers/locales';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // import { current } from '@reduxjs/toolkit';
-
+// import dayjs from 'dayjs';
+// import 'dayjs/locale/vi';
 // ----------------------------------------------------------------------
 
 interface FormValuesProps extends Omit<IStudyItem, 'avatarUrl'> {
   _id: string;
   status: string;
+  departureDate: any;
 }
 
 type Props = {
   internId?: string;
   currentStatus?: string;
+  currentDepartureDate?: any;
 };
 
 dayjs.locale('vi');
 
-export default function InternStatusForm({ internId, currentStatus }: Props) {
+export default function InternStatusForm({ internId, currentStatus, currentDepartureDate }: Props) {
   // const router = useRouter();
   console.log('TEST', currentStatus);
   const { t, currentLang } = useLocales();
@@ -68,6 +75,7 @@ export default function InternStatusForm({ internId, currentStatus }: Props) {
   const defaultValues = useMemo(
     () => ({
       status: currentStatus || '',
+      departureDate: currentDepartureDate || null,
       // school: currentIntern?.school || [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,6 +123,7 @@ export default function InternStatusForm({ internId, currentStatus }: Props) {
       {
         _id: internId,
         status: intern.status,
+        departureDate: intern.departureDate,
       }
     );
 
@@ -167,6 +176,34 @@ export default function InternStatusForm({ internId, currentStatus }: Props) {
                   </MenuItem>
                 ))}
               </RHFSelect>
+
+               <Controller
+                              name="departureDate"
+                              control={control}
+                              render={({ field, fieldState: { error } }) => (
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                  adapterLocale="vi"
+                                  localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                                >
+                                  <DatePicker
+                                    label={t('departureDate')}
+                                    value={field.value ? dayjs(field.value) : null}
+                                    onChange={(newValue) => {
+                                      field.onChange(newValue || null);
+                                    }}
+                                    // views={['month', 'year']}
+                                    slotProps={{
+                                      textField: {
+                                        fullWidth: true,
+                                        error: !!error,
+                                        helperText: error?.message,
+                                      },
+                                    }}
+                                  />
+                                </LocalizationProvider>
+                              )}
+                            />
 
            
             </Box>

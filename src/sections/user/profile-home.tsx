@@ -88,6 +88,8 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
     handleGetByInternId();
   }, [handleGetContactByInternId, handleGetByInternId]);
 
+  console.log("Studies", study);
+
   const renderFollows = (
     <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
       <Stack
