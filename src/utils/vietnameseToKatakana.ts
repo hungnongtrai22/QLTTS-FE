@@ -81,6 +81,7 @@ const vietToKatakanaMap: Record<string, string> = {
   hieu: 'ヒュー',
   ho: 'ホー',
   hoa: 'ホア',
+  hoan: 'ホアン',
   hoai: 'ホアイ',
   hoang: 'ホアン',
   hoc: 'ホック',

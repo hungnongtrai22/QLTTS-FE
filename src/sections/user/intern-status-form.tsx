@@ -36,6 +36,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { viVN } from '@mui/x-date-pickers/locales';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { typeIntern } from 'src/utils/type';
 
 // import { current } from '@reduxjs/toolkit';
 // import dayjs from 'dayjs';
@@ -52,11 +53,12 @@ type Props = {
   internId?: string;
   currentStatus?: string;
   currentDepartureDate?: any;
+  currentType?: string;
 };
 
 dayjs.locale('vi');
 
-export default function InternStatusForm({ internId, currentStatus, currentDepartureDate }: Props) {
+export default function InternStatusForm({ internId, currentStatus, currentDepartureDate, currentType }: Props) {
   // const router = useRouter();
   console.log('TEST', currentStatus);
   const { t, currentLang } = useLocales();
@@ -76,6 +78,7 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
     () => ({
       status: currentStatus || '',
       departureDate: currentDepartureDate || null,
+      type: currentType || '',
       // school: currentIntern?.school || [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,6 +127,7 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
         _id: internId,
         status: intern.status,
         departureDate: intern.departureDate,
+        type: intern.type,
       }
     );
 
@@ -204,6 +208,19 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
                                 </LocalizationProvider>
                               )}
                             />
+
+                            <RHFSelect
+                fullWidth
+                name="type"
+                label={t('type')}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {typeIntern.map((option : any) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
 
            
             </Box>

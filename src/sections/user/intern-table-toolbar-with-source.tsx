@@ -21,6 +21,7 @@ import { useLocales } from 'src/locales';
 import { saveAs } from 'file-saver';
 import { pdf } from '@react-pdf/renderer';
 import axios from 'axios';
+import { typeIntern, typeInternJP } from 'src/utils/type';
 
 import AllAttendancePDF from '../order/AllAttendancePDF';
 
@@ -35,6 +36,44 @@ type Props = {
   interns: any;
   sources: any;
 };
+
+function changeTextTypeVN(value: any) {
+  if (value === 'intern') {
+    return 'Thực tập sinh';
+  }
+  if (value === 'intern1year') {
+    return 'Thực tập sinh (1 năm)';
+  }
+  if (value === 'skill') {
+    return 'Kỹ năng đặc định';
+  }
+  if (value === 'engineer') {
+    return 'Kỹ sư';
+  }
+  if (value === 'study') {
+    return 'Du học';
+  }
+  return value;
+}
+
+function changeTextTypeJP(value: any) {
+  if (value === 'intern') {
+    return '技能実習生'; // Thực tập sinh
+  }
+  if (value === 'intern1year') {
+    return '技能実習生（1年）'; // Thực tập sinh (1 năm)
+  }
+  if (value === 'skill') {
+    return '特定技能'; // Kỹ năng đặc định
+  }
+  if (value === 'engineer') {
+    return '技術者'; // Kỹ sư
+  }
+  if (value === 'study') {
+    return '留学生'; // Du học
+  }
+  return value;
+}
 
 export default function InternTableToolbarWithSource({
   filters,
@@ -75,7 +114,7 @@ export default function InternTableToolbarWithSource({
 
   // console.log(result);
 
-  const { t } = useLocales();
+  const { t, currentLang } = useLocales();
 
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +147,16 @@ export default function InternTableToolbarWithSource({
     (event: SelectChangeEvent<string[]>) => {
       onFilters(
         'source',
+        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
+      );
+    },
+    [onFilters]
+  );
+
+    const handleFilterType = useCallback(
+    (event: SelectChangeEvent<string[]>) => {
+      onFilters(
+        'type',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
     },
@@ -222,6 +271,39 @@ export default function InternTableToolbarWithSource({
                   checked={filters?.source?.includes(option)}
                 />
                 {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+         <FormControl
+          sx={{
+            flexShrink: 0,
+            width: { xs: 1, md: 200 },
+          }}
+        >
+          <InputLabel>{t('type')}</InputLabel>
+
+          <Select
+            multiple
+            value={filters.type}
+            onChange={handleFilterType}
+            input={<OutlinedInput label="Type" />}
+            renderValue={(selected) => selected.map((value) => currentLang.value === 'jp' ? changeTextTypeJP(value) : changeTextTypeVN(value)).join(', ')}
+            MenuProps={{
+              PaperProps: {
+                sx: { maxHeight: 240 },
+              },
+            }}
+          >
+            {(currentLang.value === 'jp' ? typeInternJP : typeIntern).map((option : any) => (
+              <MenuItem key={option.value} value={option.value}>
+                <Checkbox
+                  disableRipple
+                  size="small"
+                  checked={filters?.type?.includes(option.value)}
+                />
+                {option.label}
               </MenuItem>
             ))}
           </Select>

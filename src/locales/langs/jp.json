@@ -261,6 +261,7 @@
   "text_compare": "実習生を比較リストに追加しました",
   "delete_compare": "実習生を正常に削除しました",
   "departureDate": "出国日",
+  "type": "制度",
   "demo": {
     "title": "英語"
   }

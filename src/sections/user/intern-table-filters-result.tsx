@@ -60,6 +60,44 @@ function changeTextStatusJP(value: any) {
   return '';
 }
 
+function changeTextTypeVN(value: any) {
+  if (value === 'intern') {
+    return 'Thực tập sinh';
+  }
+  if (value === 'intern1year') {
+    return 'Thực tập sinh (1 năm)';
+  }
+  if (value === 'skill') {
+    return 'Kỹ năng đặc định';
+  }
+  if (value === 'engineer') {
+    return 'Kỹ sư';
+  }
+  if (value === 'study') {
+    return 'Du học';
+  }
+  return '';
+}
+
+function changeTextTypeJP(value: any) {
+  if (value === 'intern') {
+    return '技能実習生'; // Thực tập sinh
+  }
+  if (value === 'intern1year') {
+    return '技能実習生（1年）'; // Thực tập sinh (1 năm)
+  }
+  if (value === 'skill') {
+    return '特定技能'; // Kỹ năng đặc định
+  }
+  if (value === 'engineer') {
+    return '技術者'; // Kỹ sư
+  }
+  if (value === 'study') {
+    return '留学生'; // Du học
+  }
+  return '';
+}
+
 export default function InternTableFiltersResult({
   filters,
   onFilters,
@@ -83,6 +121,11 @@ export default function InternTableFiltersResult({
   const handleRemoveCompany = (inputValue: string) => {
     const newValue = filters?.company?.filter((item) => item !== inputValue) || [];
     onFilters('company', newValue);
+  };
+
+    const handleRemoveType = (inputValue: string) => {
+    const newValue = filters?.type?.filter((item) => item !== inputValue) || [];
+    onFilters('type', newValue);
   };
 
   return (
@@ -126,6 +169,21 @@ export default function InternTableFiltersResult({
                 label={item}
                 size="small"
                 onDelete={() => handleRemoveCompany(item)}
+              />
+            ))}
+          </Block>
+        )}
+
+        {!!filters.type?.length && (
+          <Block label={t('type')}>
+            {filters.type.map((item) => (
+              <Chip
+                key={item}
+                label={currentLang.value === 'jp'
+                  ? changeTextTypeJP(item)
+                  : changeTextTypeVN(item)}
+                size="small"
+                onDelete={() => handleRemoveType(item)}
               />
             ))}
           </Block>

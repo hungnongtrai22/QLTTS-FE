@@ -21,6 +21,7 @@ export type IInternTableFilters = {
   tradeUnion: string[];
   company?: string[];
   source?: string[];
+  type?: string[];
   status: string;
 };
 
@@ -226,6 +227,7 @@ export type IInternItem = {
   studyDate: any;
   startDate: any;
   departureDate: any;
+  type: string;
 };
 
 export type ITradeUnionItem = {
