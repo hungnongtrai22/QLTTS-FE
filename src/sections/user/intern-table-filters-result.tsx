@@ -189,6 +189,20 @@ export default function InternTableFiltersResult({
           </Block>
         )}
 
+        
+        {!!filters.year?.length && (
+          <Block label={t('departure')}>
+            {filters.year.map((item) => (
+              <Chip
+                key={item}
+                label={item}
+                size="small"
+                onDelete={() => handleRemoveType(item)}
+              />
+            ))}
+          </Block>
+        )}
+
         <Button
           color="error"
           onClick={onResetFilters}

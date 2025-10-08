@@ -22,6 +22,7 @@ import { saveAs } from 'file-saver';
 import { pdf } from '@react-pdf/renderer';
 import axios from 'axios';
 import { typeIntern, typeInternJP } from 'src/utils/type';
+import { departure } from 'src/utils/departure';
 
 import AllAttendancePDF from '../order/AllAttendancePDF';
 
@@ -143,7 +144,7 @@ export default function InternTableToolbarWithSource({
     [onFilters]
   );
 
-   const handleFilterSource = useCallback(
+  const handleFilterSource = useCallback(
     (event: SelectChangeEvent<string[]>) => {
       onFilters(
         'source',
@@ -153,10 +154,20 @@ export default function InternTableToolbarWithSource({
     [onFilters]
   );
 
-    const handleFilterType = useCallback(
+  const handleFilterType = useCallback(
     (event: SelectChangeEvent<string[]>) => {
       onFilters(
         'type',
+        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
+      );
+    },
+    [onFilters]
+  );
+
+   const handleFilterYear = useCallback(
+    (event: SelectChangeEvent<string[]>) => {
+      onFilters(
+        'year',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
     },
@@ -243,7 +254,7 @@ export default function InternTableToolbarWithSource({
           </Select>
         </FormControl>
 
-         <FormControl
+        <FormControl
           sx={{
             flexShrink: 0,
             width: { xs: 1, md: 200 },
@@ -263,20 +274,16 @@ export default function InternTableToolbarWithSource({
               },
             }}
           >
-            {sources.map((option : any) => (
+            {sources.map((option: any) => (
               <MenuItem key={option} value={option}>
-                <Checkbox
-                  disableRipple
-                  size="small"
-                  checked={filters?.source?.includes(option)}
-                />
+                <Checkbox disableRipple size="small" checked={filters?.source?.includes(option)} />
                 {option}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
 
-         <FormControl
+        <FormControl
           sx={{
             flexShrink: 0,
             width: { xs: 1, md: 200 },
@@ -289,14 +296,20 @@ export default function InternTableToolbarWithSource({
             value={filters.type}
             onChange={handleFilterType}
             input={<OutlinedInput label="Type" />}
-            renderValue={(selected) => selected.map((value) => currentLang.value === 'jp' ? changeTextTypeJP(value) : changeTextTypeVN(value)).join(', ')}
+            renderValue={(selected) =>
+              selected
+                .map((value) =>
+                  currentLang.value === 'jp' ? changeTextTypeJP(value) : changeTextTypeVN(value)
+                )
+                .join(', ')
+            }
             MenuProps={{
               PaperProps: {
                 sx: { maxHeight: 240 },
               },
             }}
           >
-            {(currentLang.value === 'jp' ? typeInternJP : typeIntern).map((option : any) => (
+            {(currentLang.value === 'jp' ? typeInternJP : typeIntern).map((option: any) => (
               <MenuItem key={option.value} value={option.value}>
                 <Checkbox
                   disableRipple
@@ -309,6 +322,79 @@ export default function InternTableToolbarWithSource({
           </Select>
         </FormControl>
 
+        <FormControl
+          sx={{
+            flexShrink: 0,
+            width: { xs: 1, md: 200 },
+          }}
+        >
+          <InputLabel>{t('departure')}</InputLabel>
+
+          <Select
+            multiple
+            value={filters.year}
+            onChange={handleFilterYear}
+            input={<OutlinedInput label="Departure" />}
+            renderValue={(selected) =>
+              selected
+                .map((value) =>
+                  value
+                )
+                .join(', ')
+            }
+            MenuProps={{
+              PaperProps: {
+                sx: { maxHeight: 240 },
+              },
+            }}
+          >
+            {departure.map((option: any) => (
+              <MenuItem key={option} value={option}>
+                <Checkbox
+                  disableRipple
+                  size="small"
+                  checked={filters?.year?.includes(option)}
+                />
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+          <TextField
+            fullWidth
+            value={filters.name}
+            onChange={handleFilterName}
+            placeholder={t('search') || 'Search'}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <IconButton onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </Stack> */}
+      </Stack>
+
+      <Stack
+        spacing={2}
+        alignItems={{ xs: 'flex-end', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{
+          p: 2.5,
+          pt: 0,
+          pr: { xs: 2.5, md: 1 },
+        }}
+      >
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
@@ -364,12 +450,12 @@ export default function InternTableToolbarWithSource({
                   item.statistics.push(newData);
                 }
               }
-               const { data: newEvent } = await axios.get(
-                  `${process.env.REACT_APP_HOST_API}/api/event/listAll`
-                );
-                // console.log('newEvent', newEvent);
+              const { data: newEvent } = await axios.get(
+                `${process.env.REACT_APP_HOST_API}/api/event/listAll`
+              );
+              // console.log('newEvent', newEvent);
               const blob = await pdf(
-                <AllAttendancePDF intern={interns} attendance={result} event={newEvent}/>
+                <AllAttendancePDF intern={interns} attendance={result} event={newEvent} />
               ).toBlob();
               saveAs(blob, `All_Attendance.pdf`);
             } catch (error) {

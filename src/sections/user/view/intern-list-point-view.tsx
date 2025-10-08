@@ -60,6 +60,7 @@ const defaultFilters = {
   company: [],
   status: 'all',
   type: [],
+  year: [],
 };
 
 // ----------------------------------------------------------------------
@@ -477,7 +478,7 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IInternTableFilters;
 }) {
-  const { name, tradeUnion, company, status, source } = filters;
+  const { name, tradeUnion, company, status, source, year } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -519,6 +520,10 @@ function applyFilter({
 
   if (source?.length) {
     inputData = inputData.filter((user) => source.includes(user?.source?.name));
+  }
+
+  if (year?.length) {
+    inputData = inputData.filter((user) => year.includes(new Date(user?.departureDate)?.getFullYear().toString()));
   }
 
   return inputData;

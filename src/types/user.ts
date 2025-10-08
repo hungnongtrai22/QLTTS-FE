@@ -23,6 +23,7 @@ export type IInternTableFilters = {
   source?: string[];
   type?: string[];
   status: string;
+  year?: any[]
 };
 
 // ----------------------------------------------------------------------

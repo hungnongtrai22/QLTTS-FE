@@ -64,6 +64,7 @@ const defaultFilters = {
   company: [],
   status: 'all',
   type: [],
+  year: [],
 };
 
 interface Order {
@@ -508,7 +509,7 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IInternTableFilters;
 }) {
-  const { name, tradeUnion, status, company, source, type } = filters;
+  const { name, tradeUnion, status, company, source, type, year } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -552,6 +553,10 @@ function applyFilter({
 
    if (type?.length) {
     inputData = inputData.filter((user) => type.includes(user?.type));
+  }
+
+    if (year?.length) {
+    inputData = inputData.filter((user) => year.includes(new Date(user?.departureDate)?.getFullYear().toString()));
   }
 
   return inputData;
