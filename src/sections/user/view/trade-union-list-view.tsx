@@ -245,6 +245,7 @@ export default function TradeUnionListView() {
             onFilters={handleFilters}
             //
             roleOptions={_roles}
+            tradeUnion={tableData}
           />
 
           {canReset && (

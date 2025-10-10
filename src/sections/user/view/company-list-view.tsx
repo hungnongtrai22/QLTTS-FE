@@ -249,6 +249,7 @@ export default function CompanyListView() {
             onFilters={handleFilters}
             //
             roleOptions={tradeUnion}
+            company={dataFiltered}
           />
 
           {canReset && (

@@ -239,7 +239,6 @@ export default function InternListPointView() {
     handleGetSource();
   }, [handleGetAllIntern, handleGetTradeUnion, handleGetSource]);
 
-  console.log('sd', dataFiltered);
 
   return (
     <>
@@ -408,7 +407,7 @@ export default function InternListPointView() {
                     .map((row) => (
                       <InternByTradeUnionTableRow
                         key={row._id}
-                        row={row}
+                        row={row} 
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}

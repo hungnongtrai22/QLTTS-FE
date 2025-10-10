@@ -15,6 +15,7 @@ import { ICompanyTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import ExportListCompany from 'src/utils/ExportListCompany';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ type Props = {
   onFilters: (name: string, value: IUserTableFilterValue) => void;
   //
   roleOptions: string[];
+  company: any;
 };
 
 export default function CompanyTableToolbar({
@@ -30,6 +32,7 @@ export default function CompanyTableToolbar({
   onFilters,
   //
   roleOptions,
+  company
 }: Props) {
   const popover = usePopover();
 
@@ -49,6 +52,8 @@ export default function CompanyTableToolbar({
     },
     [onFilters]
   );
+
+  console.log("Company", company);
 
   return (
     <>
@@ -120,7 +125,8 @@ export default function CompanyTableToolbar({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <MenuItem
+        <ExportListCompany interns={company} name="Danh Sách Công Ty" />
+        {/* <MenuItem
           onClick={() => {
             popover.onClose();
           }}
@@ -145,7 +151,7 @@ export default function CompanyTableToolbar({
         >
           <Iconify icon="solar:export-bold" />
           Export
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
     </>
   );

@@ -15,6 +15,7 @@ import { IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import ExportListTradeUnion from 'src/utils/ExportListTradeUnion';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ type Props = {
   onFilters: (name: string, value: IUserTableFilterValue) => void;
   //
   roleOptions: string[];
+  tradeUnion?: any;
 };
 
 export default function UserTableToolbar({
@@ -30,6 +32,7 @@ export default function UserTableToolbar({
   onFilters,
   //
   roleOptions,
+  tradeUnion,
 }: Props) {
   const popover = usePopover();
 
@@ -120,7 +123,9 @@ export default function UserTableToolbar({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <MenuItem
+
+        <ExportListTradeUnion interns={tradeUnion} name="Danh Sách Nghiệp Đoàn" />
+        {/* <MenuItem
           onClick={() => {
             popover.onClose();
           }}
@@ -145,7 +150,7 @@ export default function UserTableToolbar({
         >
           <Iconify icon="solar:export-bold" />
           Export
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
     </>
   );

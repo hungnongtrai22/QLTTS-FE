@@ -23,6 +23,7 @@ import { pdf } from '@react-pdf/renderer';
 import axios from 'axios';
 import { typeIntern, typeInternJP } from 'src/utils/type';
 import { departure } from 'src/utils/departure';
+import ExportListInterns from 'src/utils/ExportListInterns';
 
 import AllAttendancePDF from '../order/AllAttendancePDF';
 
@@ -422,6 +423,8 @@ export default function InternTableToolbarWithSource({
         arrow="right-top"
         // sx={{ width: 140 }}
       >
+        <ExportListInterns interns={interns} name="Danh Sách Thực Tập Sinh" />
+
         <MenuItem
           // onClick={() => {
           //   popover.onClose();
