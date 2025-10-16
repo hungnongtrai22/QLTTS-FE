@@ -34,6 +34,7 @@ import InternPointForm from '../intern-point-form';
 import InternStatusForm from '../intern-status-form';
 import InternCompanyTradeUnionForm from '../intern-company-trade-union-form';
 import InternGalleryForm from '../intern-gallery-form';
+import InternCertificateForm from '../intern-certificate-form';
 
 // ----------------------------------------------------------------------
 
@@ -243,6 +244,8 @@ export default function InternProfileView() {
           <InternOtherForm currentIntern={intern} />
 
           <InternGalleryForm currentIntern={intern} />
+
+          <InternCertificateForm currentIntern={intern}/>
         </>
       )}
 

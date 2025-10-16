@@ -229,6 +229,8 @@ export type IInternItem = {
   startDate: any;
   departureDate: any;
   type: string;
+  certificate: any;
+  pushup: number | null;
 };
 
 export type ITradeUnionItem = {

@@ -16,7 +16,7 @@ import { CircularProgress, IconButton, MenuItem, TextField, Tooltip } from '@mui
 // _mock
 import axios from 'axios';
 
-import { _socials } from 'src/_mock';
+import { _bookingNew, _socials } from 'src/_mock';
 // utils
 import { fNumber } from 'src/utils/format-number';
 // types
@@ -40,6 +40,7 @@ import StudyPostItem from './study-post-item';
 import AllStudyPDF from '../order/AllStudyPDF';
 import AppAreaInstalled from '../overview/app/app-area-installed';
 import AnalyticsCurrentSubject from '../overview/analytics/analytics-current-subject';
+import BookingNewest from '../overview/booking/booking-newest';
 
 // ----------------------------------------------------------------------
 
@@ -88,7 +89,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
     handleGetByInternId();
   }, [handleGetContactByInternId, handleGetByInternId]);
 
-  console.log("Studies", study);
+  console.log('Studies', study);
 
   const renderFollows = (
     <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
@@ -303,11 +304,11 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
     </Card>
   );
 
-  const newStudy = study.slice(0,3).map((item:any)=>({
+  const newStudy = study.slice(0, 3).map((item: any) => ({
     name: `${item.time}ヶ月`,
-    data: [item.write, item.read, item.listen, item.speak, item.health, item.attend]
+    data: [item.write, item.read, item.listen, item.speak, item.health, item.attend],
   }));
-    console.log("sd", newStudy);
+  console.log('sd', newStudy);
 
   const studyCate = study.map((item: any) => item.time).reverse();
   const studyTotal = study.map((item: any) => item.total).reverse();
@@ -391,10 +392,13 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
             //   { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
             //   { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
             // ],
-             series: newStudy || [],
+            series: newStudy || [],
           }}
         />
       </Grid>
+      {currentIntern?.certificate?.length > 0 && <Grid xs={12} md={12} lg={12}>
+        <BookingNewest title="Danh sách chứng chỉ" subheader="2 chứng chỉ" list={currentIntern?.certificate} />
+      </Grid>}
 
       {user?.role === 'admin' && (
         <Grid xs={12} md={4}>

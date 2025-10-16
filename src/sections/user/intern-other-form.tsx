@@ -51,6 +51,7 @@ interface FormValuesProps extends Omit<IUserItem, 'avatarUrl'> {
   math: number | null;
   kraepelin1: number | null;
   kraepelin2: number | null;
+  pushup: number | null;
 }
 
 type Props = {
@@ -80,6 +81,7 @@ export default function InternOtherForm({ currentIntern }: Props) {
       math: currentIntern?.math || null,
       kraepelin1: currentIntern?.kraepelin1 || null,
       kraepelin2: currentIntern?.kraepelin2 || null,
+      pushup: currentIntern?.pushup || null,
       // school: currentIntern?.school || [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,6 +154,7 @@ export default function InternOtherForm({ currentIntern }: Props) {
               <RHFTextField name="math" label={t('math')} type="number" />
               <RHFTextField name="kraepelin1" label={t('kraepelin1')} type="number" />
               <RHFTextField name="kraepelin2" label={t('kraepelin2')} type="number" />
+              <RHFTextField name="pushup" label={t('pushup')} type="number" />
 
               {/* <RHFTextField name="weak" label={t('weak')} /> */}
             </Box>
