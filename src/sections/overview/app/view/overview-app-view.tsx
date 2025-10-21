@@ -189,42 +189,7 @@ export default function OverviewAppView() {
               // subheader="(+43% Income | +12% Expense) than last year"
               chart={{
                 series: [
-                  {
-                    type: 'Tuần',
-                    categories: [
-                      '月曜日',
-                      '火曜日',
-                      '水曜日',
-                      '木曜日',
-                      '金曜日',
-                      '土曜日',
-                      '日曜日',
-                    ],
-                    data: [
-                      { name: 'Đang Học', data: (countSourceByWeek as any)?.study?.chart?.series },
-                      { name: 'Đã Xuất Cảnh', data: (countSourceByWeek as any)?.study?.chart?.series },
-                      { name: 'Hoàn thành Hoặc Về Sớmh', data: (countSourceByWeek as any)?.study?.chart?.series },
-                    ],
-                  },
-                  {
-                    type: 'Tháng',
-                    categories: getDaysOfCurrentMonthJP(),
-                    data: [
-                      {
-                        name: 'Đang Học',
-                        data: (countSourceByMonth as any)?.study?.chart?.series.slice(0,new Date().getDate())
-                      },
-                      {
-                        name: 'Đã Xuất Cảnh',
-                        data: (countSourceByMonth as any)?.pass?.chart?.series.slice(0,new Date().getDate()),
-                      },
-                      {
-                        name: 'Hoàn thành Hoặc Về Sớm',
-                        data: (countSourceByMonth as any)?.completeOrSoon?.chart?.series.slice(0,new Date().getDate()),
-                      },
-                    ],
-                  },
-                  {
+                   {
                     type: 'Năm',
                     categories: [
                       '1月',
@@ -249,6 +214,43 @@ export default function OverviewAppView() {
                       },
                     ],
                   },
+                  {
+                    type: 'Tháng',
+                    categories: getDaysOfCurrentMonthJP(),
+                    data: [
+                      {
+                        name: 'Đang Học',
+                        data: (countSourceByMonth as any)?.study?.chart?.series.slice(0,new Date().getDate())
+                      },
+                      {
+                        name: 'Đã Xuất Cảnh',
+                        data: (countSourceByMonth as any)?.pass?.chart?.series.slice(0,new Date().getDate()),
+                      },
+                      {
+                        name: 'Hoàn thành Hoặc Về Sớm',
+                        data: (countSourceByMonth as any)?.completeOrSoon?.chart?.series.slice(0,new Date().getDate()),
+                      },
+                    ],
+                  },
+                  {
+                    type: 'Tuần',
+                    categories: [
+                      '月曜日',
+                      '火曜日',
+                      '水曜日',
+                      '木曜日',
+                      '金曜日',
+                      '土曜日',
+                      '日曜日',
+                    ],
+                    data: [
+                      { name: 'Đang Học', data: (countSourceByWeek as any)?.study?.chart?.series },
+                      { name: 'Đã Xuất Cảnh', data: (countSourceByWeek as any)?.study?.chart?.series },
+                      { name: 'Hoàn thành Hoặc Về Sớmh', data: (countSourceByWeek as any)?.study?.chart?.series },
+                    ],
+                  },
+                  
+                 
                 ],
               }}
             />
