@@ -313,7 +313,7 @@ export default function InternPointForm({ internId }: Props) {
       }
     );
 
-    // console.log("NEW", newData)
+    console.log("NEW", newData)
 
     if (data === null) {
       // console.log("SET NULL");
@@ -333,7 +333,7 @@ export default function InternPointForm({ internId }: Props) {
         total: undefined,
         average: undefined,
         level: '',
-        time: undefined,
+        time:  (newData?.study?.time + 1) || 1,
         kanji: undefined,
         grammarAndReading: undefined,
         listeningComprehension: undefined,
@@ -699,6 +699,7 @@ export default function InternPointForm({ internId }: Props) {
                     error={!!error}
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
+                    disabled
                     label={t('time')}
                     onFocus={(event) =>
                       event.target.addEventListener(

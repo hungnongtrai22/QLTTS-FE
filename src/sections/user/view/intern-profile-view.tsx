@@ -35,6 +35,7 @@ import InternStatusForm from '../intern-status-form';
 import InternCompanyTradeUnionForm from '../intern-company-trade-union-form';
 import InternGalleryForm from '../intern-gallery-form';
 import InternCertificateForm from '../intern-certificate-form';
+import InternPassForm from '../intern-pass-form';
 
 // ----------------------------------------------------------------------
 
@@ -211,7 +212,7 @@ export default function InternProfileView() {
         >
           {/* eslint-disable-next-line no-nested-ternary */}
           {user?.role === 'tradeunion'
-            ? TABSTRADEUNION.map((tab) => ( 
+            ? TABSTRADEUNION.map((tab) => (
                 <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
               ))
             : user?.role === 'source'
@@ -237,15 +238,22 @@ export default function InternProfileView() {
         //   onSearchFriends={handleSearchFriends}
         // />
         <>
-          <InternStatusForm internId={intern?._id} currentStatus={intern?.status} currentDepartureDate={intern?.departureDate} currentType={intern?.type}/>
+          <InternStatusForm
+            internId={intern?._id}
+            currentStatus={intern?.status}
+            currentDepartureDate={intern?.departureDate}
+            currentType={intern?.type}
+          />
 
           <InternCompanyTradeUnionForm currentIntern={intern} />
-        
+
           <InternOtherForm currentIntern={intern} />
+
+          <InternPassForm currentIntern={intern}/>
 
           <InternGalleryForm currentIntern={intern} />
 
-          <InternCertificateForm currentIntern={intern}/>
+          <InternCertificateForm currentIntern={intern} />
         </>
       )}
 

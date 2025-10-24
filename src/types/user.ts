@@ -231,6 +231,25 @@ export type IInternItem = {
   type: string;
   certificate: any;
   pushup: number | null;
+  field: string;
+  citizenId: string;
+  citizenDate: string;
+  citizenPlace: string;
+  passportId: string;
+  passportDate: any;
+  reff: string;
+  street: string;
+  state: string;
+  postelCode: string;
+  country: string;
+  phone: string;
+  contractId: string;
+  contractDate: any;
+  contractPeriod: string;
+  contractResult: string;
+  profileStatus: string;
+  orderId: any;
+  description: string;
 };
 
 export type ITradeUnionItem = {
