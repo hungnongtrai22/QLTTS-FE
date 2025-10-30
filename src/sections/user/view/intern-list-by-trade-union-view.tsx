@@ -182,13 +182,24 @@ export default function InternListByTradeUnionView() {
   }, []);
 
   const handleGetAllIntern = useCallback(async () => {
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_HOST_API}/api/user/listByTradeUnion`,
-      {
-        tradeUnion: user?.tradeUnion,
-      }
-    );
-    setTableData(data.interns);
+    if (user?.username === 'isuzu') {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/user/listByTradeUnionAndCompany`,
+        {
+          tradeUnion: user?.tradeUnion,
+          companySelect: ['69031c63656c28cf0a154b3a'],
+        }
+      );
+      setTableData(data.interns);
+    } else {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/user/listByTradeUnion`,
+        {
+          tradeUnion: user?.tradeUnion,
+        }
+      );
+      setTableData(data.interns);
+    }
   }, [user]);
 
   const handleGetTradeUnion = useCallback(async () => {
