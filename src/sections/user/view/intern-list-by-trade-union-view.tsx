@@ -187,7 +187,7 @@ export default function InternListByTradeUnionView() {
         `${process.env.REACT_APP_HOST_API}/api/user/listByTradeUnionAndCompany`,
         {
           tradeUnion: user?.tradeUnion,
-          companySelect: ['69031c63656c28cf0a154b3a'],
+          companySelect: user?.companySelect,
         }
       );
       setTableData(data.interns);
