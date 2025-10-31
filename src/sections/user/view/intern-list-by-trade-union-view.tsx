@@ -182,7 +182,7 @@ export default function InternListByTradeUnionView() {
   }, []);
 
   const handleGetAllIntern = useCallback(async () => {
-    if (user?.username === 'isuzu') {
+    if (user?.companySelect && user?.companySelect?.length > 0) {
       const { data } = await axios.post(
         `${process.env.REACT_APP_HOST_API}/api/user/listByTradeUnionAndCompany`,
         {
