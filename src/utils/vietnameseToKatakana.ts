@@ -272,6 +272,7 @@ const vietToKatakanaMap: Record<string, string> = {
   trac: 'チャック',
   tram: 'チャム',
   tran: 'チャン',
+  trenh: 'チェン',
   tri: 'チー',
   trien: 'チエン',
   triet: 'チエット',

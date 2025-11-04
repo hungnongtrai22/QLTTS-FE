@@ -250,6 +250,7 @@ export type IInternItem = {
   profileStatus: string;
   orderId: any;
   description: string;
+  returnDate: any;
 };
 
 export type ITradeUnionItem = {

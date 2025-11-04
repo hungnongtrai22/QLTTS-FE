@@ -216,9 +216,10 @@ export default function InternListByTradeUnionView() {
     // const tradeUnionId = await newData.tradeUnion._id;
 
     const { data } = await axios.post(
-      `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
+      `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnionAndCompany`,
       {
         tradeUnion: user?.tradeUnion,
+        companySelect: user?.companySelect
       }
     );
 

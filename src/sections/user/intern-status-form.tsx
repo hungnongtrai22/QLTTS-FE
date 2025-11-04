@@ -12,17 +12,19 @@ import axios from 'axios';
 import Grid from '@mui/material/Unstable_Grid2';
 // utils
 // types
-import {IStudyItem } from 'src/types/user';
+import { IStudyItem } from 'src/types/user';
 // assets
 // components
 
-import FormProvider, {
-
-  RHFSelect,
-  RHFAutocomplete,
-  RHFEditor,
-} from 'src/components/hook-form';
-import { CircularProgress, IconButton, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
+import FormProvider, { RHFSelect, RHFAutocomplete, RHFEditor } from 'src/components/hook-form';
+import {
+  CircularProgress,
+  IconButton,
+  MenuItem,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
@@ -47,18 +49,26 @@ interface FormValuesProps extends Omit<IStudyItem, 'avatarUrl'> {
   _id: string;
   status: string;
   departureDate: any;
+  returnDate: any;
 }
 
 type Props = {
   internId?: string;
   currentStatus?: string;
   currentDepartureDate?: any;
+  currentReturnDate?: any;
   currentType?: string;
 };
 
 dayjs.locale('vi');
 
-export default function InternStatusForm({ internId, currentStatus, currentDepartureDate, currentType }: Props) {
+export default function InternStatusForm({
+  internId,
+  currentStatus,
+  currentDepartureDate,
+  currentReturnDate,
+  currentType,
+}: Props) {
   // const router = useRouter();
   console.log('TEST', currentStatus);
   const { t, currentLang } = useLocales();
@@ -78,6 +88,7 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
     () => ({
       status: currentStatus || '',
       departureDate: currentDepartureDate || null,
+      returnDate: currentReturnDate || null,
       type: currentType || '',
       // school: currentIntern?.school || [],
     }),
@@ -101,15 +112,11 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
 
   const values = watch();
 
- 
-
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
-       
-          await handleUpdateStatusIntern(data);
-          enqueueSnackbar('Cập nhật thành công!');
-
+        await handleUpdateStatusIntern(data);
+        enqueueSnackbar('Cập nhật thành công!');
       } catch (error) {
         console.error(error);
       }
@@ -118,30 +125,31 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
     // [currentIntern, enqueueSnackbar, reset, router]
   );
 
-  const handleUpdateStatusIntern = useCallback(async (intern : any) => {
-    if (!internId) return;
+  const handleUpdateStatusIntern = useCallback(
+    async (intern: any) => {
+      if (!internId) return;
 
-    const { data } = await axios.put(
-      `${process.env.REACT_APP_HOST_API}/api/user/updateStatus`,
-      {
+      const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/updateStatus`, {
         _id: internId,
         status: intern.status,
         departureDate: intern.departureDate,
+        returnDate: intern.returnDate,
         type: intern.type,
-      }
-    );
+      });
 
-    // if (data === null) {
-    //   reset({
-    //     status: '',
-    //   });
-    //   return;
-    // }
+      // if (data === null) {
+      //   reset({
+      //     status: '',
+      //   });
+      //   return;
+      // }
 
-    // reset({
-    //   status: data.study?.status || '',
-    // });
-  }, [reset]);
+      // reset({
+      //   status: data.study?.status || '',
+      // });
+    },
+    [reset]
+  );
 
   // useEffect(() => {
   //   handleGetStudyByMonth();
@@ -149,8 +157,6 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-     
-
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
@@ -166,65 +172,89 @@ export default function InternStatusForm({ internId, currentStatus, currentDepar
                 sm: 'repeat(3, 1fr)',
               }}
             >
-              
-
               <RHFSelect
                 fullWidth
                 name="status"
                 label={t('status')}
                 PaperPropsSx={{ textTransform: 'capitalize' }}
               >
-                {statusIntern.map((option : any) => (
+                {statusIntern.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
               </RHFSelect>
 
-               <Controller
-                              name="departureDate"
-                              control={control}
-                              render={({ field, fieldState: { error } }) => (
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDayjs}
-                                  adapterLocale="vi"
-                                  localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                                >
-                                  <DatePicker
-                                    label={t('departureDate')}
-                                    value={field.value ? dayjs(field.value) : null}
-                                    onChange={(newValue) => {
-                                      field.onChange(newValue || null);
-                                    }}
-                                    // views={['month', 'year']}
-                                    slotProps={{
-                                      textField: {
-                                        fullWidth: true,
-                                        error: !!error,
-                                        helperText: error?.message,
-                                      },
-                                    }}
-                                  />
-                                </LocalizationProvider>
-                              )}
-                            />
+              <Controller
+                name="departureDate"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="vi"
+                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                  >
+                    <DatePicker
+                      label={t('departureDate')}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => {
+                        field.onChange(newValue || null);
+                      }}
+                      // views={['month', 'year']}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
 
-                            <RHFSelect
+              <RHFSelect
                 fullWidth
                 name="type"
                 label={t('type')}
                 PaperPropsSx={{ textTransform: 'capitalize' }}
               >
-                {typeIntern.map((option : any) => (
+                {typeIntern.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
               </RHFSelect>
 
-           
+                <Controller
+                name="returnDate"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="vi"
+                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                  >
+                    <DatePicker
+                      label={t('returnDate')}
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => {
+                        field.onChange(newValue || null);
+                      }}
+                      // views={['month', 'year']}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
             </Box>
-      
+
             <Stack alignItems="flex-end" spacing={1.5}>
               {/* <Button
                 size="small"

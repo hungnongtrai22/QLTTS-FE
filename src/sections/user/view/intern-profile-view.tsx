@@ -242,6 +242,7 @@ export default function InternProfileView() {
             internId={intern?._id}
             currentStatus={intern?.status}
             currentDepartureDate={intern?.departureDate}
+            currentReturnDate={intern?.returnDate}
             currentType={intern?.type}
           />
 
@@ -249,7 +250,7 @@ export default function InternProfileView() {
 
           <InternOtherForm currentIntern={intern} />
 
-          <InternPassForm currentIntern={intern}/>
+          <InternPassForm currentIntern={intern} />
 
           <InternGalleryForm currentIntern={intern} />
 

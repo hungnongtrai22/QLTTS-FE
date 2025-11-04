@@ -261,6 +261,7 @@
   "text_compare": "実習生を比較リストに追加しました",
   "delete_compare": "実習生を正常に削除しました",
   "departureDate": "出国日",
+  "returnDate": "帰国日",
   "departure": "出国年",
   "type": "制度",
   "pushup": "１分間の腕立て伏せテスト",
