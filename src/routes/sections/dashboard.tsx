@@ -158,7 +158,7 @@ export const dashboardRoutes = [
           {
             path: 'listByTradeUnion',
             element: (
-              <RoleBasedGuard hasContent roles={['tradeUnion']}>
+              <RoleBasedGuard hasContent roles={['tradeunion']}>
                 <InternListByTradeUnionPage />
               </RoleBasedGuard>
             ),
