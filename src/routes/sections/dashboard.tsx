@@ -147,7 +147,7 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
-           {
+          {
             path: 'listPoint',
             element: (
               <RoleBasedGuard hasContent roles={['admin']}>
@@ -155,7 +155,14 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
-          { path: 'listByTradeUnion', element: <InternListByTradeUnionPage /> },
+          {
+            path: 'listByTradeUnion',
+            element: (
+              <RoleBasedGuard hasContent roles={['tradeUnion']}>
+                <InternListByTradeUnionPage />
+              </RoleBasedGuard>
+            ),
+          },
           { path: 'compare', element: <ComparePage /> },
           { path: 'listBySource', element: <InternListBySource /> },
 
@@ -312,7 +319,7 @@ export const dashboardRoutes = [
           // { path: 'account', element: <InternAccountPage /> },
         ],
       },
-       {
+      {
         path: 'diary',
         children: [
           // { element: <InternProfilePage />, index: true },
@@ -342,12 +349,12 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
-                    { path: ':id/profile', element: <DiaryProfileView /> },
+          { path: ':id/profile', element: <DiaryProfileView /> },
 
           // { path: 'account', element: <InternAccountPage /> },
         ],
       },
-       {
+      {
         path: 'gallery',
         children: [
           // { element: <InternProfilePage />, index: true },
@@ -377,7 +384,7 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
-                    { path: ':id/profile', element: <TourDetailsPage /> },
+          { path: ':id/profile', element: <TourDetailsPage /> },
 
           // { path: 'account', element: <InternAccountPage /> },
         ],
