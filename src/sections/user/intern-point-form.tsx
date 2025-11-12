@@ -43,6 +43,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { characteristicList } from 'src/utils/characteristic';
 import { teacherList } from 'src/utils/teacher';
+import { useAuthContext } from 'src/auth/hooks';
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -72,10 +73,10 @@ interface FormValuesProps extends Omit<IStudyItem, 'avatarUrl'> {
   learningProcess: string;
   characteristic: string;
   teacher: string;
-
   comment: string;
   createdAt: any;
   monthSelect: any;
+  isPublic: boolean;
 }
 
 type Props = {
@@ -89,6 +90,8 @@ export default function InternPointForm({ internId }: Props) {
   // console.log('TEST', currentIntern);
   const { t, currentLang } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthContext();
+  // console.log('TEST', user);
 
   // const values = watch();
 
@@ -157,7 +160,9 @@ export default function InternPointForm({ internId }: Props) {
     time: Yup.string().required('Thời gian học không được để trống'),
     learningProcess: Yup.string().required('Tiến trình học tập không được để trống'),
     characteristic: Yup.string().required('Tính cách không được để trống'),
-    comment: Yup.string().required('Nhận xét không được để trống').max(300, 'Nhận xét không được vượt quá 300 ký tự'),
+    comment: Yup.string()
+      .required('Nhận xét không được để trống')
+      .max(300, 'Nhận xét không được vượt quá 300 ký tự'),
   });
 
   const defaultValues = useMemo(
@@ -188,6 +193,7 @@ export default function InternPointForm({ internId }: Props) {
 
       comment: '',
       createdAt: '',
+      isPublic: false,
       // school: currentIntern?.school || [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -223,6 +229,10 @@ export default function InternPointForm({ internId }: Props) {
   };
 
   const createNewStudy = useCallback(async (study: any) => {
+    let isPublic = false;
+    if (user?.role === 'admin') {
+      isPublic = true;
+    }
     const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/create`, {
       ...study,
       total:
@@ -239,6 +249,7 @@ export default function InternPointForm({ internId }: Props) {
       average: (study.write + study.read + study.listen + study.speak) / 4,
       internId,
       monthAndYear: normalizeDate(study.monthSelect),
+      isPublic,
     });
     return data;
   }, []);
@@ -313,7 +324,7 @@ export default function InternPointForm({ internId }: Props) {
       }
     );
 
-    console.log("NEW", newData)
+    console.log('NEW', newData);
 
     if (data === null) {
       // console.log("SET NULL");
@@ -333,7 +344,7 @@ export default function InternPointForm({ internId }: Props) {
         total: undefined,
         average: undefined,
         level: '',
-        time:  (newData?.study?.time + 1) || 1,
+        time: newData?.study?.time + 1 || 1,
         kanji: undefined,
         grammarAndReading: undefined,
         listeningComprehension: undefined,
@@ -345,6 +356,7 @@ export default function InternPointForm({ internId }: Props) {
         comment: '',
         createdAt: '',
         monthSelect,
+        isPublic: false,
       });
       return;
     }
@@ -390,6 +402,7 @@ export default function InternPointForm({ internId }: Props) {
       comment: data.study?.comment || '',
       createdAt: data.study?.createdAt || '',
       monthSelect: data.study?.monthAndYear || '',
+      isPublic: data.study?.isPublic || false,
     });
   }, [monthSelect, internId, reset, defaultValues]);
 
@@ -400,7 +413,7 @@ export default function InternPointForm({ internId }: Props) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid xs={4} md={4}>
+        <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
             {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
               Family:
@@ -410,9 +423,10 @@ export default function InternPointForm({ internId }: Props) {
               columnGap={3}
               display="grid"
               gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(1, 1fr)',
+                xs: 'repeat(3, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
+              // sx={{justifyContent: 'center'}}
             >
               <Controller
                 name="monthSelect"
@@ -444,6 +458,25 @@ export default function InternPointForm({ internId }: Props) {
                   </LocalizationProvider>
                 )}
               />
+              {/* <div>
+
+              </div> */}
+
+              {user?.role === 'admin' && (
+                <RHFSwitch
+                  name="isPublic"
+                  labelPlacement="start"
+                  defaultChecked={false}
+                  label={
+                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                      Công khai
+                    </Typography>
+                  }
+                  // label={null}
+                  sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                />
+              )}
+
               {/* <RHFTextField name="strong" label={t('strong')} /> */}
 
               {/* <RHFTextField name="weak" label={t('weak')} /> */}

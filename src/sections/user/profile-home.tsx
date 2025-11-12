@@ -73,16 +73,28 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
   }, [currentIntern]);
 
   const handleGetByInternId = useCallback(async () => {
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
-      { internId: currentIntern?._id }
-    );
-    setStudy(data.studies);
-  }, [currentIntern]);
+    if (user?.role === 'admin' || user?.role === 'source') {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
+        { internId: currentIntern?._id }
+      );
+      setStudy(data.studies);
+    } else {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_HOST_API}/api/study/listByInternIdPublic`,
+        { internId: currentIntern?._id }
+      );
+      setStudy(data.studies);
+    }
+  }, [currentIntern, user]);
 
   const handleRemoveStudy = useCallback(async (id: any) => {
     setStudy((pre: any) => pre.filter((item: any) => item._id !== id));
   }, []);
+
+   const handleUpdateStudy = useCallback(async (id: any) => {
+    handleGetByInternId();
+  }, [handleGetByInternId]);
 
   useEffect(() => {
     handleGetContactByInternId();
@@ -396,9 +408,15 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
           }}
         />
       </Grid>
-      {currentIntern?.certificate?.length > 0 && <Grid xs={12} md={12} lg={12}>
-        <BookingNewest title="Danh sách chứng chỉ" subheader="2 chứng chỉ" list={currentIntern?.certificate} />
-      </Grid>}
+      {currentIntern?.certificate?.length > 0 && (
+        <Grid xs={12} md={12} lg={12}>
+          <BookingNewest
+            title="Danh sách chứng chỉ"
+            subheader="2 chứng chỉ"
+            list={currentIntern?.certificate}
+          />
+        </Grid>
+      )}
 
       {user?.role === 'admin' && (
         <Grid xs={12} md={4}>
@@ -429,6 +447,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
               study={item}
               intern={currentIntern || null}
               onRemove={handleRemoveStudy}
+              onUpdate={handleUpdateStudy}
             />
           ))}
         </Stack>

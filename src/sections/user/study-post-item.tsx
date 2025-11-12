@@ -48,6 +48,7 @@ interface Props {
   study: IStudyItem;
   intern: any;
   onRemove: any;
+  onUpdate: any;
 }
 
 const changDateJP = (date: any) => {
@@ -115,7 +116,7 @@ const judgeJLPTResult = (
   return isPass ? '合' : '不';
 };
 
-export default function StudyPostItem({ study, intern, onRemove }: Props) {
+export default function StudyPostItem({ study, intern, onRemove, onUpdate }: Props) {
   const { user } = useAuthContext();
   const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
 
@@ -142,6 +143,32 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
     [confirm, onRemove]
   );
 
+  const normalizeDate = (date: any) => {
+    const jsDate = new Date(date);
+
+    // Lấy năm, tháng, ngày
+    const year = jsDate.getUTCFullYear();
+    const month = jsDate.getUTCMonth(); // 0-11
+    const day = jsDate.getUTCDate();
+
+    // Tạo lại date mới nhưng fix giờ 17:00:00 UTC
+    return new Date(Date.UTC(year, month, day, 17, 0, 0, 0));
+  };
+
+  const onUpdateRow = useCallback(async () => {
+    // console.log('DELETE', id);
+    const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/study/updatePublic`, {
+      isPublic: true,
+      _id: study._id,
+    });
+    onUpdate();
+
+    return data;
+
+    // confirm.onToggle();
+    // onRemove(id);
+  }, [onUpdate, study]);
+
   const handleChangeMessage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
   }, []);
@@ -163,8 +190,8 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
       disableTypography
       avatar={<Avatar src={intern?.avatar} alt={intern?.name} />}
       title={
-        <Link color="inherit" variant="subtitle1">
-          {`${intern?.name} (${intern?.namejp})`}
+        <Link color={study?.isPublic ? 'inherit' : 'error'} variant="subtitle1">
+          {`${intern?.name} (${intern?.namejp})`} {!study?.isPublic && '(Chưa công khai)'}
         </Link>
       }
       subheader={
@@ -174,11 +201,9 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
         </Box>
       }
       action={
-         (
-          <IconButton>
-            <Iconify icon="eva:more-vertical-fill" onClick={popover.onOpen} />
-          </IconButton>
-        )
+        <IconButton>
+          <Iconify icon="eva:more-vertical-fill" onClick={popover.onOpen} />
+        </IconButton>
       }
     />
   );
@@ -211,15 +236,17 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
             <Markdown children={study.comment} />
           </Box>
 
-              <Stack
+          <Stack
             // sx={{ mb: 0.5 }}
-            alignItems='flex-end' 
+            alignItems="flex-end"
             // justifyContent="space-between"
             // direction={{ xs: 'column', sm: 'row' }}
           >
             {/* <Box sx={{ typography: 'subtitle2' }}>コメント</Box> */}
 
-            <Box sx={{ typography: 'caption', color: 'text.disabled' }}>担当教師: {study?.teacher}</Box>
+            <Box sx={{ typography: 'caption', color: 'text.disabled' }}>
+              担当教師: {study?.teacher}
+            </Box>
           </Stack>
         </Paper>
       </Stack>
@@ -662,7 +689,7 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
         arrow="right-top"
         sx={{ width: 140 }}
       >
-         <MenuItem
+        <MenuItem
           sx={{ color: 'success.main' }}
           onClick={async () => {
             try {
@@ -685,17 +712,31 @@ export default function StudyPostItem({ study, intern, onRemove }: Props) {
           {t('download')}
           {/* {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'} */}
         </MenuItem>
-        {user?.role === "admin" && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Xóa
-        </MenuItem>}
-       
+        {user?.role === 'admin' && study?.isPublic === false && (
+          <MenuItem
+            onClick={() => {
+              // confirm.onTrue();
+              // popover.onClose();
+              onUpdateRow();
+            }}
+            sx={{ color: 'warning.main' }}
+          >
+            <Iconify icon="material-symbols:public" />
+            Công khai
+          </MenuItem>
+        )}
+        {user?.role === 'admin' && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Xóa
+          </MenuItem>
+        )}
       </CustomPopover>
 
       <ConfirmDialog

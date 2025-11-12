@@ -173,6 +173,7 @@ export type IStudyItem = {
   createdAt: any;
   monthAndYear: any;
   teacher: string;
+  isPublic: boolean;
 };
 
 export type IInternItem = {

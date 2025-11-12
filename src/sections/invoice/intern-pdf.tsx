@@ -403,7 +403,7 @@ export default function InternPDF({ invoice }: Props) {
                   </View>
 
                   <View style={[styles.tableCell_6, styles.textCenter]}>
-                    <Text>{`左目: ${leftEye} - 右目: ${rightEye}`}</Text>
+                    <Text>{`左目: ${leftEye || ""} - 右目: ${rightEye || ""}`}</Text>
                   </View>
 
                   <View style={[styles.tableCell_4, styles.titleBackground]}>
