@@ -22,7 +22,7 @@ export default function Router() {
       element: (
         <Navigate
           to={
-            user?.role === 'admin' ? paths.dashboard.root : paths.dashboard.intern.listByTradeUnion
+            user?.role === 'admin' ? paths.dashboard.root : user?.role === 'tradeunion' ? paths.dashboard.intern.listByTradeUnion : paths.dashboard.intern.listBySource
           }
           replace
         />
