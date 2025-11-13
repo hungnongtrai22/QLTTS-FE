@@ -15,18 +15,18 @@ import { componentsRoutes } from './components';
 
 export default function Router() {
   const { user } = useAuthContext();
+  let redirectPath = paths.dashboard.intern.listBySource;
+
+  if (user?.role === 'admin') {
+    redirectPath = paths.dashboard.root;
+  } else if (user?.role === 'tradeunion') {
+    redirectPath = paths.dashboard.intern.listByTradeUnion;
+  }
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     {
       path: '/',
-      element: (
-        <Navigate
-          to={
-            user?.role === 'admin' ? paths.dashboard.root : user?.role === 'tradeunion' ? paths.dashboard.intern.listByTradeUnion : paths.dashboard.intern.listBySource
-          }
-          replace
-        />
-      ),
+      element: <Navigate to={redirectPath} replace />,
     },
 
     // ----------------------------------------------------------------------
