@@ -53,8 +53,6 @@ import InternByDongThapTableToolbar from '../intern-by-dong-thap-table-toolbar';
 
 // const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
-
-
 const defaultFilters = {
   name: '',
   // role: [],
@@ -66,26 +64,27 @@ const defaultFilters = {
 
 export default function InternListByDongThapView() {
   const table = useTable();
-    const { t } = useLocales();
-  
+  const { t } = useLocales();
 
   const TABLE_HEAD = [
-  { id: 'name', label: t('full_name'), width: 310 },
-  { id: 'phoneNumber', label: t('city'), width: 100 },
-  { id: 'birthday', label: t('birthday'), width: 120 },
-  { id: 'age', label: t('age'), width: 80 },
-  { id: 'height', label: t('height'), width: 80 },
-  { id: 'weight', label: t('weight'), width: 80 },
-  { id: '', width: 88 },
-];
+    { id: 'name', label: t('full_name'), width: 310 },
+    { id: 'phoneNumber', label: t('city'), width: 100 },
+    { id: 'birthday', label: t('birthday'), width: 120 },
+    { id: 'age', label: t('age'), width: 80 },
+    { id: 'height', label: t('height'), width: 80 },
+    { id: 'weight', label: t('weight'), width: 80 },
+    { id: '', width: 88 },
+  ];
 
   const STATUS_OPTIONS = [
     { value: 'all', label: t('all') },
+    { value: 'interview', label: t('interview') },
     { value: 'study', label: t('studying') },
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
+    { value: 'soon', label: t('soon') },
+    { value: 'wait', label: t('wait') },
   ];
-
   const settings = useSettingsContext();
 
   const { user } = useAuthContext();
@@ -174,9 +173,7 @@ export default function InternListByDongThapView() {
   }, []);
 
   const handleGetAllIntern = useCallback(async () => {
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_HOST_API}/api/user/listByDongThap`
-    );
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/listByDongThap`);
     setTableData(data.interns);
   }, []);
 
@@ -237,22 +234,26 @@ export default function InternListByDongThapView() {
                       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
                     }
                     color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
+                      (tab.value === 'study' && 'success') ||
+                      (tab.value === 'pass' && 'warning') ||
+                      (tab.value === 'complete' && 'error') ||
+                      (tab.value === 'soon' && 'info') ||
                       'default'
                     }
                   >
-                    {tab.value === 'all' && _userList.length}
-                    {tab.value === 'active' &&
-                      _userList.filter((item) => item.status === 'active').length}
-
-                    {tab.value === 'pending' &&
-                      _userList.filter((item) => item.status === 'pending').length}
-                    {tab.value === 'banned' &&
-                      _userList.filter((item) => item.status === 'banned').length}
-                    {tab.value === 'rejected' &&
-                      _userList.filter((item) => item.status === 'rejected').length}
+                    {tab.value === 'all' && tableData.length}
+                    {tab.value === 'study' &&
+                      tableData.filter((inte) => inte.status === 'study').length}
+                    {tab.value === 'interview' &&
+                      tableData.filter((inte) => inte.status === 'interview').length}
+                    {tab.value === 'pass' &&
+                      tableData.filter((inte) => inte.status === 'pass').length}
+                    {tab.value === 'complete' &&
+                      tableData.filter((inte) => inte.status === 'complete').length}
+                    {tab.value === 'soon' &&
+                      tableData.filter((inte) => inte.status === 'soon').length}
+                    {tab.value === 'wait' &&
+                      tableData.filter((inte) => inte.status === 'wait').length}
                   </Label>
                 }
               />

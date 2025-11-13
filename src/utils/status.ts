@@ -19,6 +19,10 @@ export const statusIntern = [
     label: 'Về trước hạn',
     value: 'soon',
   },
+   {
+    label: 'Chờ bay',
+    value: 'wait',
+  },
 ];
 
 export const statusProfile = [

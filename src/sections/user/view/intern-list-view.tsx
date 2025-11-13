@@ -99,6 +99,7 @@ export default function InternListView() {
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
     { value: 'soon', label: t('soon') },
+    { value: 'wait', label: t('wait') },
   ];
 
   const table = useTable();
@@ -331,6 +332,8 @@ export default function InternListView() {
                       tableData.filter((user) => user.status === 'complete').length}
                     {tab.value === 'soon' &&
                       tableData.filter((user) => user.status === 'soon').length}
+                      {tab.value === 'wait' &&
+                      tableData.filter((user) => user.status === 'wait').length}
                     {/* {tab.value === 'rejected' &&
                       dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>

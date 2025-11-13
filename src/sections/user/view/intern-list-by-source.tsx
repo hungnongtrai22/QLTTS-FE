@@ -42,6 +42,7 @@ import {
 import { useAuthContext } from 'src/auth/hooks';
 import axios from 'axios';
 import { t } from 'i18next';
+import { Navigate } from 'react-router-dom';
 
 //
 import InternTableFiltersResult from '../intern-table-filters-result';
@@ -90,6 +91,7 @@ export default function InternListBySource() {
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
     { value: 'soon', label: t('soon') },
+    { value: 'wait', label: t('wait') },
   ];
 
   const [tableData, setTableData] = useState<IInternItem[]>([]);
@@ -97,6 +99,8 @@ export default function InternListBySource() {
   const [company, setCompany] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
+
+ 
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -209,10 +213,20 @@ export default function InternListBySource() {
     console.log('Company', data.companies);
   }, [user]);
 
+   console.log('Testtt', user);
+
+  // ✅ Nếu user là tradeunion thì chuyển hướng\
+
+  
+
   useEffect(() => {
     handleGetAllIntern();
     handleGetCompany();
   }, [handleGetAllIntern, handleGetCompany]);
+
+  if (user?.role === 'tradeunion') {
+    return <Navigate to="/dashboard/intern/listByTradeUnion" replace />;
+  }
 
   return (
     <>
@@ -278,6 +292,8 @@ export default function InternListBySource() {
                       tableData.filter((intern) => intern.status === 'complete').length}
                     {tab.value === 'soon' &&
                       tableData.filter((intern) => intern.status === 'soon').length}
+                    {tab.value === 'wait' &&
+                      tableData.filter((intern) => intern.status === 'wait').length}
                     {/* {tab.value === 'rejected' &&
                                 dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
@@ -434,7 +450,7 @@ function applyFilter({
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-   function removeVietnameseTones(str: string): string {
+  function removeVietnameseTones(str: string): string {
     return str
       .normalize('NFD') // Tách dấu
       .replace(/[\u0300-\u036f]/g, '') // Xóa các dấu

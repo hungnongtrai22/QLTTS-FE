@@ -88,6 +88,7 @@ export default function InternListByTradeUnionView() {
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
     { value: 'soon', label: t('soon') },
+    { value: 'wait', label: t('wait') },
   ];
 
   const [tableData, setTableData] = useState<IInternItem[]>([]);
@@ -219,7 +220,7 @@ export default function InternListByTradeUnionView() {
       `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnionAndCompany`,
       {
         tradeUnion: user?.tradeUnion,
-        companySelect: user?.companySelect
+        companySelect: user?.companySelect,
       }
     );
 
@@ -295,6 +296,8 @@ export default function InternListByTradeUnionView() {
                       tableData.filter((intern) => intern.status === 'complete').length}
                     {tab.value === 'soon' &&
                       tableData.filter((intern) => intern.status === 'soon').length}
+                    {tab.value === 'wait' &&
+                      tableData.filter((intern) => intern.status === 'wait').length}
                     {/* {tab.value === 'rejected' &&
                                 dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
