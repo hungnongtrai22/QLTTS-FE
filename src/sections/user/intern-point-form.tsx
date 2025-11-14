@@ -229,10 +229,10 @@ export default function InternPointForm({ internId }: Props) {
   };
 
   const createNewStudy = useCallback(async (study: any) => {
-    let isPublic = false;
-    if (user?.role === 'admin') {
-      isPublic = true;
-    }
+    // let isPublic = false;
+    // if (user?.role === 'admin') {
+    //   isPublic = true;
+    // }
     const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/create`, {
       ...study,
       total:
@@ -249,7 +249,7 @@ export default function InternPointForm({ internId }: Props) {
       average: (study.write + study.read + study.listen + study.speak) / 4,
       internId,
       monthAndYear: normalizeDate(study.monthSelect),
-      isPublic,
+      // isPublic,
     });
     return data;
   }, []);

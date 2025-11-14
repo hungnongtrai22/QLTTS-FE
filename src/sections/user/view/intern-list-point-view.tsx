@@ -93,6 +93,7 @@ export default function InternListPointView() {
     { value: 'pass', label: t('pass') },
     { value: 'complete', label: t('complete') },
     { value: 'soon', label: t('soon') },
+    { value: 'wait', label: t('wait') },
   ];
 
     const { enqueueSnackbar } = useSnackbar();
@@ -304,6 +305,8 @@ export default function InternListPointView() {
                       tableData.filter((intern) => intern.status === 'complete').length}
                     {tab.value === 'soon' &&
                       tableData.filter((intern) => intern.status === 'soon').length}
+                      {tab.value === 'wait' &&
+                      tableData.filter((intern) => intern.status === 'wait').length}
                     {/* {tab.value === 'rejected' &&
                                 dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
