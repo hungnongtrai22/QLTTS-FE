@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import {  View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
+import { View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 // utils
 
 import { IInternItem } from 'src/types/user';
@@ -324,9 +324,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
           <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
             {/* <Text style={styles.h3}>{currentStatus}</Text> */}
             <Text>NHAT TAN MANPOWER</Text>
-            <Text style={styles.subtitle4}>
-              8 TX01, Thoi An Ward, Ho Chi Minh City, Vietnam
-            </Text>
+            <Text style={styles.subtitle4}>8 TX01, Thoi An Ward, Ho Chi Minh City, Vietnam</Text>
           </View>
         </View>
         <View style={styles.spaceBorder}>
@@ -594,9 +592,16 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                         <Text>{item.content}</Text>
                       </View>
 
-                      <View style={[styles.tableCell_4, styles.textCenter]}>
-                        <Text>{item.current}</Text>
-                      </View>
+                      {item.current === '高校一年時、留年' ? (
+                        <View style={[styles.tableCell_4, styles.textCenter]}>
+                          <Text>高校一年時</Text>
+                          <Text>留年</Text>
+                        </View>
+                      ) : (
+                        <View style={[styles.tableCell_4, styles.textCenter]}>
+                          <Text>{item.current}</Text>
+                        </View>
+                      )}
                     </View>
                   ))}
 

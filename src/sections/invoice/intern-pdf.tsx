@@ -556,9 +556,16 @@ export default function InternPDF({ invoice }: Props) {
                       <Text>{item.content}</Text>
                     </View>
 
-                    <View style={[styles.tableCell_4, styles.textCenter]}>
-                      <Text>{item.current}</Text>
-                    </View>
+                    {item.current === '高校一年時、留年' ? (
+                        <View style={[styles.tableCell_4, styles.textCenter]}>
+                          <Text>高校一年時</Text>
+                          <Text>留年</Text>
+                        </View>
+                      ) : (
+                        <View style={[styles.tableCell_4, styles.textCenter]}>
+                          <Text>{item.current}</Text>
+                        </View>
+                      )}
                   </View>
                 ))}
 
