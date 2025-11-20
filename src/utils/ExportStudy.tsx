@@ -49,6 +49,7 @@ export type Intern = {
   money: string;
   familyInJapan: boolean;
   moveForeign: boolean;
+  type: string;
 };
 
 type Props = {
@@ -252,7 +253,7 @@ const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
         };
 
         const headerIntern = [
-          '技能実習生履歴書',
+          `${it?.type === 'engineer' ? 'エンジンア' : '技能実習'}生履歴書`,
           `履歴書日 ${changDateJP(new Date().toISOString())}`,
           `面接番号: ${i + 1}`,
         ];

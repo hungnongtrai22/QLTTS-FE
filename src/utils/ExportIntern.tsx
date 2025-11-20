@@ -48,6 +48,7 @@ export type Intern = {
   money: string;
   familyInJapan: boolean;
   moveForeign: boolean;
+  type: string;
 };
 
 type Props = {
@@ -114,7 +115,7 @@ const ExportIntern: React.FC<Props> = ({ intern }) => {
       sheetIntern.mergeCells('A1:I4'); // Gộp toàn bộ khối A1 đến I4 thành 1 ô duy nhất
       const titleIntern = sheetIntern.getCell('A1');
       titleIntern.value =
-        'NHAT TAN MANPOWER\nAddress: No. 8, TX01 Street, Thanh Xuan Ward, District 12, Ho Chi Minh City, Viet Nam';
+        'NHAT TAN MANPOWER\nAddress: 8 TX01, Thoi An Ward, Ho Chi Minh City, Vietnam';
       titleIntern.alignment = {
         horizontal: 'center',
         vertical: 'middle',
@@ -134,7 +135,7 @@ const ExportIntern: React.FC<Props> = ({ intern }) => {
       };
 
       const headerIntern = [
-        '技能実習生履歴書',
+        `${it?.type === 'engineer' ? 'エンジンア' : '技能実習'}生履歴書`,
         `履歴書日 ${changDateJP(new Date().toISOString())}`,
         `面接番号: `,
       ];

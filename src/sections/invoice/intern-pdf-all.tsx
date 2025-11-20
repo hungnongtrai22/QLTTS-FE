@@ -311,6 +311,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
     money,
     familyInJapan,
     moveForeign,
+    type
   } = invoice;
 
   const styles = useStyles();
@@ -334,7 +335,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                 <View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_7, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>技能実習生履歴書</Text>
+                      <Text style={styles.subtitle2}>{type === 'engineer' ? 'エンジンア' : '技能実習'}生履歴書</Text>
                     </View>
 
                     <View style={[styles.tableCell_7, styles.titleBackground]}>
