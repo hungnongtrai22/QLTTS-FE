@@ -233,7 +233,7 @@ const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
         sheetIntern.mergeCells('A1:I4'); // Gộp toàn bộ khối A1 đến I4 thành 1 ô duy nhất
         const titleIntern = sheetIntern.getCell('A1');
         titleIntern.value =
-          'NHAT TAN MANPOWER\nAddress: No. 8, TX01 Street, Thanh Xuan Ward, District 12, Ho Chi Minh City, Viet Nam';
+          'NHAT TAN MANPOWER\nAddress: 8 TX01, Thoi An Ward, Ho Chi Minh City, Vietnam';
         titleIntern.alignment = {
           horizontal: 'center',
           vertical: 'middle',

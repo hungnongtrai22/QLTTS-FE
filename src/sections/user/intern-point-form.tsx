@@ -312,7 +312,7 @@ export default function InternPointForm({ internId }: Props) {
       `${process.env.REACT_APP_HOST_API}/api/study/getInternByMonth`,
       {
         internId,
-        month: monthSelect.getMonth(),
+        month: monthSelect.getMonth() + 1,
         year: monthSelect.getFullYear(),
       }
     );
