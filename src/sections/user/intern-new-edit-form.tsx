@@ -281,8 +281,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
     // BMI: Yup.number().required('BMI is required').min(1),
     avatar: Yup.mixed().required('Ảnh không được để trống'),
     hand: Yup.string().required('Tay thuận không được để trống'),
-    leftEye: Yup.number().required('Mắt trái không được để trống'),
-    rightEye: Yup.number().required('Mắt phải không được để trống'),
+    leftEye: Yup.string().required('Mắt trái không được để trống'),
+    rightEye: Yup.string().required('Mắt phải không được để trống'),
     address: Yup.string().required('Địa chỉ không được để trống'),
     city: Yup.string().required('Thành phố không được để trống'),
     married: Yup.string().required('Tình trạng hôn nhân không được để trống'),
@@ -1023,6 +1023,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 PaperPropsSx={{ textTransform: 'capitalize' }}
               >
                 {[
+                  '乱視',
                   '0',
                   '0.1',
                   '0.2',
@@ -1050,6 +1051,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                 PaperPropsSx={{ textTransform: 'capitalize' }}
               >
                 {[
+                  '乱視',
                   '0',
                   '0.1',
                   '0.2',
