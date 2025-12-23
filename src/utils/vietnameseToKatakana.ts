@@ -100,6 +100,7 @@ const vietToKatakanaMap: Record<string, string> = {
   hưng: 'フン',
   huong: 'フオン',
   huu: 'フウ',
+  hữu: 'ヒュー',
   huy: 'フイ',
   huyen: 'フエン',
   huynh: 'フイン',
@@ -323,7 +324,7 @@ const vietToKatakanaMap: Record<string, string> = {
 
 
 const removeVietnameseTones = (str: string): string => {
-  const exceptions = ['hưng', 'thư', 'như', 'võ'];
+  const exceptions = ['hưng', 'thư', 'như', 'võ', 'hữu'];
 
   // Tách chuỗi thành từ
   const words = str.trim().split(/\s+/);
