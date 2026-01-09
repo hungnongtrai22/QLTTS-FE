@@ -120,6 +120,8 @@ export function useNavData() {
               },
 
               { title: t('create'), path: paths.dashboard.intern.new, roles: ['admin'] },
+                            { title: t('createIsuzu'), path: paths.dashboard.intern.newIsuzu, roles: ['admin'] },
+
               // { title: t('edit'), path: paths.dashboard.intern.demo.edit },
               // { title: t('account'), path: paths.dashboard.intern.account },
             ],

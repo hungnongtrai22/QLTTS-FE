@@ -21,6 +21,7 @@ import InternListPointPage from 'src/pages/dashboard/intern/listPoint';
 import TourDetailsPage from 'src/pages/dashboard/tour/details';
 import GalleryEditPage from 'src/pages/dashboard/gallery/edit';
 import ComparePage from 'src/pages/dashboard/intern/compare';
+import InternEditIsuzuPage from 'src/pages/dashboard/intern/editIsuzu';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,8 @@ const InternListByTradeUnionPage = lazy(
 );
 const InternAccountPage = lazy(() => import('src/pages/dashboard/intern/account'));
 const InternCreatePage = lazy(() => import('src/pages/dashboard/intern/new'));
+const InternCreatePageIsuzu = lazy(() => import('src/pages/dashboard/intern/newIsuzu'));
+
 const InternEditPage = lazy(() => import('src/pages/dashboard/intern/edit'));
 // Trade Union
 const TradeUnionListPage = lazy(() => import('src/pages/dashboard/tradeUnion/list'));
@@ -176,11 +179,27 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
+             {
+            path: 'newIsuzu',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternCreatePageIsuzu />
+              </RoleBasedGuard>
+            ),
+          },
           {
             path: ':id/edit',
             element: (
               <RoleBasedGuard hasContent roles={['admin']}>
                 <InternEditPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/editIsuzu',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <InternEditIsuzuPage />
               </RoleBasedGuard>
             ),
           },

@@ -222,6 +222,14 @@ export default function InternListView() {
     [router]
   );
 
+   const handleEditIsuzuRow = useCallback(
+    (id: string) => {
+      router.push(paths.dashboard.intern.editIsuzu(id));
+    },
+    [router]
+  );
+
+
   const handleViewRow = useCallback((id: string) => {
     const url = paths.dashboard.intern.profile(id);
     window.open(url, '_blank');
@@ -433,6 +441,8 @@ export default function InternListView() {
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
                         onEditRow={() => handleEditRow(row._id)}
+                                                onEditIsuzuRow={() => handleEditIsuzuRow(row._id)}
+
                         onViewRow={() => handleViewRow(row._id)}
                       />
                     ))}

@@ -249,6 +249,8 @@
   "compact": "折りたたむ",
   "interview": "面接",
   "listPoint": "成績入力一覧",
+  "createIsuzu": "いすゞCV作成",
+  "medical": "既往症",
   "edit_order": "注文を更新",
   "gallery": "ギャラリ",
   "date": "日付",
@@ -267,6 +269,7 @@
   "pushup": "１分間の腕立て伏せテスト",
   "view": "見る",
   "wait": "出発待ち",
+  "fillInfo": "備考欄",
   "demo": {
     "title": "英語"
   }

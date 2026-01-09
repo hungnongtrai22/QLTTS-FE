@@ -252,6 +252,53 @@ export type IInternItem = {
   orderId: any;
   description: string;
   returnDate: any;
+  birthPlace: any;
+phoneNumber: any;
+email: any;
+children: any;
+
+respiratoryDisease: any;
+obstetrics: any;
+highBloodPressure: any;
+ophthalmological: any;
+urinaryDiseases: any;
+anemia: any;
+otorhinolaryngological: any;
+cranialNerves: any;
+headache: any;
+pharyngealSystemDisease: any;
+hernia: any;
+anyAllergies: any;
+cardiovascularDisease: any;
+rheumatism: any;
+irregalerMenstruation: any;
+heartDisease: any;
+fainting: any;
+tbTest: any;
+dental: any;
+diabetes: any;
+history: any;
+digestive: any;
+asthma: any;
+otherMajor: any;
+psychosomatic: any;
+vnsomnia: any;
+surgery: any;
+hematology: any;
+lowerBack: any;
+hospitalization: any;
+
+others: any;
+moneyMonthFrom: any;
+moneyMonthTo: any;
+money3YearsFrom: any;
+money3YearsTo: any;
+religion: any;
+planMarried: any;
+crime: any;
+crimeDetail: any;
+fillInfo: any;
+
 };
 
 export type ITradeUnionItem = {

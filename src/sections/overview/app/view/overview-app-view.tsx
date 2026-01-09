@@ -348,7 +348,7 @@ export default function OverviewAppView() {
                     <td className={styles.td}>{total?.pass || 0}</td>
                   </tr>
                   <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất cảnh 2025</td>
+                    <td className={styles.td}>Xuất cảnh {new Date().getFullYear()}</td>
                     <td className={styles.td}>{total?.passCurrentYear || 0}</td>
                   </tr>
                   <tr className={styles.tr}>
@@ -767,7 +767,7 @@ export default function OverviewAppView() {
 
         <Grid xs={12} md={6} lg={8}>
           <AnalyticsConversionRates
-            title={`Điểm trung bình từng nguồn ${new Date().getMonth()}`}
+            title={`Điểm trung bình từng nguồn ${new Date().getMonth() === 0 ? 12 : new Date().getMonth()}`}
             // subheader="(+43%) than last year"
             chart={{
               series:
@@ -781,7 +781,7 @@ export default function OverviewAppView() {
 
         <Grid xs={12} md={6} lg={4}>
           <AppTopAuthors
-            title={`Bảng xếp hạng thực tập sinh tháng ${new Date().getMonth()}`}
+            title={`Bảng xếp hạng thực tập sinh tháng ${new Date().getMonth() === 0 ? 12 : new Date().getMonth()}`}
             list={topStudy}
           />
         </Grid>

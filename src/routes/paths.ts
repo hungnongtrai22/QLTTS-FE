@@ -110,6 +110,8 @@ export const paths = {
     intern: {
       root: `${ROOTS.DASHBOARD}/intern/list`,
       new: `${ROOTS.DASHBOARD}/intern/new`,
+            newIsuzu: `${ROOTS.DASHBOARD}/intern/newIsuzu`,
+
       list: `${ROOTS.DASHBOARD}/intern/list`,
       compare: `${ROOTS.DASHBOARD}/intern/compare`,
       listPoint: `${ROOTS.DASHBOARD}/intern/listPoint`,
@@ -120,6 +122,7 @@ export const paths = {
       profile: (id: string) => `${ROOTS.DASHBOARD}/intern/${id}/profile`,
       account: `${ROOTS.DASHBOARD}/intern/account`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/intern/${id}/edit`,
+      editIsuzu: (id: string) => `${ROOTS.DASHBOARD}/intern/${id}/editIsuzu`,
       demo: {
         edit: `${ROOTS.DASHBOARD}/intern/${MOCK_ID}/edit`,
       },

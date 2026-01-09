@@ -1,0 +1,66 @@
+/* eslint-disable react/jsx-fragments */
+
+import React from 'react';
+
+import { Document, Page, View, StyleSheet } from '@react-pdf/renderer';
+// import InternPDFAll from '../invoice/intern-pdf-all';
+import InternPDFHome from '../invoice/intern-pdf-home';
+import InternPDFIsuzu from '../invoice/intern-pdf-isuzu';
+import InternPDFIsuzuPage2 from '../invoice/intern-pdf-isuzu-page-2';
+import InternPDFIsuzuPage3 from '../invoice/intern-pdf-isuzu-page-3';
+
+const styles = StyleSheet.create({
+  page: {
+    fontSize: 9,
+    lineHeight: 1.6,
+    fontFamily: 'Noto Sans JP',
+    backgroundColor: '#FFFFFF',
+    textTransform: 'capitalize',
+    padding: '10px 24px 10px 24px',
+  },
+  pageBorder: {
+    flex: 1, // 👈 QUAN TRỌNG
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    // borderWidth: 1.5,
+    // borderColor: 'black',
+    // borderStyle: 'solid',
+  },
+});
+
+// Hàm chia mảng thành các nhóm 9 phần tử
+const chunkArray = (array: any[], size: number) => {
+  const result = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+};
+
+export default function InternPDFIsuzuNew({ intern }: { intern: any }) {
+
+  return (
+    <Document>
+        <React.Fragment>
+          <Page size="A4" style={styles.page}>
+            <View style={styles.pageBorder}>
+              <InternPDFIsuzu invoice={intern} stt={1} />
+            </View>
+          </Page>
+
+          <Page size="A4" style={styles.page}>
+            <View style={styles.pageBorder}>
+              <InternPDFIsuzuPage2 invoice={intern} stt={1} />
+            </View>
+          </Page>
+
+          <Page size="A4" style={styles.page}>
+            <View style={styles.pageBorder}>
+              <InternPDFIsuzuPage3 invoice={intern} stt={1} />
+            </View>
+          </Page>
+        </React.Fragment>
+    </Document>
+  );
+}

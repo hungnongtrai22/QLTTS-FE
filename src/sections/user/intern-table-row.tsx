@@ -26,6 +26,8 @@ import StudyQuickEditForm from './study-quick-edit-form';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
+    onEditIsuzuRow: VoidFunction;
+
   row: IInternItem;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
@@ -47,6 +49,8 @@ export default function InternTableRow({
   onSelectRow,
   onDeleteRow,
   onViewRow,
+    onEditIsuzuRow,
+
 }: Props) {
   const { name, namejp, avatar, city, birthday, age, height, weight, createdAt } = row;
 
@@ -188,6 +192,16 @@ export default function InternTableRow({
         >
           <Iconify icon="solar:pen-bold" />
           Chỉnh Sửa
+        </MenuItem>
+
+         <MenuItem
+          onClick={() => {
+            onEditIsuzuRow();
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="solar:pen-bold" />
+          Chỉnh Sửa Isuzu
         </MenuItem>
 
          <MenuItem
