@@ -933,12 +933,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                     </View>
                   </View>
                   <View style={[styles.tableRow]}>
-                    <View
-                      style={[
-                        styles.tableCell_3,
-                        { paddingBottom: 0, display: 'flex' },
-                      ]}
-                    >
+                    <View style={[styles.tableCell_3, { paddingBottom: 0, display: 'flex' }]}>
                       <View
                         style={[
                           styles.subtitle2,
@@ -984,7 +979,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         },
                       ]}
                     >
-                      <Text>{birthPlace || " "}</Text>
+                      <Text>{birthPlace || ' '}</Text>
                     </View>
                   </View>
 
@@ -1275,7 +1270,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         },
                       ]}
                     >
-                      <Text style={{ textTransform: 'none' }}>{email || " "}</Text>
+                      <Text style={{ textTransform: 'none' }}>{email || ' '}</Text>
                     </View>
 
                     <View
@@ -1290,7 +1285,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         },
                       ]}
                     >
-                      <Text>{phoneNumber || " "}</Text>
+                      <Text>{phoneNumber || ' '}</Text>
                     </View>
                   </View>
                   <View style={[styles.tableRow]}>
@@ -1779,7 +1774,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                               borderTopWidth: 0,
                               borderStyle: 'solid',
                               borderColor: 'black',
-                              flex: 1,
+                              // flex: 1,
                               // height: '50%',
                               fontSize: 8,
                               fontWeight: 'normal', // borderRightWidth: 1,
@@ -1801,7 +1796,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                               borderBottomWidth: 1,
                               borderStyle: 'solid',
                               borderColor: 'black',
-                              flex: 1,
+                              // flex: 1,
                               // height: '50%',
                               fontSize: 8,
                               fontWeight: 'normal',
@@ -2080,6 +2075,9 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                               borderTopWidth: 0,
                               borderStyle: 'solid',
                               borderColor: 'black',
+                              
+                              display: 'flex',
+                              justifyContent: 'center',
                             },
                           ]}
                         >
@@ -2110,6 +2108,9 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                               // borderBottomWidth: 1,
                               borderStyle: 'solid',
                               borderColor: 'black',
+                              
+                              display: 'flex',
+                              justifyContent: 'center',
                             },
                           ]}
                         >
@@ -2138,62 +2139,9 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         <View
                           style={[
                             styles.tableCell_15,
-                            { paddingBottom: 0, borderBottomWidth: 1, borderTopWidth: 0 },
-                          ]}
-                        >
-                          <View
-                            style={[
-                              styles.subtitle2,
-                              // styles.textCenter,
-                              {
-                                // borderBottomWidth: 1,
-                                borderBottomWidth: 0,
-                                borderTopWidth: 0,
-                                borderStyle: 'solid',
-                                borderColor: 'black',
-                                flex: 1,
-                                // height: '50%',
-                                fontSize: 8,
-                                fontWeight: 'normal',
-                                // borderRightWidth: 1,
-                              },
-                            ]}
-                          >
-                            <Text>{item.content}</Text>
-                          </View>
-                        </View>
-
-                        <View
-                          style={[
-                            styles.tableCell_23,
-                            { paddingBottom: 0, borderBottomWidth: 1, borderTopWidth: 0 },
-                          ]}
-                        >
-                          <View
-                            style={[
-                              styles.subtitle2,
-                              // styles.textCenter,
-                              {
-                                // borderBottomWidth: 1,
-                                borderBottomWidth: 0,
-                                borderTopWidth: 0,
-                                borderStyle: 'solid',
-                                borderColor: 'black',
-                                flex: 1,
-                                // height: '50%',
-                                fontSize: 8,
-                                fontWeight: 'normal',
-                                // borderRightWidth: 1,
-                              },
-                            ]}
-                          >
-                            <Text>{item.name}</Text>
-                          </View>
-                        </View>
-                        <View
-                          style={[
-                            styles.tableCell_22,
-                            { paddingBottom: 0, borderBottomWidth: 1, borderTopWidth: 0 },
+                            { paddingBottom: 0, borderBottomWidth: 1, borderTopWidth: 0,
+                              display: 'flex',
+                              justifyContent: 'center', },
                           ]}
                         >
                           <View
@@ -2210,11 +2158,79 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                                 // height: '50%',
                                 fontSize: 8,
                                 fontWeight: 'normal',
-                                borderRightWidth: 1,
+                                // borderRightWidth: 1,
                               },
                             ]}
                           >
-                            <Text>{item.address || " "}</Text>
+                            <Text>{item.content}</Text>
+                          </View>
+                        </View>
+
+                        <View
+                          style={[
+                            styles.tableCell_23,
+                            {
+                              paddingBottom: 0,
+                              borderBottomWidth: 1,
+                              borderTopWidth: 0,
+                              display: 'flex',
+                              justifyContent: 'center',
+                            },
+                          ]}
+                        >
+                          <View
+                            style={[
+                              styles.subtitle2,
+                              // styles.textCenter,
+                              {
+                                // borderBottomWidth: 1,
+                                borderBottomWidth: 0,
+                                borderTopWidth: 0,
+                                borderStyle: 'solid',
+                                borderColor: 'black',
+                                // flex: 1,
+                                // height: '50%',
+                                fontSize: 8,
+                                fontWeight: 'normal',
+                                // borderRightWidth: 1,
+                              },
+                            ]}
+                          >
+                            <Text>{item.name}</Text>
+                          </View>
+                        </View>
+                        <View
+                          style={[
+                            styles.tableCell_22,
+                            {
+                              paddingBottom: 0,
+                              borderBottomWidth: 1,
+                              borderTopWidth: 0,
+                              display: 'flex',
+                              justifyContent: 'center',
+                                                              borderRightWidth: 1,
+
+                            },
+                          ]}
+                        >
+                          <View
+                            style={[
+                              styles.subtitle2,
+                              // styles.textCenter,
+                              {
+                                // borderBottomWidth: 1,
+                                borderBottomWidth: 0,
+                                borderTopWidth: 0,
+                                borderStyle: 'solid',
+                                borderColor: 'black',
+                                // flex: 1,
+                                // height: '50%',
+                                fontSize: 8,
+                                fontWeight: 'normal',
+                              },
+                            ]}
+                          >
+                            <Text>{item.address || ' '}</Text>
                           </View>
                         </View>
                       </View>
@@ -2496,6 +2512,9 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                             borderTopWidth: 0,
                             borderStyle: 'solid',
                             borderColor: 'black',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
                           },
                         ]}
                       >
@@ -2610,7 +2629,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                               borderTopWidth: 0,
                               borderStyle: 'solid',
                               borderColor: 'black',
-                              flex: 1,
+                              // flex: 1,
                               // height: '50%',
                               fontSize: 8,
                               fontWeight: 'normal',
@@ -2618,7 +2637,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                             },
                           ]}
                         >
-                          <Text>{item.location}</Text>
+                          <Text>{item.location || ' '}</Text>
                         </View>
                       </View>
                     </View>

@@ -1573,7 +1573,7 @@ const noHyphenation: HyphenationCallback = (word) => [word];
                         },
                       ]}
                     >
-                      <Text>{crime ? '■' : '□'}</Text>
+                      <Text>{!crime ? '■' : '□'}</Text>
                     </View>
 
                     <View
@@ -1797,7 +1797,7 @@ const noHyphenation: HyphenationCallback = (word) => [word];
                         },
                       ]}
                     >
-                      <Text>{tattoo ? '■' : '□'}</Text>
+                      <Text>{!tattoo ? '■' : '□'}</Text>
                     </View>
 
                     <View
