@@ -774,7 +774,7 @@ export default function InternPDFIsuzuPage2({ invoice, stt }: Props) {
                           },
                         ]}
                       >
-                        <Text>Plans after Returning to Japan</Text>
+                        <Text>Plans after Returning to Vietnam</Text>
                       </View>
                     </View>
 
@@ -2733,7 +2733,7 @@ export default function InternPDFIsuzuPage2({ invoice, stt }: Props) {
                             fontSize: 9,
                             textAlign: "left",
                             paddingLeft: "3px",
-                            borderBottomWidth: 1,
+                            // borderBottomWidth: 1,
                             borderRightWidth: 1
                           },
                         ]}

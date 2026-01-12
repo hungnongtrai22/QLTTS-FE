@@ -1676,7 +1676,7 @@ const noHyphenation: HyphenationCallback = (word) => [word];
                         },
                       ]}
                     >
-                      <Text>{crimeDetail}</Text>
+                      <Text>{crimeDetail || " "}</Text>
                     </View>
                   </View>
 

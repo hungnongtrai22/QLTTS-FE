@@ -933,7 +933,12 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                     </View>
                   </View>
                   <View style={[styles.tableRow]}>
-                    <View style={[styles.tableCell_3, { paddingBottom: 0, display: 'flex' }]}>
+                    <View
+                      style={[
+                        styles.tableCell_3,
+                        { paddingBottom: 0, display: 'flex' },
+                      ]}
+                    >
                       <View
                         style={[
                           styles.subtitle2,
@@ -956,10 +961,10 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                           // , styles.textCenter,
                           {
                             flex: 1,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            fontWeight: 'normal',
+                            // display: 'flex',
+                            // justifyContent: 'center',
+                            // alignItems: 'center',
+                            // fontWeight: 'normal',
                             fontSize: 8,
                           },
                         ]}
@@ -979,7 +984,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         },
                       ]}
                     >
-                      <Text>{birthPlace}</Text>
+                      <Text>{birthPlace || " "}</Text>
                     </View>
                   </View>
 
@@ -1270,7 +1275,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         },
                       ]}
                     >
-                      <Text>{email}</Text>
+                      <Text>{email || " "}</Text>
                     </View>
 
                     <View
@@ -1285,7 +1290,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         },
                       ]}
                     >
-                      <Text>{phoneNumber}</Text>
+                      <Text>{phoneNumber || " "}</Text>
                     </View>
                   </View>
                   <View style={[styles.tableRow]}>
@@ -2209,7 +2214,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                               },
                             ]}
                           >
-                            <Text>{item.address}</Text>
+                            <Text>{item.address || " "}</Text>
                           </View>
                         </View>
                       </View>
