@@ -1275,7 +1275,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                         },
                       ]}
                     >
-                      <Text>{email || " "}</Text>
+                      <Text style={{ textTransform: 'none' }}>{email || " "}</Text>
                     </View>
 
                     <View
