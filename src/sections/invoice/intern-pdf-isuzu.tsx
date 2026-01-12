@@ -661,7 +661,7 @@ export default function InternPDFIsuzu({ invoice, stt }: Props) {
                       },
                     ]}
                   >
-                    <Text>2007年6月25日</Text>
+                    <Text>{changDateJP(new Date().toISOString())}</Text>
                   </View>
                 </View>
               </View>
