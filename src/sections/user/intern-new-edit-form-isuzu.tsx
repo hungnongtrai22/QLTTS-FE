@@ -1671,7 +1671,7 @@ fillInfo: currentIntern?.fillInfo,
                   </li>
                 )}
               />
-              <RHFTextField name="aim" label={t('aim')} />
+              <RHFTextField name="aim" label={t('pr')} />
               <RHFTextField name="money" label={t('money')} />
               <RHFTextField name="plan" label={t('plan')} />
             </Box>
