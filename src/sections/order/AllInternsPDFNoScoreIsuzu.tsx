@@ -20,9 +20,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    borderWidth: 1.5,
-    borderColor: 'black',
-    borderStyle: 'solid',
+    // borderWidth: 1.5,
+    // borderColor: 'black',
+    // borderStyle: 'solid',
   },
 });
 

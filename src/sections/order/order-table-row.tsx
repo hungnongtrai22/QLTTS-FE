@@ -41,6 +41,7 @@ import AllInternsPDFNoScoreKraepelin from './AllInternsPDFNoScoreKraepelin';
 import AllInternsPDFIQ from './AllInternsPDFNoScoreIQ';
 import AllInternsPDFIQAndPushUp from './AllInternsPDFNoScoreIQAndPushUp';
 import AllInternsPDFIsuzu from './AllInternsPDFIsuzu';
+import AllInternsPDFNoScoreIsuzu from './AllInternsPDFNoScoreIsuzu';
 
 // ----------------------------------------------------------------------
 
@@ -404,7 +405,7 @@ export default function OrderTableRow({
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);
-              const blob = await pdf(<AllInternsPDFNoScore interns={listIntern} />).toBlob();
+              const blob = await pdf(<AllInternsPDFNoScoreIsuzu interns={listIntern} />).toBlob();
               saveAs(blob, `All_CVs_${name}.pdf`);
             } catch (error) {
               console.error('Lỗi khi tạo PDF:', error);
