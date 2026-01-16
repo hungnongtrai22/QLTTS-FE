@@ -400,6 +400,24 @@ export default function OrderTableRow({
           {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV Isuzu'}
         </MenuItem>
 
+         <MenuItem
+          onClick={async () => {
+            try {
+              setLoadingDownloadAll(true);
+              const blob = await pdf(<AllInternsPDFNoScore interns={listIntern} />).toBlob();
+              saveAs(blob, `All_CVs_${name}.pdf`);
+            } catch (error) {
+              console.error('Lỗi khi tạo PDF:', error);
+            } finally {
+              setLoadingDownloadAll(false);
+              popover.onClose();
+            }
+          }}
+        >
+          <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV Isuzu không có điểm'}
+        </MenuItem>
+
 
 
         <ExportInternsWithAvatar interns={listIntern} name={name} />
