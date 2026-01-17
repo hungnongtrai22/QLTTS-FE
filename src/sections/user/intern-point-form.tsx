@@ -44,6 +44,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { characteristicList } from 'src/utils/characteristic';
 import { teacherList } from 'src/utils/teacher';
 import { useAuthContext } from 'src/auth/hooks';
+import { learningProcess } from 'src/utils/learningProcess';
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -810,7 +811,7 @@ export default function InternPointForm({ internId }: Props) {
                 )}
               />
 
-              <Controller
+              {/* <Controller
                 name="learningProcess"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
@@ -828,6 +829,19 @@ export default function InternPointForm({ internId }: Props) {
                     InputLabelProps={{ shrink: true }}
                     label={t('learningProcess')}
                   />
+                )}
+              /> */}
+
+                 <RHFAutocomplete
+                name="learningProcess"
+                label={t('learningProcess') || ''}
+                disablePortal
+                freeSolo
+                options={learningProcess}
+                renderOption={(props, option) => (
+                  <li {...props} key={option} value={option}>
+                    {option}
+                  </li>
                 )}
               />
               {/* 
