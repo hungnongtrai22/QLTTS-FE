@@ -42,6 +42,7 @@ import AllInternsPDFIQ from './AllInternsPDFNoScoreIQ';
 import AllInternsPDFIQAndPushUp from './AllInternsPDFNoScoreIQAndPushUp';
 import AllInternsPDFIsuzu from './AllInternsPDFIsuzu';
 import AllInternsPDFNoScoreIsuzu from './AllInternsPDFNoScoreIsuzu';
+import AllInternsPDFNoScoreIsuzu1Year from './AllInternsPDFNoScoreIsuzu1Year';
 
 // ----------------------------------------------------------------------
 
@@ -109,13 +110,13 @@ export default function OrderTableRow({
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         {/* <Avatar alt={customer?.name} src={customer?.avatarUrl} sx={{ mr: 2 }} /> */}
         <Box
-          // onClick={onViewRow}
-          // sx={{
-          //   cursor: 'pointer',
-          //   '&:hover': {
-          //     textDecoration: 'underline',
-          //   },
-          // }}
+        // onClick={onViewRow}
+        // sx={{
+        //   cursor: 'pointer',
+        //   '&:hover': {
+        //     textDecoration: 'underline',
+        //   },
+        // }}
         >
           <ListItemText
             primary={name}
@@ -308,7 +309,7 @@ export default function OrderTableRow({
           }}
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
-          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV'}
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV'}
         </MenuItem>
 
         <MenuItem
@@ -326,14 +327,16 @@ export default function OrderTableRow({
           }}
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
-          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV không có điểm'}
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV không có điểm'}
         </MenuItem>
 
-          <MenuItem
+        <MenuItem
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);
-              const blob = await pdf(<AllInternsPDFNoScoreKraepelin interns={listIntern} />).toBlob();
+              const blob = await pdf(
+                <AllInternsPDFNoScoreKraepelin interns={listIntern} />
+              ).toBlob();
               saveAs(blob, `All_CVs_${name}.pdf`);
             } catch (error) {
               console.error('Lỗi khi tạo PDF:', error);
@@ -344,10 +347,10 @@ export default function OrderTableRow({
           }}
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
-          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV không có điểm cộng dồn'}
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV không có điểm cộng dồn'}
         </MenuItem>
 
-          <MenuItem
+        <MenuItem
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);
@@ -362,10 +365,10 @@ export default function OrderTableRow({
           }}
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
-          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV chỉ có điểm IQ'}
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV (IQ)'}
         </MenuItem>
 
-         <MenuItem
+        <MenuItem
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);
@@ -380,10 +383,10 @@ export default function OrderTableRow({
           }}
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
-          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV chỉ có điểm IQ và hít đất'}
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV (IQ & hít đất)'}
         </MenuItem>
 
-         <MenuItem
+        <MenuItem
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);
@@ -398,10 +401,10 @@ export default function OrderTableRow({
           }}
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
-          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV Isuzu'}
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV Isuzu'}
         </MenuItem>
 
-         <MenuItem
+        <MenuItem
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);
@@ -416,10 +419,26 @@ export default function OrderTableRow({
           }}
         >
           <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
-          {loadingDownloadAll ? 'Đang tạo PDF...' : 'Tải tất cả CV Isuzu không có điểm'}
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV Isuzu không có điểm'}
         </MenuItem>
 
-
+        <MenuItem
+          onClick={async () => {
+            try {
+              setLoadingDownloadAll(true);
+              const blob = await pdf(<AllInternsPDFNoScoreIsuzu1Year interns={listIntern} />).toBlob();
+              saveAs(blob, `All_CVs_${name}.pdf`);
+            } catch (error) {
+              console.error('Lỗi khi tạo PDF:', error);
+            } finally {
+              setLoadingDownloadAll(false);
+              popover.onClose();
+            }
+          }}
+        >
+          <Iconify icon={loadingDownloadAll ? 'eos-icons:loading' : 'ic:baseline-download'} />
+          {loadingDownloadAll ? 'Đang tạo PDF...' : 'CV Isuzu (1 năm) không có điểm'}
+        </MenuItem>
 
         <ExportInternsWithAvatar interns={listIntern} name={name} />
 
