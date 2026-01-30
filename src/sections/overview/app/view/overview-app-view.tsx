@@ -45,6 +45,7 @@ interface Total3Year {
   pass3Year2023: number;
   pass3Year2024: number;
   pass3Year2025: number;
+  pass3Year2026: number;
   wait3Year: number;
   studyDN: number;
   studyTV: number;
@@ -71,6 +72,7 @@ interface Total {
 interface Total1Year {
   pass1Year2024: number;
   pass1Year2025: number;
+  pass1Year2026: number;
   wait1Year: number;
   study1YearTV: number;
   study1YearCT: number;
@@ -80,6 +82,7 @@ interface Total1Year {
 
 interface TotalEngineer {
   passKS2025: number;
+  passKS2026: number;
   waitKS: number;
   studyKS: number;
 }
@@ -94,6 +97,7 @@ interface TotalTokutei {
   pass2023: number;
   pass2024: number;
   pass2025: number;
+  pass2026: number;
   waitSkill: number;
 }
 
@@ -215,7 +219,7 @@ export default function OverviewAppView() {
     handleTotal1Year,
     handleTotalEngineer,
     handleTokuteiKS,
-    handleTokutei
+    handleTokutei,
   ]);
 
   // console.log((countSourceByMonth as any)?.study?.chart?.series);
@@ -254,7 +258,7 @@ export default function OverviewAppView() {
                 </thead>
                 <tbody className={styles.tbody}>
                   <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={16} style={{ fontWeight: 'bold' }}>
+                    <td className={styles.td} rowSpan={17} style={{ fontWeight: 'bold' }}>
                       Đơn hàng 3 năm
                     </td>
                     <td className={styles.td}>Xuất Cảnh 2022</td>
@@ -271,6 +275,10 @@ export default function OverviewAppView() {
                   <tr className={styles.tr}>
                     <td className={styles.td}>Xuất Cảnh 2025</td>
                     <td className={styles.td}>{total3Year?.pass3Year2025 || 0}</td>
+                  </tr>
+                  <tr className={styles.tr}>
+                    <td className={styles.td}>Xuất Cảnh 2026</td>
+                    <td className={styles.td}>{total3Year?.pass3Year2026 || 0}</td>
                   </tr>
                   <tr className={styles.tr}>
                     <td className={styles.td}>Chờ bay</td>
@@ -390,7 +398,7 @@ export default function OverviewAppView() {
                 </thead>
                 <tbody className={styles.tbody}>
                   <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={7} style={{ fontWeight: 'bold' }}>
+                    <td className={styles.td} rowSpan={8} style={{ fontWeight: 'bold' }}>
                       Đơn hàng 1 năm
                     </td>
                     <td className={styles.td}>Xuất Cảnh 2024</td>
@@ -399,6 +407,10 @@ export default function OverviewAppView() {
                   <tr className={styles.tr}>
                     <td className={styles.td}>Xuất Cảnh 2025</td>
                     <td className={styles.td}>{total1Year?.pass1Year2025 || 0}</td>
+                  </tr>
+                    <tr className={styles.tr}>
+                    <td className={styles.td}>Xuất Cảnh 2026</td>
+                    <td className={styles.td}>{total1Year?.pass1Year2026 || 0}</td>
                   </tr>
                   <tr className={styles.tr}>
                     <td className={styles.td}>Chờ bay</td>
@@ -441,11 +453,15 @@ export default function OverviewAppView() {
                 </thead>
                 <tbody className={styles.tbody}>
                   <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={3} style={{ fontWeight: 'bold' }}>
+                    <td className={styles.td} rowSpan={4} style={{ fontWeight: 'bold' }}>
                       Kỹ sư
                     </td>
                     <td className={styles.td}>Xuất Cảnh 2025</td>
                     <td className={styles.td}>{totalEngineer?.passKS2025 || 0}</td>
+                  </tr>
+                      <tr className={styles.tr}>
+                    <td className={styles.td}>Xuất Cảnh 2026</td>
+                    <td className={styles.td}>{totalEngineer?.passKS2026 || 0}</td>
                   </tr>
                   <tr className={styles.tr}>
                     <td className={styles.td}>Chờ bay</td>
@@ -513,7 +529,7 @@ export default function OverviewAppView() {
                 </thead>
                 <tbody className={styles.tbody}>
                   <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={4} style={{ fontWeight: 'bold' }}>
+                    <td className={styles.td} rowSpan={5} style={{ fontWeight: 'bold' }}>
                       Đặc định
                     </td>
                     <td className={styles.td}>Xuất Cảnh 2023</td>
@@ -528,6 +544,10 @@ export default function OverviewAppView() {
                     <td className={styles.td}>{totalTokutei?.pass2025 || 0}</td>
                   </tr>
                   <tr className={styles.tr}>
+                    <td className={styles.td}>Xuất Cảnh 2026</td>
+                    <td className={styles.td}>{totalTokutei?.pass2026 || 0}</td>
+                  </tr>
+                  <tr className={styles.tr}>
                     <td className={styles.td}>Chờ bay</td>
                     <td className={styles.td}>{totalTokutei?.waitSkill || 0}</td>
                   </tr>
@@ -536,9 +556,7 @@ export default function OverviewAppView() {
                       Tổng cộng
                     </th>
                     <th className={styles.th} style={{ backgroundColor: '#A6E3E9' }}>
-                      {totalTokutei
-                        ? Object.values(totalTokutei).reduce((s, n) => s + n, 0)
-                        : 0}
+                      {totalTokutei ? Object.values(totalTokutei).reduce((s, n) => s + n, 0) : 0}
                     </th>
                   </tr>
                 </tbody>
@@ -767,7 +785,9 @@ export default function OverviewAppView() {
 
         <Grid xs={12} md={6} lg={8}>
           <AnalyticsConversionRates
-            title={`Điểm trung bình từng nguồn ${new Date().getMonth() === 0 ? 12 : new Date().getMonth()}`}
+            title={`Điểm trung bình từng nguồn ${
+              new Date().getMonth() === 0 ? 12 : new Date().getMonth()
+            }`}
             // subheader="(+43%) than last year"
             chart={{
               series:
@@ -781,7 +801,9 @@ export default function OverviewAppView() {
 
         <Grid xs={12} md={6} lg={4}>
           <AppTopAuthors
-            title={`Bảng xếp hạng thực tập sinh tháng ${new Date().getMonth() === 0 ? 12 : new Date().getMonth()}`}
+            title={`Bảng xếp hạng thực tập sinh tháng ${
+              new Date().getMonth() === 0 ? 12 : new Date().getMonth()
+            }`}
             list={topStudy}
           />
         </Grid>
