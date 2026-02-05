@@ -1037,6 +1037,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                   '1.0',
                   '1.1',
                   '1.2',
+                  '1.5',
+                  '2.0'
                 ].map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
@@ -1065,6 +1067,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                   '1.0',
                   '1.1',
                   '1.2',
+                  '1.5',
+                  '2.0'
                 ].map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
