@@ -100,6 +100,13 @@ export default function InternPointForm({ internId }: Props) {
   // const [currentStudy, setCurrentStudy] = useState<IStudyItem | null>(null);
   // console.log(currentStudy);
   const [monthSelect, setMonthSelect] = useState<Date | null>(null);
+  const [learning, setLearning] = useState<any>('');
+  const getNumber = (str: string) => {
+    const match = str.match(/\d+/);
+    return match ? Number(match[0]) : null;
+  };
+
+  // console.log(getNumber(learning));
 
   const NewUserSchema = Yup.object().shape({
     monthSelect: Yup.date().required('Tháng không được để trống'),
@@ -216,6 +223,14 @@ export default function InternPointForm({ internId }: Props) {
   } = methods;
 
   const values = watch();
+
+  const learningProcessValue = watch('learningProcess');
+
+  useEffect(() => {
+    if (learningProcessValue !== undefined) {
+      setLearning(learningProcessValue);
+    }
+  }, [learningProcessValue]);
 
   const normalizeDate = (date: any) => {
     const jsDate = new Date(date);
@@ -764,7 +779,8 @@ export default function InternPointForm({ internId }: Props) {
                     error={!!error}
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
-                    label={t('kanji')}
+                    label={t('kanji') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')}
+                    disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
                   />
                 )}
               />
@@ -785,7 +801,8 @@ export default function InternPointForm({ internId }: Props) {
                     error={!!error}
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
-                    label={t('grammarAndReading')}
+                    label={t('grammarAndReading') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')}
+                    disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
                   />
                 )}
               />
@@ -806,7 +823,8 @@ export default function InternPointForm({ internId }: Props) {
                     error={!!error}
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
-                    label={t('listeningComprehension')}
+                    label={t('listeningComprehension') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')}
+                    disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
                   />
                 )}
               />
@@ -832,7 +850,7 @@ export default function InternPointForm({ internId }: Props) {
                 )}
               /> */}
 
-                 <RHFAutocomplete
+              <RHFAutocomplete
                 name="learningProcess"
                 label={t('learningProcess') || ''}
                 disablePortal
