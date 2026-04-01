@@ -780,7 +780,7 @@ export default function InternPointForm({ internId }: Props) {
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
                     label={t('kanji') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')}
-                    disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
+                    // disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
                   />
                 )}
               />
@@ -802,7 +802,7 @@ export default function InternPointForm({ internId }: Props) {
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
                     label={t('grammarAndReading') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')}
-                    disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
+                    // disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
                   />
                 )}
               />
@@ -824,7 +824,7 @@ export default function InternPointForm({ internId }: Props) {
                     helperText={error?.message}
                     InputLabelProps={{ shrink: true }}
                     label={t('listeningComprehension') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')}
-                    disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
+                    // disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
                   />
                 )}
               />
