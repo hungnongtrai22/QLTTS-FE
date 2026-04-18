@@ -40,11 +40,10 @@ export default function RHFAutocomplete<
           {...field}
           {...other}
           onChange={(event, newValue) => {
-            if(newValue === null){
-            setValue(name, "", { shouldValidate: true });
-            }else{
-            setValue(name, newValue, { shouldValidate: true });
-
+            if (newValue === null) {
+              setValue(name, '', { shouldValidate: true });
+            } else {
+              setValue(name, newValue, { shouldValidate: true });
             }
           }}
           onInputChange={(event, newInputValue, reason) => {
