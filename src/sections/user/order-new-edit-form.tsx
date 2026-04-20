@@ -30,6 +30,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { viVN } from '@mui/x-date-pickers/locales';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { IOrderItem } from 'src/types/order';
+import RHFAutocompleteNew from 'src/components/hook-form/rhf-autocomplete-new';
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -38,6 +39,8 @@ import { IOrderItem } from 'src/types/order';
 interface FormValuesProps extends Omit<IUserItem, 'avatarUrl'> {
   avatar: CustomFile | string;
   recruitmentDate: any;
+  tradeUnion: any | null;
+  companySelect: any | null;
 }
 
 type Props = {
@@ -47,19 +50,25 @@ type Props = {
 
 export default function OrderNewEditForm({ currentOrder }: Props) {
   // const router = useRouter();
-  // console.log('TEST', currentIntern);
+  console.log('TEST', currentOrder);
   const { t } = useLocales();
 
   dayjs.locale('vi');
 
   const [interns, setInterns] = useState([]);
+  const [tradeUnion, setTradeUnion] = useState([]);
+  const [tradeUnionSelect, setTradeUnionSelect] = useState(currentOrder?.tradeUnion);
+  const [company, setCompany] = useState([]);
+  const [companySelect, setCompanySelect] = useState(currentOrder?.companySelect || '');
 
   const { enqueueSnackbar } = useSnackbar();
 
   // const [city, setCity] = useState('');
 
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
+    name: Yup.string().required('Vui lòng nhập tên đơn hàng'),
+    tradeUnion: Yup.object().required('Vui lòng nhập tên nghiệp đoàn'),
+    companySelect: Yup.object().required('Vui lòng nhập tên công ty'),
   });
 
   const defaultValues = useMemo(
@@ -81,9 +90,11 @@ export default function OrderNewEditForm({ currentOrder }: Props) {
       study: currentOrder?.study || '',
       applicationConditions: currentOrder?.applicationConditions || '',
       insurance: currentOrder?.insurance || '',
-                  housingConditions: currentOrder?.housingConditions || '',
-                  livingConditions: currentOrder?.livingConditions || '',
-                  otherLivingConditions: currentOrder?.otherLivingConditions || '',
+      housingConditions: currentOrder?.housingConditions || '',
+      livingConditions: currentOrder?.livingConditions || '',
+      otherLivingConditions: currentOrder?.otherLivingConditions || '',
+      tradeUnion: currentOrder?.tradeUnion || null,
+      companySelect: currentOrder?.companySelect || null,
 
       // school: currentIntern?.school || [],
     }),
@@ -100,6 +111,7 @@ export default function OrderNewEditForm({ currentOrder }: Props) {
     reset,
     // watch,
     control,
+    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -139,16 +151,47 @@ export default function OrderNewEditForm({ currentOrder }: Props) {
     [currentOrder]
   );
 
+  const handleGetTradeUnion = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
+    setTradeUnion(data.tradeUnions);
+  }, []);
+
+  const handleSelectTradeUnion = useCallback(
+    async (id: any) => {
+      setTradeUnionSelect(id);
+      setCompanySelect('');
+
+      setValue('companySelect', null);
+    },
+    [setValue]
+  );
+
+  const handleSelectCompany = useCallback(async (id: any) => {
+    setCompanySelect(id);
+  }, []);
+
+  const handleGetCompanyByTradeUnionId = useCallback(async () => {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_HOST_API}/api/company/listByTradeUnion`,
+      {
+        tradeUnion: tradeUnionSelect,
+      }
+    );
+    setCompany(data.companies);
+  }, [tradeUnionSelect]);
+
   const onSubmit = useCallback(
     async (data: FormValuesProps) => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
         // router.push(paths.dashboard.user.list);
         if (currentOrder) {
-          await editOrder(data);
+          console.log('Order', currentOrder);
+          // await editOrder(data);
           enqueueSnackbar(currentOrder ? 'Update success!' : 'Create success!');
         } else {
           await createOrder(data);
+          await editOrder(data);
           enqueueSnackbar(currentOrder ? 'Update success!' : 'Create success!');
         }
         reset();
@@ -163,6 +206,16 @@ export default function OrderNewEditForm({ currentOrder }: Props) {
   useEffect(() => {
     getAllInterns();
   }, [getAllInterns]);
+
+  useEffect(() => {
+    handleGetTradeUnion();
+  }, [handleGetTradeUnion]);
+
+  useEffect(() => {
+    if (tradeUnionSelect) {
+      handleGetCompanyByTradeUnionId();
+    }
+  }, [tradeUnionSelect, handleGetCompanyByTradeUnionId]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -237,6 +290,39 @@ export default function OrderNewEditForm({ currentOrder }: Props) {
               />
               <RHFTextField name="work" label={t('work')} />
 
+              {tradeUnion.length > 0 && (
+                <RHFAutocompleteNew
+                  name="tradeUnion"
+                  label={t('trade_union') || ''}
+                  // disablePortal
+                  // value={tradeUnionSelect}
+                  // defaultValue={tradeUnionSelect._id}
+                  options={tradeUnion}
+                  getOptionLabel={(option: any) => option?.name || ''}
+                  renderOption={(props, option: any) => (
+                    <li {...props} key={option._id} value={option._id}>
+                      {option.name}
+                    </li>
+                  )}
+                  changeState={handleSelectTradeUnion}
+                  isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
+                />
+              )}
+
+              <RHFAutocompleteNew
+                name="companySelect"
+                label={t('company_new') || ''}
+                // disablePortal
+                options={company}
+                getOptionLabel={(option: any) => option?.name || ''}
+                renderOption={(props, option: any) => (
+                  <li {...props} key={option._id} value={option._id}>
+                    {option.name}
+                  </li>
+                )}
+                changeState={handleSelectCompany}
+                isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
+              />
               {/* <RHFTextField name="description" label={t('description')} /> */}
 
               {/* <RHFTextField name="address" label={t('address')} /> */}

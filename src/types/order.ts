@@ -74,6 +74,8 @@ export type IOrderItem = {
   study: string;
   applicationConditions: string;
   insurance: string;
+  tradeUnion: any;
+  companySelect: any;
   housingConditions: string;
   livingConditions: string;
   otherLivingConditions: string;

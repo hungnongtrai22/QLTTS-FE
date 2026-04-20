@@ -159,7 +159,7 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
   }, []);
 
   const handleSelectSource = useCallback(async (id: any) => {
-    console.log("id", id)
+    console.log("id", id);
     setSourceSelect(id);
   }, []);
 
@@ -180,21 +180,7 @@ export default function InternCompanyTradeUnionForm({ currentIntern }: Props) {
   useEffect(() => {
     handleGetTradeUnion();
     handleGetSource();
-    // setValue('tradeUnion', currentIntern?.tradeUnion);
-    // setValue(
-    //   'tradeUnion',
-    //   {
-    //     _id: '682a9056b1e4651739e9e88d',
-    //     name: 'GLOBAL JINZAI SUPPORT KYODO KUMIAI',
-    //     email: '',
-    //     address: '429 Butai',
-    //     city: 'Tsukubamirai-shi',
-    //     state: 'Ibaraki-ken',
-    //     country: 'Nhật Bản',
-    //     phone: '0297385937',
-    //   },
-    //   { shouldValidate: true }
-    // );
+    
   }, [handleGetTradeUnion]);
 
   useEffect(() => {
