@@ -186,8 +186,8 @@ export default function OrderNewEditForm({ currentOrder }: Props) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         // router.push(paths.dashboard.user.list);
         if (currentOrder) {
-          console.log('Order', currentOrder);
-          // await editOrder(data);
+          // console.log('Order', currentOrder);
+          await editOrder(data);
           enqueueSnackbar(currentOrder ? 'Update success!' : 'Create success!');
         } else {
           await createOrder(data);
