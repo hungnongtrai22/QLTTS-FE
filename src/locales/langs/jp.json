@@ -271,6 +271,9 @@
   "wait": "出発待ち",
   "fillInfo": "備考欄",
   "pr": "自己PR",
+  "list_certificate": "資格一覧",
+  "num_certificate1": "資格",
+  "num_certificate2": "件",
   "demo": {
     "title": "英語"
   }

@@ -41,6 +41,7 @@ import AllStudyPDF from '../order/AllStudyPDF';
 import AppAreaInstalled from '../overview/app/app-area-installed';
 import AnalyticsCurrentSubject from '../overview/analytics/analytics-current-subject';
 import BookingNewest from '../overview/booking/booking-newest';
+// import { useLocales } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
   const [contact, setContact] = useState<IContactItem>();
   const [study, setStudy] = useState<IStudyItem[]>([]);
   const { user } = useAuthContext();
+  // const {t} = useLocales();
 
   const handleAttach = () => {
     if (fileRef.current) {
@@ -411,8 +413,8 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
       {currentIntern?.certificate?.length > 0 && (
         <Grid xs={12} md={12} lg={12}>
           <BookingNewest
-            title="Danh sách chứng chỉ"
-            subheader="2 chứng chỉ"
+            title={`${t('list_certificate')}`}
+            subheader={`${t('num_certificate1')}${currentIntern?.certificate?.length}${t('num_certificate2')}`}
             list={currentIntern?.certificate}
           />
         </Grid>
