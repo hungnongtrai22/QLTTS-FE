@@ -1424,6 +1424,7 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                       '姪',
                       '祖母',
                       '祖父',
+                      '伯母'
                     ].map((option) => (
                       <MenuItem key={option} value={option}>
                         {option}

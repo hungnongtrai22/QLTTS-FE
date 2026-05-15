@@ -1081,7 +1081,7 @@ if (currentIntern?.studyDate) {
                     defaultValue={currentIntern?.family[index].relationship}
                     sx={{ pointerEvents: 'none', opacity: 1 }}
                   >
-                    {['父', '母', '兄', '姉', '弟', '妹', '妻', '夫', '息子', '娘'].map(
+                    {['父', '母', '兄', '姉', '弟', '妹', '妻', '夫', '息子', '娘', '伯母'].map(
                       (option) => (
                         <MenuItem key={option} value={option}>
                           {option}

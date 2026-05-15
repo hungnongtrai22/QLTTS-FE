@@ -50,7 +50,6 @@ export default function AllInternsPDFNoScoreIsuzu1Year({ interns }: { interns: a
         );
       })}
 
-      {/* Sau đó render từng intern bằng InternPDFAll như cũ */}
       {interns.map((intern, index) => (
         <React.Fragment key={`detail-${index}`}>
           <Page size="A4" style={styles.page}>
