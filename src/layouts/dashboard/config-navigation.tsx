@@ -55,12 +55,17 @@ export function useNavData() {
   const { user } = useAuthContext();
 
   const transListInternPath = () => {
+    console.log("ROLE", user?.role);
     if (user?.role === 'tradeunion') {
       return paths.dashboard.intern.listByTradeUnion;
     }
     if (user?.role === 'source') {
       return paths.dashboard.intern.listBySource;
     }
+     if (user?.role === 'demo') {
+      return paths.dashboard.intern.list;
+    }
+    
     return paths.dashboard.intern.root;
   };
 
@@ -94,11 +99,11 @@ export function useNavData() {
               // { title: t('profile'), path: paths.dashboard.intern.root },
               // { title: t('cards'), path: paths.dashboard.intern.cards },
 
-              { title: t('list'), path: paths.dashboard.intern.list, roles: ['admin'] },
+              { title: t('list'), path: paths.dashboard.intern.list, roles: ['admin', 'demo'] },
               {
                 title: t('listCompare'),
                 path: paths.dashboard.intern.compare,
-                roles: ['admin', 'tradeunion'],
+                roles: ['admin', 'tradeunion', 'demo'],
               },
               // { title: t('listCompare'), path: paths.dashboard.intern.compare, roles: ['admin'] },
 
@@ -120,7 +125,7 @@ export function useNavData() {
               },
 
               { title: t('create'), path: paths.dashboard.intern.new, roles: ['admin'] },
-                            { title: t('createIsuzu'), path: paths.dashboard.intern.newIsuzu, roles: ['admin'] },
+              { title: t('createIsuzu'), path: paths.dashboard.intern.newIsuzu, roles: ['admin'] },
 
               // { title: t('edit'), path: paths.dashboard.intern.demo.edit },
               // { title: t('account'), path: paths.dashboard.intern.account },

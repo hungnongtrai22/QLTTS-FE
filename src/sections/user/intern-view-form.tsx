@@ -954,7 +954,7 @@ if (currentIntern?.studyDate) {
                     PaperPropsSx={{ textTransform: 'capitalize' }}
                     defaultValue={currentIntern.school[index].current}
                   >
-                    {['卒業', '中退', '在学中'].map((option) => (
+                    {['卒業', '中退', '在学中', '未卒業'].map((option) => (
                       <MenuItem key={option} value={option}>
                         {option}
                       </MenuItem>

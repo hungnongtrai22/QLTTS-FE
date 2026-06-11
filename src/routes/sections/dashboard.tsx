@@ -118,7 +118,7 @@ export const dashboardRoutes = [
     children: [
       {
         element: (
-          <RoleBasedGuard hasContent roles={['admin']}>
+          <RoleBasedGuard hasContent roles={['admin', 'demo']}>
             <IndexPage />
           </RoleBasedGuard>
         ),
@@ -134,7 +134,7 @@ export const dashboardRoutes = [
         children: [
           {
             element: (
-              <RoleBasedGuard hasContent roles={['admin']}>
+              <RoleBasedGuard hasContent roles={['admin', 'demo']}>
                 <InternProfilePage />
               </RoleBasedGuard>
             ),
@@ -145,7 +145,7 @@ export const dashboardRoutes = [
           {
             path: 'list',
             element: (
-              <RoleBasedGuard hasContent roles={['admin']}>
+              <RoleBasedGuard hasContent roles={['admin', 'demo']}>
                 <InternListPage />
               </RoleBasedGuard>
             ),

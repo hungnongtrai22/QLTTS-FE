@@ -1315,7 +1315,7 @@ fillInfo: currentIntern?.fillInfo,
                     PaperPropsSx={{ textTransform: 'capitalize' }}
                     defaultValue={schools[index].current}
                   >
-                    {['卒業', '中退', '在学中', '卒業見込み', '高校一年時、留年'].map((option) => (
+                    {['卒業', '中退', '在学中', '卒業見込み', '高校一年時、留年', '未卒業'].map((option) => (
                       <MenuItem key={option} value={option}>
                         {option}
                       </MenuItem>

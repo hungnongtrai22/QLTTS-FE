@@ -45,6 +45,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { Box, TextField } from '@mui/material';
 
 import axios from 'axios';
+import { useAuthContext } from 'src/auth/hooks';
 
 //
 import InternTableRow from '../intern-table-row';
@@ -76,6 +77,8 @@ interface Order {
 
 export default function InternListView() {
   const { t } = useLocales();
+
+  const { user:userRole } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -222,13 +225,12 @@ export default function InternListView() {
     [router]
   );
 
-   const handleEditIsuzuRow = useCallback(
+  const handleEditIsuzuRow = useCallback(
     (id: string) => {
       router.push(paths.dashboard.intern.editIsuzu(id));
     },
     [router]
   );
-
 
   const handleViewRow = useCallback((id: string) => {
     const url = paths.dashboard.intern.profile(id);
@@ -252,6 +254,14 @@ export default function InternListView() {
     setTableData(data.interns);
   }, []);
 
+  const handleGetAllInternDemo = useCallback(async () => {
+    const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`, {
+      internsDemo: userRole?.internsDemo,
+    });
+    // console.log(data.interns);
+    setTableData(data.interns);
+  }, [userRole]);
+
   const handleGetTradeUnion = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
     setTradeUnion(data.tradeUnions.map((item: any) => item.name));
@@ -270,11 +280,16 @@ export default function InternListView() {
   }, []);
 
   useEffect(() => {
-    handleGetAllIntern();
+    if (userRole?.role === 'demo') {
+          console.log(userRole);
+      handleGetAllInternDemo();
+    } else {
+      handleGetAllIntern();
+    }
     handleGetTradeUnion();
     handleGetSource();
     handleGetOrder();
-  }, [handleGetAllIntern, handleGetTradeUnion, handleGetOrder, handleGetSource]);
+  }, [handleGetAllIntern, handleGetAllInternDemo, handleGetTradeUnion, handleGetOrder, handleGetSource, userRole]);
 
   return (
     <>
@@ -340,7 +355,7 @@ export default function InternListView() {
                       tableData.filter((user) => user.status === 'complete').length}
                     {tab.value === 'soon' &&
                       tableData.filter((user) => user.status === 'soon').length}
-                      {tab.value === 'wait' &&
+                    {tab.value === 'wait' &&
                       tableData.filter((user) => user.status === 'wait').length}
                     {/* {tab.value === 'rejected' &&
                       dataFiltered.filter((user) => user.status === 'rejected').length} */}
@@ -441,8 +456,7 @@ export default function InternListView() {
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
                         onEditRow={() => handleEditRow(row._id)}
-                                                onEditIsuzuRow={() => handleEditIsuzuRow(row._id)}
-
+                        onEditIsuzuRow={() => handleEditIsuzuRow(row._id)}
                         onViewRow={() => handleViewRow(row._id)}
                       />
                     ))}
@@ -564,12 +578,14 @@ function applyFilter({
     inputData = inputData.filter((user) => source.includes(user?.source?.name));
   }
 
-   if (type?.length) {
+  if (type?.length) {
     inputData = inputData.filter((user) => type.includes(user?.type));
   }
 
-    if (year?.length) {
-    inputData = inputData.filter((user) => year.includes(new Date(user?.departureDate)?.getFullYear().toString()));
+  if (year?.length) {
+    inputData = inputData.filter((user) =>
+      year.includes(new Date(user?.departureDate)?.getFullYear().toString())
+    );
   }
 
   return inputData;

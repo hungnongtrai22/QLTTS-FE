@@ -17,7 +17,7 @@ export default function Router() {
   const { user } = useAuthContext();
   let redirectPath = paths.dashboard.intern.listBySource;
 
-  if (user?.role === 'admin') {
+  if (user?.role === 'admin' || user?.role === 'demo') {
     redirectPath = paths.dashboard.root;
   } else if (user?.role === 'tradeunion') {
     redirectPath = paths.dashboard.intern.listByTradeUnion;
