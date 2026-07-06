@@ -314,6 +314,14 @@ export default function InternPDFAll({ invoice, stt }: Props) {
     type
   } = invoice;
 
+  let temp123 = "技能実習生履歴書";
+
+  if(type === 'skill'){
+    temp123 = "特定技能履歴書"
+  }else if(type === 'engineer'){
+        temp123 = "エンジニア履歴書"
+  }
+
   const styles = useStyles();
 
   return (
@@ -335,7 +343,7 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                 <View>
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_7, styles.titleBackground]}>
-                      <Text style={styles.subtitle2}>{type === 'engineer' ? 'エンジンア' : '技能実習'}生履歴書</Text>
+                      <Text style={styles.subtitle2}>{temp123}</Text>
                     </View>
 
                     <View style={[styles.tableCell_7, styles.titleBackground]}>
