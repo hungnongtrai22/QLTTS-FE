@@ -1502,6 +1502,7 @@ fillInfo: currentIntern?.fillInfo,
                       '祖母',
                       '祖父',
                       '伯母',
+                      '義姉'
                     ].map((option) => (
                       <MenuItem key={option} value={option}>
                         {option}
