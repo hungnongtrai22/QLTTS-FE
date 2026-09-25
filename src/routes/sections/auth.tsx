@@ -17,7 +17,6 @@ const AmplifyForgotPasswordPage = lazy(() => import('src/pages/auth/amplify/forg
 
 // JWT
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
-const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
 
 // FIREBASE
 const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
@@ -86,14 +85,8 @@ const authJwt = {
         </AuthClassicLayout>
       ),
     },
-    {
-      path: 'register',
-      element: (
-        <AuthClassicLayout title="Manage the job more effectively with Minimal">
-          <JwtRegisterPage />
-        </AuthClassicLayout>
-      ),
-    },
+    // Đã gỡ route 'register': hệ thống không có đăng ký công khai.
+    // Tài khoản chỉ được tạo bởi admin (POST /api/account/register, yêu cầu token admin).
   ],
 };
 

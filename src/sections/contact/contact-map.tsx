@@ -1,3 +1,8 @@
+// Mapbox nạp tại đây thay vì trong App.tsx: thư viện nặng (~800KB + worker ~490KB)
+// mà chỉ trang này dùng, nên để nó rơi vào chunk riêng của route /contact-us.
+import 'src/utils/mapboxgl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
 import Map from 'react-map-gl';
 import { useState } from 'react';
 // @mui

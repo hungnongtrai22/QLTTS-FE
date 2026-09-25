@@ -200,6 +200,11 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/diary/${MOCK_ID}/edit`,
       },
     },
+    // Tài khoản đăng nhập (chỉ admin), khác với hồ sơ thực tập sinh ở `intern`.
+    account: {
+      root: `${ROOTS.DASHBOARD}/account/list`,
+      list: `${ROOTS.DASHBOARD}/account/list`,
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user/list`,
       new: `${ROOTS.DASHBOARD}/user/new`,

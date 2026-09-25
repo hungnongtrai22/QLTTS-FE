@@ -4,7 +4,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-loop-func */
 import React from 'react';
-import ExcelJS from 'exceljs';
+// ExcelJS (~1MB) nạp động ngay lúc bấm xuất file, không nằm trong bundle khởi động.
+// Phần kiểu dùng cú pháp import('exceljs') — chỉ tồn tại lúc biên dịch.
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 import MenuItem from '@mui/material/MenuItem';
@@ -89,11 +90,11 @@ function normalizeName(name: string): string {
 }
 
 const ExportInternsPass: React.FC<Props> = ({ interns, name }) => {
-  const fetchImageBuffer = async (url: string): Promise<ExcelJS.Buffer | undefined> => {
+  const fetchImageBuffer = async (url: string): Promise<import('exceljs').Buffer | undefined> => {
     try {
       const response = await axios.get(url, { responseType: 'arraybuffer' });
       const arrayBuffer = response.data as ArrayBuffer;
-      return new Uint8Array(arrayBuffer) as unknown as ExcelJS.Buffer;
+      return new Uint8Array(arrayBuffer) as unknown as import('exceljs').Buffer;
     } catch {
       console.warn('Không thể tải ảnh:', url);
       return undefined;
@@ -105,6 +106,7 @@ const ExportInternsPass: React.FC<Props> = ({ interns, name }) => {
       // Giữ tối đa 30 intern
       const list = interns;
 
+      const ExcelJS = (await import('exceljs')).default;
       const workbook = new ExcelJS.Workbook();
       const sheet = workbook.addWorksheet('Interns');
 

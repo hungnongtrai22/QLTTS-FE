@@ -6,24 +6,27 @@ import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
-import CreateOrder from 'src/pages/dashboard/order/new';
-import InternListByDongThapPage from 'src/pages/dashboard/intern/listByDongThap';
-import OrderListPage from 'src/pages/dashboard/order/list';
-import OrderEditPage from 'src/pages/dashboard/order/edit';
-import SourceCreatePage from 'src/pages/dashboard/source/new';
-import SourceEditPage from 'src/pages/dashboard/source/edit';
-import InternListBySource from 'src/sections/user/view/intern-list-by-source';
-import DiaryListPage from 'src/pages/dashboard/diary/list';
-import DiaryCreatePage from 'src/pages/dashboard/diary/new';
-import DiaryEditPage from 'src/pages/dashboard/diary/edit';
-import DiaryProfileView from 'src/sections/user/view/diary-profile-view';
-import InternListPointPage from 'src/pages/dashboard/intern/listPoint';
-import TourDetailsPage from 'src/pages/dashboard/tour/details';
-import GalleryEditPage from 'src/pages/dashboard/gallery/edit';
-import ComparePage from 'src/pages/dashboard/intern/compare';
-import InternEditIsuzuPage from 'src/pages/dashboard/intern/editIsuzu';
 
 // ----------------------------------------------------------------------
+
+// Đã chuyển sang lazy(): trước đây 16 trang này import trực tiếp nên bị gộp vào
+// bundle khởi động, tải về cho cả người dùng không có quyền xem chúng.
+const CreateOrder = lazy(() => import('src/pages/dashboard/order/new'));
+const InternListByDongThapPage = lazy(() => import('src/pages/dashboard/intern/listByDongThap'));
+const OrderListPage = lazy(() => import('src/pages/dashboard/order/list'));
+const OrderEditPage = lazy(() => import('src/pages/dashboard/order/edit'));
+const SourceCreatePage = lazy(() => import('src/pages/dashboard/source/new'));
+const SourceEditPage = lazy(() => import('src/pages/dashboard/source/edit'));
+const InternListBySource = lazy(() => import('src/sections/user/view/intern-list-by-source'));
+const DiaryListPage = lazy(() => import('src/pages/dashboard/diary/list'));
+const DiaryCreatePage = lazy(() => import('src/pages/dashboard/diary/new'));
+const DiaryEditPage = lazy(() => import('src/pages/dashboard/diary/edit'));
+const DiaryProfileView = lazy(() => import('src/sections/user/view/diary-profile-view'));
+const InternListPointPage = lazy(() => import('src/pages/dashboard/intern/listPoint'));
+const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
+const GalleryEditPage = lazy(() => import('src/pages/dashboard/gallery/edit'));
+const ComparePage = lazy(() => import('src/pages/dashboard/intern/compare'));
+const InternEditIsuzuPage = lazy(() => import('src/pages/dashboard/intern/editIsuzu'));
 
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
@@ -67,6 +70,8 @@ const CompanyCreatePage = lazy(() => import('src/pages/dashboard/company/new'));
 const CompanyEditPage = lazy(() => import('src/pages/dashboard/company/edit'));
 // Source
 const SourceListPage = lazy(() => import('src/pages/dashboard/source/list'));
+// Account (tài khoản đăng nhập — chỉ admin)
+const AccountListPage = lazy(() => import('src/pages/dashboard/account/list'));
 // USER
 // const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 // const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
@@ -336,6 +341,19 @@ export const dashboardRoutes = [
             ),
           },
           // { path: 'account', element: <InternAccountPage /> },
+        ],
+      },
+      {
+        path: 'account',
+        children: [
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <AccountListPage />
+              </RoleBasedGuard>
+            ),
+          },
         ],
       },
       {

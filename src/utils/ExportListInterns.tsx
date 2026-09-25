@@ -4,7 +4,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-loop-func */
 import React, { useState } from 'react';
-import ExcelJS from 'exceljs';
+// ExcelJS (~1MB) nạp động ngay lúc bấm xuất file, không nằm trong bundle khởi động.
+// Phần kiểu dùng cú pháp import('exceljs') — chỉ tồn tại lúc biên dịch.
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 import MenuItem from '@mui/material/MenuItem';
@@ -59,6 +60,11 @@ export type Intern = {
 type Props = {
   interns: Intern[];
   name: any;
+  /**
+   * Khi bảng dùng phân trang phía server, prop `interns` chỉ chứa trang hiện tại.
+   * Truyền hàm này để lấy trọn bộ kết quả đã lọc ngay lúc bấm xuất file.
+   */
+  fetchInterns?: () => Promise<Intern[]>;
 };
 
 const changDateJP = (date: any): string => {
@@ -106,13 +112,13 @@ function normalizeName(name: string): string {
     .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
 }
 
-const ExportListInterns: React.FC<Props> = ({ interns, name }) => {
+const ExportListInterns: React.FC<Props> = ({ interns, name, fetchInterns }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const fetchImageBuffer = async (url: string): Promise<ExcelJS.Buffer | undefined> => {
+  const fetchImageBuffer = async (url: string): Promise<import('exceljs').Buffer | undefined> => {
     try {
       const response = await axios.get(url, { responseType: 'arraybuffer' });
       const arrayBuffer = response.data as ArrayBuffer;
-      return new Uint8Array(arrayBuffer) as unknown as ExcelJS.Buffer;
+      return new Uint8Array(arrayBuffer) as unknown as import('exceljs').Buffer;
     } catch {
       console.warn('Không thể tải ảnh:', url);
       return undefined;
@@ -123,8 +129,10 @@ const ExportListInterns: React.FC<Props> = ({ interns, name }) => {
     try {
       // Giữ tối đa 30 intern
       setIsLoading(true);
-      const list = interns;
+      // Bảng phân trang chỉ giữ trang hiện tại, nên lấy trọn bộ ngay tại đây.
+      const list = fetchInterns ? await fetchInterns() : interns;
 
+      const ExcelJS = (await import('exceljs')).default;
       const workbook = new ExcelJS.Workbook();
       const sheet = workbook.addWorksheet('Interns');
 

@@ -9,16 +9,19 @@ import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 
-// map
-import 'src/utils/mapboxgl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+// carousel
+// BẮT BUỘC giữ: trang tổng quan (`overview/app/app-featured.tsx`) và `/about-us` đều
+// dùng Carousel. Gỡ CSS này ra thì slide xếp chồng không style, kéo giãn cả hàng Grid
+// và trang tổng quan trông như một khối xanh rỗng. CSS chỉ vài KB, không đáng để bỏ.
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
+// Bản đồ (mapbox-gl) KHÔNG nạp ở đây: nó nặng ~800KB kèm worker ~490KB mà chỉ dùng ở
+// `/contact-us`. Phần nạp nằm trong `sections/contact/contact-map.tsx` để rơi vào chunk
+// của riêng route đó. Đừng đưa lại lên file này.
 
 // editor
 import 'react-quill/dist/quill.snow.css';
-
-// slick-carousel
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 
 // lazy image
 import 'react-lazy-load-image-component/src/effects/blur.css';
