@@ -1,3 +1,4 @@
+import { memo } from 'react';
 /* eslint-disable no-restricted-globals */
 
 // @mui
@@ -25,11 +26,11 @@ import InternQuickEditForm from './intern-quick-edit-form';
 
 type Props = {
   selected: boolean;
-  onEditRow: VoidFunction;
+  onEditRow: (id: string) => void;
   row: IInternItem;
-  onSelectRow: VoidFunction;
-  onDeleteRow: VoidFunction;
-  onViewRow: VoidFunction;
+  onSelectRow: (id: string) => void;
+  onDeleteRow: (id: string) => void;
+  onViewRow: (id: string) => void;
 };
 
 const changDateJP = (date: any) => {
@@ -58,7 +59,7 @@ const changMonthJP = (date: any) => {
   return `${parts[0]}年${parts[1]}月`;
 };
 
-export default function InternByTradeUnionTableRow({
+function InternByTradeUnionTableRow({
   row,
   selected,
   onEditRow,
@@ -78,7 +79,7 @@ export default function InternByTradeUnionTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
+          <Checkbox checked={selected} onClick={() => onSelectRow(row._id)} />
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
@@ -127,7 +128,7 @@ export default function InternByTradeUnionTableRow({
             <IconButton
               color={quickEdit.value ? 'inherit' : 'default'}
               onClick={() => {
-                onViewRow();
+                onViewRow(row._id);
               }}
             >
               <Iconify icon="solar:eye-bold" />
@@ -161,7 +162,7 @@ export default function InternByTradeUnionTableRow({
 
         <MenuItem
           onClick={() => {
-            onEditRow();
+            onEditRow(row._id);
             popover.onClose();
           }}
         >
@@ -171,7 +172,7 @@ export default function InternByTradeUnionTableRow({
 
          <MenuItem
           onClick={() => {
-            onEditRow();
+            onEditRow(row._id);
             popover.onClose();
           }}
         >
@@ -186,7 +187,7 @@ export default function InternByTradeUnionTableRow({
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={() => onDeleteRow(row._id)}>
             Delete
           </Button>
         }
@@ -194,3 +195,8 @@ export default function InternByTradeUnionTableRow({
     </>
   );
 }
+
+// Bọc memo: dòng bảng chỉ render lại khi chính prop của nó đổi.
+// Chỉ có tác dụng vì các view truyền thẳng hàm ổn định (không phải arrow nội tuyến)
+// và useTable.onSelectRow đã bỏ phụ thuộc vào `selected`.
+export default memo(InternByTradeUnionTableRow);

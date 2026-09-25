@@ -1,3 +1,4 @@
+import { memo } from 'react';
 // @mui
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -25,13 +26,13 @@ import StudyQuickEditForm from './study-quick-edit-form';
 
 type Props = {
   selected: boolean;
-  onEditRow: VoidFunction;
-    onEditIsuzuRow: VoidFunction;
+  onEditRow: (id: string) => void;
+    onEditIsuzuRow: (id: string) => void;
 
   row: IInternItem;
-  onSelectRow: VoidFunction;
-  onDeleteRow: VoidFunction;
-  onViewRow: VoidFunction;
+  onSelectRow: (id: string) => void;
+  onDeleteRow: (id: string) => void;
+  onViewRow: (id: string) => void;
 };
 
 const changDateJP = (date: any) => {
@@ -42,7 +43,7 @@ const changDateJP = (date: any) => {
   return customFormat;
 };
 
-export default function InternTableRow({
+function InternTableRow({
   row,
   selected,
   onEditRow,
@@ -68,7 +69,7 @@ export default function InternTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
+          <Checkbox checked={selected} onClick={() => onSelectRow(row._id)} />
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
@@ -140,7 +141,7 @@ export default function InternTableRow({
             <IconButton
               color={quickEdit.value ? 'inherit' : 'default'}
               onClick={() => {
-                onViewRow();
+                onViewRow(row._id);
               }}
             >
               <Iconify icon="solar:eye-bold" />
@@ -186,7 +187,7 @@ export default function InternTableRow({
 
         <MenuItem
           onClick={() => {
-            onEditRow();
+            onEditRow(row._id);
             popover.onClose();
           }}
         >
@@ -196,7 +197,7 @@ export default function InternTableRow({
 
          <MenuItem
           onClick={() => {
-            onEditIsuzuRow();
+            onEditIsuzuRow(row._id);
             popover.onClose();
           }}
         >
@@ -206,7 +207,7 @@ export default function InternTableRow({
 
          <MenuItem
           onClick={() => {
-            onEditRow();
+            onEditRow(row._id);
             popover.onClose();
           }}
         >
@@ -216,7 +217,7 @@ export default function InternTableRow({
 
         {/* <MenuItem
           onClick={() => {
-            onEditRow();
+            onEditRow(row._id);
             popover.onClose();
           }}
         >
@@ -231,7 +232,7 @@ export default function InternTableRow({
         title="Xoá"
         content="Bạn có chắc muốn xóa thực tập sinh (thao tác này sẽ không hoàn tác lại được)?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={() => onDeleteRow(row._id)}>
             Xoá
           </Button>
         }
@@ -239,3 +240,8 @@ export default function InternTableRow({
     </>
   );
 }
+
+// Bọc memo: dòng bảng chỉ render lại khi chính prop của nó đổi.
+// Chỉ có tác dụng vì các view truyền thẳng hàm ổn định (không phải arrow nội tuyến)
+// và useTable.onSelectRow đã bỏ phụ thuộc vào `selected`.
+export default memo(InternTableRow);

@@ -14,6 +14,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { ICompanyTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
+import { useDebouncedFilter } from 'src/hooks/use-debounced-filter';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ExportListCompany from 'src/utils/ExportListCompany';
 
@@ -36,11 +37,15 @@ export default function CompanyTableToolbar({
 }: Props) {
   const popover = usePopover();
 
+  // Ô nhập cập nhật ngay, nhưng chỉ báo lên view sau khi ngừng gõ —
+  // tránh chạy lại applyFilter trên toàn bộ danh sách ở mỗi phím.
+  const searchName = useDebouncedFilter(filters.name, (next) => onFilters('name', next));
+
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      onFilters('name', event.target.value);
+      searchName.onChange(event.target.value);
     },
-    [onFilters]
+    [searchName]
   );
 
   const handleFilterRole = useCallback(
@@ -101,7 +106,7 @@ export default function CompanyTableToolbar({
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
-            value={filters.name}
+            value={searchName.value}
             onChange={handleFilterName}
             placeholder="Search..."
             InputProps={{

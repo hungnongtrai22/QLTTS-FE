@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -87,11 +87,17 @@ export default function TradeUnionListView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
+  // Bọc useMemo: trước đây applyFilter chạy lại ở MỌI lần render, mà nó sao chép
+  // rồi sắp xếp toàn bộ mảng và lọc tuần tự — tốn nhất khi danh sách dài.
+  const dataFiltered = useMemo(
+    () =>
+      applyFilter({
+        inputData: tableData,
+        comparator: getComparator(table.order, table.orderBy),
+        filters,
+      }),
+    [tableData, table.order, table.orderBy, filters]
+  );
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,

@@ -122,105 +122,35 @@ export default function OverviewAppView() {
 
   const settings = useSettingsContext();
 
-  const handleGetAllIntern = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/count`);
-    // console.log(data.interns);
-    setCount(data);
-  }, []);
+  // Một lời gọi duy nhất thay cho 12 endpoint riêng lẻ.
+  // Backend chạy 12 phép thống kê song song rồi cache 3 phút — xem
+  // QLTTS-BE/src/pages/api/user/dashboardStats.ts
+  const handleGetStats = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_HOST_API}/api/user/dashboardStats`
+      );
 
-  const handleGetAllCountSource = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/countSource`);
-    // console.log(data.interns);
-    setCountSource(data);
-  }, []);
-
-  const handleGetAllCountSourceByMonth = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/countByMonth`);
-    // console.log(data.interns);
-    setCountSourceByMonth(data);
-  }, []);
-
-  const handleGetAllCountSourceByWeek = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/countByWeek`);
-    // console.log(data.interns);
-    setCountSourceByWeek(data);
-  }, []);
-
-  const handleGetTopStudy = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/topStudy`);
-    // console.log(data);
-    setTopStudy(data);
-  }, []);
-
-  const handleGetAvgSource = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/avgSource`);
-    console.log(data?.stats);
-    setAvgSource(data?.stats);
-  }, []);
-
-  const handleTotal3Year = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/total3Year`);
-    console.log(data);
-    setTotal3Year(data);
-  }, []);
-
-  const handleTotal = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/total`);
-    console.log(data);
-    setTotal(data);
-  }, []);
-
-  const handleTotal1Year = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/total1Year`);
-    console.log(data);
-    setTotal1Year(data);
-  }, []);
-
-  const handleTotalEngineer = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/totalEngineer`);
-    console.log(data);
-    setTotalEngineer(data);
-  }, []);
-
-  const handleTokuteiKS = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/totalTokuteiKS`);
-    console.log(data);
-    setTotalTokuteiKS(data);
-  }, []);
-
-  const handleTokutei = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/totalTokutei`);
-    console.log(data);
-    setTotalTokutei(data);
+      setCount(data.count);
+      setCountSource(data.countSource);
+      setCountSourceByMonth(data.countByMonth);
+      setCountSourceByWeek(data.countByWeek);
+      setTopStudy(data.topStudy);
+      setAvgSource(data.avgSource?.stats);
+      setTotal3Year(data.total3Year);
+      setTotal(data.total);
+      setTotal1Year(data.total1Year);
+      setTotalEngineer(data.totalEngineer);
+      setTotalTokuteiKS(data.totalTokuteiKS);
+      setTotalTokutei(data.totalTokutei);
+    } catch (error) {
+      console.error('[Dashboard stats]', error);
+    }
   }, []);
 
   useEffect(() => {
-    handleGetAllIntern();
-    handleGetAllCountSource();
-    handleGetAllCountSourceByMonth();
-    handleGetAllCountSourceByWeek();
-    handleGetTopStudy();
-    handleGetAvgSource();
-    handleTotal3Year();
-    handleTotal();
-    handleTotal1Year();
-    handleTotalEngineer();
-    handleTokuteiKS();
-    handleTokutei();
-  }, [
-    handleGetAllIntern,
-    handleGetAllCountSource,
-    handleGetAllCountSourceByMonth,
-    handleGetAllCountSourceByWeek,
-    handleGetTopStudy,
-    handleGetAvgSource,
-    handleTotal3Year,
-    handleTotal,
-    handleTotal1Year,
-    handleTotalEngineer,
-    handleTokuteiKS,
-    handleTokutei,
-  ]);
+    handleGetStats();
+  }, [handleGetStats]);
 
   // console.log((countSourceByMonth as any)?.study?.chart?.series);
 

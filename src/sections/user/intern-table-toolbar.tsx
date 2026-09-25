@@ -16,13 +16,12 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
+import { useDebouncedFilter } from 'src/hooks/use-debounced-filter';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useLocales } from 'src/locales';
 import { saveAs } from 'file-saver';
-import { pdf } from '@react-pdf/renderer';
 import axios from 'axios';
 
-import AllAttendancePDF from '../order/AllAttendancePDF';
 
 // ----------------------------------------------------------------------
 
@@ -75,11 +74,15 @@ export default function InternTableToolbar({
 
   const { t } = useLocales();
 
+  // Ô nhập cập nhật ngay, nhưng chỉ báo lên view sau khi ngừng gõ —
+  // tránh chạy lại applyFilter trên toàn bộ danh sách ở mỗi phím.
+  const searchName = useDebouncedFilter(filters.name, (next) => onFilters('name', next));
+
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      onFilters('name', event.target.value);
+      searchName.onChange(event.target.value);
     },
-    [onFilters]
+    [searchName]
   );
 
   const handleFilterRole = useCallback(
@@ -185,7 +188,7 @@ export default function InternTableToolbar({
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
-            value={filters.name}
+            value={searchName.value}
             onChange={handleFilterName}
             placeholder={t('search') || 'Search'}
             InputProps={{
@@ -241,6 +244,13 @@ export default function InternTableToolbar({
                   `${process.env.REACT_APP_HOST_API}/api/event/listAll`
                 );
                 // console.log('newEvent', newEvent);
+              // @react-pdf/renderer (~1.3MB) chỉ nạp khi thật sự bấm xuất PDF,
+              // thay vì tải kèm mỗi lần mở trang danh sách.
+              const [{ pdf }, { default: AllAttendancePDF }] = await Promise.all([
+                import('@react-pdf/renderer'),
+                import('../order/AllAttendancePDF'),
+              ]);
+
               const blob = await pdf(
                 <AllAttendancePDF intern={interns} attendance={result} event={newEvent}/>
               ).toBlob();

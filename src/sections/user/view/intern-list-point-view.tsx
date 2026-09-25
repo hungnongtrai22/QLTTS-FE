@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -68,6 +68,10 @@ const defaultFilters = {
 export default function InternListPointView() {
   const table = useTable();
 
+  // Tách sẵn phương thức cần dùng: tham chiếu ổn định, và eslint không đòi
+  // cả object `table` trong mảng phụ thuộc (object đó đổi mỗi khi selection đổi).
+  const { onResetPage, onUpdatePageDeleteRow } = table;
+
   const settings = useSettingsContext();
 
   const { user } = useAuthContext();
@@ -106,11 +110,17 @@ export default function InternListPointView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
+  // Bọc useMemo: trước đây applyFilter chạy lại ở MỌI lần render, mà nó sao chép
+  // rồi sắp xếp toàn bộ mảng và lọc tuần tự — tốn nhất khi danh sách dài.
+  const dataFiltered = useMemo(
+    () =>
+      applyFilter({
+        inputData: tableData,
+        comparator: getComparator(table.order, table.orderBy),
+        filters,
+      }),
+    [tableData, table.order, table.orderBy, filters]
+  );
 
   console.log('Order', table.order, table.orderBy);
 
@@ -148,7 +158,7 @@ export default function InternListPointView() {
 
   const handleFilters = useCallback(
     async (name: string, value: IUserTableFilterValue) => {
-      table.onResetPage();
+      onResetPage();
       setFilters((prevState) => ({
         ...prevState,
         [name]: value,
@@ -157,7 +167,7 @@ export default function InternListPointView() {
         await handleGetCompany(value);
       }
     },
-    [table, handleGetCompany]
+    [onResetPage, handleGetCompany]
   );
 
   const handleAddInternIntoCompare = useCallback(async () => {
@@ -177,9 +187,11 @@ export default function InternListPointView() {
       const deleteRow = tableData.filter((row) => row._id !== id);
       setTableData(deleteRow);
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
+      onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, tableData]
+    // Chỉ phụ thuộc đúng phương thức được dùng: cả object `table` đổi mỗi khi
+    // selection đổi, sẽ làm memo trên dòng bảng mất tác dụng.
+    [dataInPage.length, onUpdatePageDeleteRow, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -412,10 +424,10 @@ export default function InternListPointView() {
                         key={row._id}
                         row={row} 
                         selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                        onViewRow={() => handleViewRow(row._id)}
+                        onSelectRow={table.onSelectRow}
+                        onDeleteRow={handleDeleteRow}
+                        onEditRow={handleEditRow}
+                        onViewRow={handleViewRow}
                       />
                     ))}
 

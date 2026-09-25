@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 //
 import { TableProps } from './types';
 
@@ -39,16 +39,16 @@ export default function useTable(props?: UseTableProps): ReturnType {
     [order, orderBy]
   );
 
-  const onSelectRow = useCallback(
-    (inputValue: string) => {
-      const newSelected = selected.includes(inputValue)
-        ? selected.filter((value) => value !== inputValue)
-        : [...selected, inputValue];
-
-      setSelected(newSelected);
-    },
-    [selected]
-  );
+  // Dùng dạng hàm của setSelected để callback không phụ thuộc vào `selected`.
+  // Nếu phụ thuộc, mỗi lần chọn một dòng là hàm này đổi tham chiếu, khiến React.memo
+  // trên component dòng bảng mất tác dụng hoàn toàn.
+  const onSelectRow = useCallback((inputValue: string) => {
+    setSelected((prev) =>
+      prev.includes(inputValue)
+        ? prev.filter((value) => value !== inputValue)
+        : [...prev, inputValue]
+    );
+  }, []);
 
   const onChangeRowsPerPage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setPage(0);
@@ -115,30 +115,52 @@ export default function useTable(props?: UseTableProps): ReturnType {
     [page, rowsPerPage, selected.length]
   );
 
-  return {
-    dense,
-    order,
-    page,
-    orderBy,
-    rowsPerPage,
-    //
-    selected,
-    onSelectRow,
-    onSelectAllRows,
-    //
-    onSort,
-    onChangePage,
-    onChangeDense,
-    onResetPage,
-    onChangeRowsPerPage,
-    onUpdatePageDeleteRow,
-    onUpdatePageDeleteRows,
-    //
-    setPage,
-    setDense,
-    setOrder,
-    setOrderBy,
-    setSelected,
-    setRowsPerPage,
-  };
+  // Bọc useMemo: trước đây hook trả về một object literal mới ở MỌI lần render, nên
+  // mọi callback trong view có `table` trong mảng phụ thuộc cũng đổi theo. Điều đó làm
+  // React.memo trên component dòng bảng mất tác dụng hoàn toàn.
+  return useMemo(
+    () => ({
+      dense,
+      order,
+      page,
+      orderBy,
+      rowsPerPage,
+      //
+      selected,
+      onSelectRow,
+      onSelectAllRows,
+      //
+      onSort,
+      onChangePage,
+      onChangeDense,
+      onResetPage,
+      onChangeRowsPerPage,
+      onUpdatePageDeleteRow,
+      onUpdatePageDeleteRows,
+      //
+      setPage,
+      setDense,
+      setOrder,
+      setOrderBy,
+      setSelected,
+      setRowsPerPage,
+    }),
+    [
+      dense,
+      order,
+      page,
+      orderBy,
+      rowsPerPage,
+      selected,
+      onSelectRow,
+      onSelectAllRows,
+      onSort,
+      onChangePage,
+      onChangeDense,
+      onResetPage,
+      onChangeRowsPerPage,
+      onUpdatePageDeleteRow,
+      onUpdatePageDeleteRows,
+    ]
+  );
 }

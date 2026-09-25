@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -18,7 +18,7 @@ import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 import { useLocales } from 'src/locales';
 // types
-import { IInternItem, IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { IInternItem, IUserTableFilterValue } from 'src/types/user';
 // _mock
 import { _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 // hooks
@@ -33,7 +33,6 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   useTable,
-  getComparator,
   emptyRows,
   TableNoData,
   TableEmptyRows,
@@ -107,6 +106,10 @@ export default function InternListView() {
 
   const table = useTable();
 
+  // Tách sẵn phương thức cần dùng: tham chiếu ổn định, và eslint không đòi
+  // cả object `table` trong mảng phụ thuộc (object đó đổi mỗi khi selection đổi).
+  const { onResetPage, onUpdatePageDeleteRow } = table;
+
   const settings = useSettingsContext();
 
   const router = useRouter();
@@ -122,22 +125,57 @@ export default function InternListView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
+  // Việc lọc, sắp xếp và phân trang nay do server làm. `tableData` chỉ chứa trang hiện tại.
+  const [total, setTotal] = useState(0);
+  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  // Ô tìm kiếm gõ tới đâu gọi API tới đó thì quá tốn; hoãn lại 400ms.
+  const [debouncedName, setDebouncedName] = useState('');
+
+  // Tăng số này để buộc tải lại danh sách (sau khi xoá). Dùng token thay vì gọi thẳng
+  // hàm fetch để không phải phụ thuộc vào hàm được khai báo phía dưới.
+  const [reloadToken, setReloadToken] = useState(0);
+  const reload = useCallback(() => setReloadToken((value) => value + 1), []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedName(filters.name), 400);
+    return () => clearTimeout(timer);
+  }, [filters.name]);
 
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = !tableData.length && !loading;
+
+  // Tham số truy vấn dùng chung cho cả bảng lẫn các thao tác hàng loạt.
+  const filterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+
+    if (debouncedName) params.search = debouncedName;
+    if (filters.status && filters.status !== 'all') params.status = filters.status;
+    if (filters.tradeUnion?.length) params.tradeUnion = filters.tradeUnion.join(',');
+    if (filters.source?.length) params.source = filters.source.join(',');
+    if (filters.company?.length) params.company = filters.company.join(',');
+    if (filters.type?.length) params.type = filters.type.join(',');
+    if (filters.year?.length) params.year = filters.year.join(',');
+
+    return params;
+    // Cố ý KHÔNG phụ thuộc cả object `filters`, và cố ý bỏ `filters.name`:
+    // name đổi ở mỗi phím gõ, nếu đưa vào đây thì mỗi ký tự sẽ sinh một object
+    // filterParams mới -> handleGetAllIntern đổi -> gọi lại API với giá trị tìm
+    // kiếm CŨ. Giá trị tìm kiếm đã được thay bằng debouncedName ở trên.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    debouncedName,
+    filters.status,
+    filters.tradeUnion,
+    filters.source,
+    filters.company,
+    filters.type,
+    filters.year,
+  ]);
 
   const handleGetCompany = useCallback(async (tradeUnionName: any) => {
     const { data: newData } = await axios.post(
@@ -162,7 +200,7 @@ export default function InternListView() {
 
   const handleFilters = useCallback(
     async (name: string, value: IUserTableFilterValue) => {
-      table.onResetPage();
+      onResetPage();
       setFilters((prevState) => ({
         ...prevState,
         [name]: value,
@@ -171,7 +209,7 @@ export default function InternListView() {
         await handleGetCompany(value);
       }
     },
-    [table, handleGetCompany]
+    [onResetPage, handleGetCompany]
   );
 
   const handleDeleteRow = useCallback(
@@ -188,24 +226,19 @@ export default function InternListView() {
       await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/delete`, {
         _id: id,
       });
-      const deleteRow = tableData.filter((row) => row._id !== id);
-      setTableData(deleteRow);
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
+      // Tải lại từ server thay vì tự cắt mảng: bảng chỉ giữ trang hiện tại,
+      // xoá xong thì tổng số và các trang sau đều đổi.
+      reload();
     },
-    [dataInPage.length, table, tableData]
+    [reload]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row._id));
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+    // Bảng đã phân trang phía server nên không tự cắt mảng nữa; tải lại cho chắc.
+    table.onSelectAllRows(false, []);
+    reload();
+  }, [table, reload]);
 
   const handleAddInternIntoOrder = useCallback(async () => {
     // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
@@ -249,18 +282,70 @@ export default function InternListView() {
   }, []);
 
   const handleGetAllIntern = useCallback(async () => {
-    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`);
-    // console.log(data.interns);
-    setTableData(data.interns);
-  }, []);
+    setLoading(true);
+    try {
+      const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`, {
+        params: {
+          ...filterParams,
+          page: table.page,
+          limit: table.rowsPerPage,
+          sortBy: table.orderBy,
+          sortOrder: table.order,
+        },
+      });
 
-  const handleGetAllInternDemo = useCallback(async () => {
-    const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`, {
-      internsDemo: userRole?.internsDemo,
+      setTableData(data.interns);
+      setTotal(data.total ?? data.interns.length);
+      setStatusCounts(data.statusCounts ?? {});
+    } catch (error) {
+      enqueueSnackbar((error as any)?.response?.data?.message || 'Không tải được danh sách', {
+        variant: 'error',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [filterParams, table.page, table.rowsPerPage, table.orderBy, table.order, enqueueSnackbar]);
+
+  /**
+   * Lấy trọn bộ kết quả đã lọc, không phân trang — dùng cho xuất Excel và PDF điểm danh.
+   * Gọi không kèm tham số `page` nên server trả về đủ trường, chỉ những hồ sơ khớp bộ lọc.
+   */
+  const fetchAllInterns = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`, {
+      params: filterParams,
     });
-    // console.log(data.interns);
-    setTableData(data.interns);
-  }, [userRole]);
+    return data.interns as IInternItem[];
+  }, [filterParams]);
+
+  // Tài khoản demo chỉ xem một danh sách đã gán sẵn, thường rất ngắn nên chưa cần
+  // phân trang phía server. Vẫn cập nhật total/statusCounts để giao diện thống nhất.
+  const handleGetAllInternDemo = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`, {
+        internsDemo: userRole?.internsDemo,
+      });
+
+      setTableData(data.interns);
+      setTotal(data.interns.length);
+      setStatusCounts(
+        data.interns.reduce(
+          (acc: Record<string, number>, item: IInternItem) => {
+            acc[item.status] = (acc[item.status] || 0) + 1;
+            acc.all += 1;
+            return acc;
+          },
+          { all: 0 }
+        )
+      );
+    } catch (error) {
+      enqueueSnackbar((error as any)?.response?.data?.message || 'Không tải được danh sách', {
+        variant: 'error',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [userRole, enqueueSnackbar]);
 
   const handleGetTradeUnion = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
@@ -279,17 +364,22 @@ export default function InternListView() {
     setOrders(data.orders.map((item: any) => ({ text: item.name, value: item._id })));
   }, []);
 
+  // Danh sách nghiệp đoàn / nguồn / đơn hàng chỉ để đổ vào bộ lọc — nạp một lần,
+  // không nạp lại mỗi khi đổi trang hay đổi bộ lọc.
+  useEffect(() => {
+    handleGetTradeUnion();
+    handleGetSource();
+    handleGetOrder();
+  }, [handleGetTradeUnion, handleGetSource, handleGetOrder]);
+
+  // Bảng nạp lại khi đổi trang, đổi sắp xếp, đổi bộ lọc, hoặc sau khi xoá.
   useEffect(() => {
     if (userRole?.role === 'demo') {
-          console.log(userRole);
       handleGetAllInternDemo();
     } else {
       handleGetAllIntern();
     }
-    handleGetTradeUnion();
-    handleGetSource();
-    handleGetOrder();
-  }, [handleGetAllIntern, handleGetAllInternDemo, handleGetTradeUnion, handleGetOrder, handleGetSource, userRole]);
+  }, [handleGetAllIntern, handleGetAllInternDemo, userRole, reloadToken]);
 
   return (
     <>
@@ -344,19 +434,8 @@ export default function InternListView() {
                       'default'
                     }
                   >
-                    {tab.value === 'all' && tableData.length}
-                    {tab.value === 'study' &&
-                      tableData.filter((user) => user.status === 'study').length}
-                    {tab.value === 'interview' &&
-                      tableData.filter((user) => user.status === 'interview').length}
-                    {tab.value === 'pass' &&
-                      tableData.filter((user) => user.status === 'pass').length}
-                    {tab.value === 'complete' &&
-                      tableData.filter((user) => user.status === 'complete').length}
-                    {tab.value === 'soon' &&
-                      tableData.filter((user) => user.status === 'soon').length}
-                    {tab.value === 'wait' &&
-                      tableData.filter((user) => user.status === 'wait').length}
+                    {/* Số đếm do server tính trên toàn bộ tập đã lọc, không phải trang hiện tại. */}
+                    {statusCounts[tab.value] ?? 0}
                     {/* {tab.value === 'rejected' &&
                       dataFiltered.filter((user) => user.status === 'rejected').length} */}
                   </Label>
@@ -372,7 +451,8 @@ export default function InternListView() {
             roleOptions={tradeUnion}
             companyOptions={company}
             sources={source}
-            interns={dataFiltered}
+            interns={tableData}
+            fetchAllInterns={fetchAllInterns}
           />
 
           {canReset && (
@@ -382,7 +462,7 @@ export default function InternListView() {
               //
               onResetFilters={handleResetFilters}
               //
-              results={dataFiltered.length}
+              results={total}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -443,27 +523,22 @@ export default function InternListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
+                  {tableData.map((row) => (
                       <InternTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                        onEditIsuzuRow={() => handleEditIsuzuRow(row._id)}
-                        onViewRow={() => handleViewRow(row._id)}
+                        onSelectRow={table.onSelectRow}
+                        onDeleteRow={handleDeleteRow}
+                        onEditRow={handleEditRow}
+                        onEditIsuzuRow={handleEditIsuzuRow}
+                        onViewRow={handleViewRow}
                       />
                     ))}
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, total)}
                   />
 
                   <TableNoData notFound={notFound} />
@@ -473,7 +548,7 @@ export default function InternListView() {
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={total}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -523,70 +598,4 @@ export default function InternListView() {
       />
     </>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applyFilter({
-  inputData,
-  comparator,
-  filters,
-}: {
-  inputData: IInternItem[];
-  comparator: (a: any, b: any) => number;
-  filters: IInternTableFilters;
-}) {
-  const { name, tradeUnion, status, company, source, type, year } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  function removeVietnameseTones(str: string): string {
-    return str
-      .normalize('NFD') // Tách dấu
-      .replace(/[\u0300-\u036f]/g, '') // Xóa các dấu
-      .replace(/đ/g, 'd') // Đ -> d
-      .replace(/Đ/g, 'd') // Đ -> d
-      .toLowerCase(); // Chuyển về chữ thường
-  }
-
-  if (name) {
-    const search = removeVietnameseTones(name);
-    inputData = inputData.filter((user) => removeVietnameseTones(user.name).includes(search));
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
-  if (tradeUnion.length) {
-    inputData = inputData.filter((user) => tradeUnion.includes(user?.tradeUnion?.name));
-  }
-
-  if (company?.length) {
-    inputData = inputData.filter((user) => company.includes(user?.companySelect?.name));
-  }
-
-  if (source?.length) {
-    inputData = inputData.filter((user) => source.includes(user?.source?.name));
-  }
-
-  if (type?.length) {
-    inputData = inputData.filter((user) => type.includes(user?.type));
-  }
-
-  if (year?.length) {
-    inputData = inputData.filter((user) =>
-      year.includes(new Date(user?.departureDate)?.getFullYear().toString())
-    );
-  }
-
-  return inputData;
 }

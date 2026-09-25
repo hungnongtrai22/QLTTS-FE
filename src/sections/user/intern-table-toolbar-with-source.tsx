@@ -19,13 +19,11 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useLocales } from 'src/locales';
 import { saveAs } from 'file-saver';
-import { pdf } from '@react-pdf/renderer';
 import axios from 'axios';
 import { typeIntern, typeInternJP } from 'src/utils/type';
 import { departure } from 'src/utils/departure';
 import ExportListInterns from 'src/utils/ExportListInterns';
 
-import AllAttendancePDF from '../order/AllAttendancePDF';
 
 // ----------------------------------------------------------------------
 
@@ -35,8 +33,14 @@ type Props = {
   //
   roleOptions: string[];
   companyOptions: string[];
+  /** Chỉ là trang hiện tại khi bảng dùng phân trang phía server. */
   interns: any;
   sources: any;
+  /**
+   * Lấy trọn bộ kết quả đã lọc (không phân trang), dùng cho các thao tác hàng loạt:
+   * xuất Excel và xuất PDF điểm danh. Không truyền thì các thao tác đó dùng `interns`.
+   */
+  fetchAllInterns?: () => Promise<any[]>;
 };
 
 function changeTextTypeVN(value: any) {
@@ -85,17 +89,23 @@ export default function InternTableToolbarWithSource({
   companyOptions,
   sources,
   interns,
+  fetchAllInterns,
 }: Props) {
   const popover = usePopover();
   // console.log('Interns', interns);
   const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
 
-  const studyDate = interns[0]?.studyDate;
-  const start = studyDate ? new Date(studyDate) : null;
+  // Khoảng tháng cần thống kê, suy từ ngày nhập học của thực tập sinh đầu danh sách.
+  // Trước đây tính ngay lúc render vì `interns` là toàn bộ danh sách. Nay bảng đã phân
+  // trang nên phải tính bên trong handler, sau khi đã lấy đủ dữ liệu — nếu tính ở đây
+  // thì khoảng tháng sẽ đổi theo trang đang xem.
+  const buildMonthRange = (list: any[]) => {
+    const studyDate = list[0]?.studyDate;
+    const start = studyDate ? new Date(studyDate) : null;
+    const months: { month: number; year: number }[] = [];
 
-  const result: { month: number; year: number }[] = [];
+    if (!start) return months;
 
-  if (start) {
     const current = new Date();
     let year = start.getFullYear();
     let month = start.getMonth() + 1; // getMonth() trả về từ 0 đến 11
@@ -104,7 +114,7 @@ export default function InternTableToolbarWithSource({
     const currentMonth = current.getMonth() + 1;
 
     while (year < currentYear || (year === currentYear && month <= currentMonth)) {
-      result.push({ month, year });
+      months.push({ month, year });
 
       month += 1;
       if (month > 12) {
@@ -112,9 +122,9 @@ export default function InternTableToolbarWithSource({
         year += 1;
       }
     }
-  }
 
-  // console.log(result);
+    return months;
+  };
 
   const { t, currentLang } = useLocales();
 
@@ -423,7 +433,11 @@ export default function InternTableToolbarWithSource({
         arrow="right-top"
         // sx={{ width: 140 }}
       >
-        <ExportListInterns interns={interns} name="Danh Sách Thực Tập Sinh" />
+        <ExportListInterns
+          interns={interns}
+          fetchInterns={fetchAllInterns}
+          name="Danh Sách Thực Tập Sinh"
+        />
 
         <MenuItem
           // onClick={() => {
@@ -432,7 +446,11 @@ export default function InternTableToolbarWithSource({
           onClick={async () => {
             try {
               setLoadingDownloadAll(true);
-              for (const item of interns) {
+              // Lấy trọn bộ kết quả đã lọc, rồi mới tính khoảng tháng từ đó.
+              const allInterns = fetchAllInterns ? await fetchAllInterns() : interns;
+              const result = buildMonthRange(allInterns);
+
+              for (const item of allInterns) {
                 const { data } = await axios.post(
                   `${process.env.REACT_APP_HOST_API}/api/attendance/listByInternId`,
                   {
@@ -457,8 +475,15 @@ export default function InternTableToolbarWithSource({
                 `${process.env.REACT_APP_HOST_API}/api/event/listAll`
               );
               // console.log('newEvent', newEvent);
+              // @react-pdf/renderer (~1.3MB) chỉ nạp khi thật sự bấm xuất PDF,
+              // thay vì tải kèm mỗi lần mở trang danh sách.
+              const [{ pdf }, { default: AllAttendancePDF }] = await Promise.all([
+                import('@react-pdf/renderer'),
+                import('../order/AllAttendancePDF'),
+              ]);
+
               const blob = await pdf(
-                <AllAttendancePDF intern={interns} attendance={result} event={newEvent} />
+                <AllAttendancePDF intern={allInterns} attendance={result} event={newEvent} />
               ).toBlob();
               saveAs(blob, `All_Attendance.pdf`);
             } catch (error) {

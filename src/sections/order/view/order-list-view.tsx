@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import axios from 'axios';
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -96,12 +96,18 @@ export default function OrderListView() {
 
   const dateError = isDateError(filters.startDate, filters.endDate);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-    dateError,
-  });
+  // Bọc useMemo: trước đây applyFilter chạy lại ở MỌI lần render, mà nó sao chép
+  // rồi sắp xếp toàn bộ mảng và lọc tuần tự — tốn nhất khi danh sách dài.
+  const dataFiltered = useMemo(
+    () =>
+      applyFilter({
+        inputData: tableData,
+        comparator: getComparator(table.order, table.orderBy),
+        filters,
+        dateError,
+      }),
+    [tableData, table.order, table.orderBy, filters, dateError]
+  );
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -128,7 +134,7 @@ export default function OrderListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row: any) => row.id !== id);
+      const deleteRow = tableData.filter((row: any) => row._id !== id);
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
@@ -137,7 +143,7 @@ export default function OrderListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row: any) => !table.selected.includes(row.id));
+    const deleteRows = tableData.filter((row: any) => !table.selected.includes(row._id));
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -292,7 +298,7 @@ export default function OrderListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  tableData.map((row: any) => row.id)
+                  tableData.map((row: any) => row._id)
                 )
               }
               action={
@@ -316,7 +322,7 @@ export default function OrderListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row: any) => row.id)
+                      tableData.map((row: any) => row._id)
                     )
                   }
                 />
@@ -329,12 +335,12 @@ export default function OrderListView() {
                     )
                     .map((row) => (
                       <OrderTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onViewRow={() => handleViewRow(row._id)}
                         onEditRow={() => handleEditRow(row._id)}
                         onViewInternRow={handleViewInternRow}
                         onRemoveIntern={handleRemoveInternInOrder}
