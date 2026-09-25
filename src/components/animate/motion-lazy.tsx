@@ -1,4 +1,4 @@
-import { LazyMotion, m } from 'framer-motion';
+import { LazyMotion, MotionConfig, m } from 'framer-motion';
 
 // ----------------------------------------------------------------------
 
@@ -11,9 +11,13 @@ type Props = {
 
 function MotionLazy({ children }: Props) {
   return (
-    <LazyMotion strict features={loadFeatures}>
-      <m.div style={{ height: '100%' }}> {children} </m.div>
-    </LazyMotion>
+    // reducedMotion="user": người dùng bật "giảm chuyển động" trong hệ điều hành thì
+    // framer-motion bỏ hiệu ứng dịch chuyển/co giãn, chỉ giữ đổi độ mờ. Áp cho toàn app.
+    <MotionConfig reducedMotion="user">
+      <LazyMotion strict features={loadFeatures}>
+        <m.div style={{ height: '100%' }}> {children} </m.div>
+      </LazyMotion>
+    </MotionConfig>
   );
 }
 
