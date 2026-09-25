@@ -125,14 +125,24 @@ export type IUserItem = {
   isVerified: boolean;
 };
 
+// Tài khoản đăng nhập (collection Account bên BE), khác với hồ sơ thực tập sinh.
+// Không có `password`: API luôn trả về kèm .select('-password').
 export type IAccountItem = {
   _id: string;
   name: string;
   username: string;
-  password: string;
-  email: string;
+  email?: string;
   role: string;
-  tradeUnion: any;
+  tradeUnion?: { _id: string; name: string } | null;
+  source?: { _id: string; name: string } | null;
+  companySelect?: { _id: string; name: string }[];
+  internsDemo?: string[];
+  createdAt: string;
+};
+
+export type IAccountTableFilters = {
+  name: string;
+  role: string;
 };
 
 export type IContactItem = {

@@ -176,6 +176,14 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
+          // Account (tài khoản đăng nhập)
+          {
+            title: t('account_management'),
+            roles: ['admin'],
+            path: paths.dashboard.account.root,
+            icon: ICONS.lock,
+            children: [{ title: t('list'), path: paths.dashboard.account.list, roles: ['admin'] }],
+          },
           // Source
           {
             title: t('source'),
