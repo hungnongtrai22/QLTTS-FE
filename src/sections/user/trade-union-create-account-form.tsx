@@ -24,7 +24,10 @@ import Iconify from 'src/components/iconify';
 import { CustomFile } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
-import axios from 'axios';
+// utils
+// Dùng instance có sẵn header Authorization (setSession gắn vào), không dùng axios trần:
+// endpoint tạo tài khoản nay yêu cầu token của admin.
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -60,10 +63,10 @@ export default function TradeUnionCreateAccountForm({ open, onClose, tradeUnion 
   });
 
   const createAccountHandler = useCallback(async (account: any) => {
-    const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/account/register`, {
+    const { data } = await axios.post(API_ENDPOINTS.auth.register, {
       ...account,
-      role: "tradeunion",
-      tradeUnion: tradeUnion._id
+      role: 'tradeunion',
+      tradeUnion: tradeUnion._id,
     });
     return data;
   }, [tradeUnion]);
@@ -84,7 +87,10 @@ export default function TradeUnionCreateAccountForm({ open, onClose, tradeUnion 
         enqueueSnackbar('Create account success!');
         // console.info('DATA', data);
       } catch (error) {
-        console.error(error);
+        // Interceptor của src/utils/axios trả thẳng phần body lỗi, nên message nằm ở đây.
+        const message =
+          (error as any)?.message || 'Tạo tài khoản thất bại. Vui lòng thử lại.';
+        enqueueSnackbar(message, { variant: 'error' });
       }
     },
     [enqueueSnackbar, onClose, reset, createAccountHandler]
