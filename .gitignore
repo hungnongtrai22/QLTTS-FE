@@ -26,3 +26,6 @@ yarn-error.log*
 .eslintcache
 
 .unimportedrc.json
+
+# Playwright MCP: ảnh chụp và log của phiên kiểm thử
+.playwright-mcp/
