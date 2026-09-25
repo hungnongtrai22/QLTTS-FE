@@ -424,5 +424,7 @@
   "contract_company_address": "Địa chỉ công ty",
   "contract_emergency_phone": "SĐT người được báo tin",
   "contract_missing_many": "{{count}} hợp đồng còn mục để trống (in ra dòng chấm)",
-  "contract_missing_more": "và {{count}} mục khác"
+  "contract_missing_more": "và {{count}} mục khác",
+  "contract_name": "Tên trên hợp đồng",
+  "contract_name_hint": "Tên tiếng Việt/Latin in lên hợp đồng lao động. Để trống sẽ in tên hiện tại"
 }

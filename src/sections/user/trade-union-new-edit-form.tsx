@@ -18,6 +18,8 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import axios from 'axios';
 import { useLocales } from 'src/locales';
+import { m } from 'framer-motion';
+import { varFade } from 'src/components/animate';
 
 // import { current } from '@reduxjs/toolkit';
 
@@ -100,6 +102,7 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
   const defaultValues = useMemo(
     () => ({
       name: currentTradeUnion?.name || '',
+      contractName: currentTradeUnion?.contractName || '',
       email: currentTradeUnion?.email || '',
       phone: currentTradeUnion?.phone || '',
       city: currentTradeUnion?.city || '',
@@ -159,9 +162,10 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
         }
       } catch (error) {
         console.error(error);
+        enqueueSnackbar(error?.message || t('save_failed'), { variant: 'error' });
       }
     },
-    [createNewTradeUnion, editTradeUnion, enqueueSnackbar, currentTradeUnion]
+    [createNewTradeUnion, editTradeUnion, enqueueSnackbar, currentTradeUnion, t]
     // [currentIntern, enqueueSnackbar, reset, router]
   );
 
@@ -169,26 +173,32 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
-          <Card sx={{ p: 3 }}>
-            {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
+          <m.div initial="initial" animate="animate" variants={varFade({ distance: 24 }).inUp}>
+            <Card sx={{ p: 3 }}>
+              {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
               Family:
             </Typography> */}
-            <Box
-              rowGap={3}
-              columnGap={3}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-              }}
-            >
-              <RHFTextField name="name" label={t('name')} />
-              <RHFTextField name="email" label="Email" />
-              <RHFTextField name="phone" label={t('phone')} />
-              <RHFTextField name="city" label={t('city')} />
-              <RHFTextField name="state" label={t('state')} />
+              <Box
+                rowGap={3}
+                columnGap={3}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(3, 1fr)',
+                }}
+              >
+                <RHFTextField name="name" label={t('name')} />
+                <RHFTextField
+                  name="contractName"
+                  label={t('contract_name')}
+                  helperText={t('contract_name_hint')}
+                />
+                <RHFTextField name="email" label="Email" />
+                <RHFTextField name="phone" label={t('phone')} />
+                <RHFTextField name="city" label={t('city')} />
+                <RHFTextField name="state" label={t('state')} />
 
-              {/* <RHFSelect
+                {/* <RHFSelect
                 fullWidth
                 name="foreignLanguage"
                 label={t('foreign_language')}
@@ -200,11 +210,11 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
                   </MenuItem>
                 ))}
               </RHFSelect> */}
-              <RHFTextField name="country" label={t('country')} />
-              <RHFTextField name="address" label={t('address')} />
-            </Box>
-            <Stack alignItems="flex-end" spacing={1.5}>
-              {/* <Button
+                <RHFTextField name="country" label={t('country')} />
+                <RHFTextField name="address" label={t('address')} />
+              </Box>
+              <Stack alignItems="flex-end" spacing={1.5}>
+                {/* <Button
                 size="small"
                 color="primary"
                 startIcon={<Iconify icon="mingcute:add-line" />}
@@ -213,13 +223,19 @@ export default function TradeUnionNewEditForm({ currentTradeUnion }: Props) {
               >
                 Add Item
               </Button> */}
-            </Stack>
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentTradeUnion ? t('create_trade_union') : t('edit_trade_union')}
-              </LoadingButton>
-            </Stack>
-          </Card>
+              </Stack>
+              <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  loading={isSubmitting}
+                  sx={{ minHeight: 44 }}
+                >
+                  {!currentTradeUnion ? t('create_trade_union') : t('edit_trade_union')}
+                </LoadingButton>
+              </Stack>
+            </Card>
+          </m.div>
         </Grid>
       </Grid>
     </FormProvider>

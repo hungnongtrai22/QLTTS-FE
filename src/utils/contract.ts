@@ -489,8 +489,9 @@ export function buildContractData(intern: any): ContractData {
     interviewDate: intern?.interviewDate || null,
     departureDate: intern?.departureDate || null,
     address: joinAddress(intern?.street, intern?.state),
-    tradeUnion: text(tradeUnion.name),
-    company: text(company.name),
+    // Tên trong CSDL thường là tiếng Nhật; ưu tiên tên admin nhập riêng cho hợp đồng.
+    tradeUnion: text(tradeUnion.contractName) || text(tradeUnion.name),
+    company: text(company.contractName) || text(company.name),
     job: text(intern?.field),
     // Ưu tiên ô "Địa chỉ" của công ty; chỉ ghép thành phố/tỉnh/quốc gia khi ô đó trống.
     companyAddress:

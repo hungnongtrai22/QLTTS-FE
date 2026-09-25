@@ -372,5 +372,7 @@
   "contract_company_address": "会社の住所",
   "contract_emergency_phone": "緊急連絡先の電話番号",
   "contract_missing_many": "{{count}}件の契約書に未記入の項目があります（点線で印刷）",
-  "contract_missing_more": "ほか{{count}}項目"
+  "contract_missing_more": "ほか{{count}}項目",
+  "contract_name": "契約書に記載する名称",
+  "contract_name_hint": "ベトナム語の労働契約書に印字する名称。空欄の場合は現在の名称を印字"
 }

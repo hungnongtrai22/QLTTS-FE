@@ -125,6 +125,7 @@ export default function CompanyNewEditForm({ currentCompany }: Props) {
       tradeUnion: currentCompany?.tradeUnion || '',
       description: currentCompany?.description || '',
       // Khối dùng cho HĐLĐ. Giữ dạng chuỗi để ô trống vẫn là '' (BE $unset), không thành 0.
+      contractName: currentCompany?.contractName || '',
       director: currentCompany?.director || '',
       trainingAllowance: currentCompany?.trainingAllowance ?? '',
       salary: currentCompany?.salary ?? '',
@@ -256,6 +257,11 @@ export default function CompanyNewEditForm({ currentCompany }: Props) {
                   md: 'repeat(3, 1fr)',
                 }}
               >
+                <RHFTextField
+                  name="contractName"
+                  label={t('contract_name')}
+                  helperText={t('contract_name_hint')}
+                />
                 <RHFTextField name="director" label={t('company_director')} />
                 {MONEY_FIELDS.map((field) => (
                   <RHFTextField
@@ -282,7 +288,12 @@ export default function CompanyNewEditForm({ currentCompany }: Props) {
               </Button> */}
               </Stack>
               <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  loading={isSubmitting}
+                  sx={{ minHeight: 44 }}
+                >
                   {!currentCompany ? t('create_company') : t('edit_company')}
                 </LoadingButton>
               </Stack>

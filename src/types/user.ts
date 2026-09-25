@@ -317,6 +317,8 @@ export type IInternItem = {
 export type ITradeUnionItem = {
   _id: string;
   name: string;
+  // Tên in lên hợp đồng tiếng Việt (HĐLĐ); trống thì in `name`
+  contractName?: string;
   email: string;
   address: string;
   city: string;
@@ -361,7 +363,8 @@ export type ICompanyItem = {
   country: string;
   description: string;
   tradeUnion: any;
-  // Dùng cho HĐLĐ: người đại diện và khối lương (Yên)
+  // Dùng cho HĐLĐ: tên in trên hợp đồng, người đại diện và khối lương (Yên)
+  contractName?: string;
   director?: string;
   trainingAllowance?: number;
   salary?: number;
