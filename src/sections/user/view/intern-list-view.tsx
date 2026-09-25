@@ -41,7 +41,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 import Autocomplete from '@mui/material/Autocomplete';
-import { Box, TextField } from '@mui/material';
+import { Box, Stack, TextField } from '@mui/material';
 
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
@@ -51,6 +51,7 @@ import InternTableRow from '../intern-table-row';
 import InternTableToolbar from '../intern-table-toolbar';
 import InternTableFiltersResult from '../intern-table-filters-result';
 import InternTableToolbarWithSource from '../intern-table-toolbar-with-source';
+import InternContractButton from '../intern-contract-button';
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +78,7 @@ interface Order {
 export default function InternListView() {
   const { t } = useLocales();
 
-  const { user:userRole } = useAuthContext();
+  const { user: userRole } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -250,6 +251,28 @@ export default function InternListView() {
     });
     enqueueSnackbar('Thêm thực tập sinh vào đơn hàng thành công!');
   }, [table, orderSelect, enqueueSnackbar]);
+
+  // In hợp đồng cho các dòng đang chọn. Bảng chỉ có 12 trường của trang hiện tại, còn
+  // hợp đồng cần hồ sơ đầy đủ + công ty đã populate, nên tải lại từng người qua
+  // GET /api/user/:id — tối đa 6 lượt song song, giữ đúng thứ tự đang hiện trên bảng.
+  const loadSelectedInterns = useCallback(async () => {
+    const ids = tableData.map((row) => row._id).filter((id) => table.selected.includes(id));
+    const result: any[] = new Array(ids.length);
+    let next = 0;
+    const worker = async () => {
+      while (next < ids.length) {
+        const index = next;
+        next += 1;
+        // eslint-disable-next-line no-await-in-loop
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_HOST_API}/api/user/${ids[index]}`
+        );
+        result[index] = data?.intern;
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(6, ids.length) }, worker));
+    return result.filter(Boolean);
+  }, [tableData, table.selected]);
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -497,11 +520,17 @@ export default function InternListView() {
                 )
               }
               action={
-                <Tooltip title="Thêm vào đơn hàng">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="streamline-ultimate:job-responsibility-bag-hand-bold" />
-                  </IconButton>
-                </Tooltip>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <InternContractButton
+                    loadInterns={loadSelectedInterns}
+                    size={table.dense ? 'small' : 'medium'}
+                  />
+                  <Tooltip title="Thêm vào đơn hàng">
+                    <IconButton color="primary" onClick={confirm.onTrue}>
+                      <Iconify icon="streamline-ultimate:job-responsibility-bag-hand-bold" />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
               }
             />
 
@@ -524,17 +553,17 @@ export default function InternListView() {
 
                 <TableBody>
                   {tableData.map((row) => (
-                      <InternTableRow
-                        key={row._id}
-                        row={row}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={table.onSelectRow}
-                        onDeleteRow={handleDeleteRow}
-                        onEditRow={handleEditRow}
-                        onEditIsuzuRow={handleEditIsuzuRow}
-                        onViewRow={handleViewRow}
-                      />
-                    ))}
+                    <InternTableRow
+                      key={row._id}
+                      row={row}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={table.onSelectRow}
+                      onDeleteRow={handleDeleteRow}
+                      onEditRow={handleEditRow}
+                      onEditIsuzuRow={handleEditIsuzuRow}
+                      onViewRow={handleViewRow}
+                    />
+                  ))}
 
                   <TableEmptyRows
                     height={denseHeight}

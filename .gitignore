@@ -29,3 +29,7 @@ yarn-error.log*
 
 # Playwright MCP: ảnh chụp và log của phiên kiểm thử
 .playwright-mcp/
+
+# File mẫu hợp đồng gốc: chứa CCCD/SĐT người thật. Khuôn đã làm sạch nằm ở
+# public/assets/templates/ (tạo bằng scripts/build-contract-template.js).
+/MẪU HĐLĐ*.xlsx

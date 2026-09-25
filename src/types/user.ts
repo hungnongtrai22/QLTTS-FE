@@ -23,7 +23,7 @@ export type IInternTableFilters = {
   source?: string[];
   type?: string[];
   status: string;
-  year?: any[]
+  year?: any[];
 };
 
 // ----------------------------------------------------------------------
@@ -226,7 +226,7 @@ export type IInternItem = {
   money: string;
   plan: string;
   tradeUnion: any;
-    source: any;
+  source: any;
   companySelect: any;
   iq: number | null;
   math: number | null;
@@ -254,6 +254,10 @@ export type IInternItem = {
   postelCode: string;
   country: string;
   phone: string;
+  // Người được báo tin — in trên HĐLĐ
+  emergencyContactName?: string;
+  emergencyContactRelationship?: string;
+  emergencyContactPhone?: string;
   contractId: string;
   contractDate: any;
   contractPeriod: string;
@@ -263,52 +267,51 @@ export type IInternItem = {
   description: string;
   returnDate: any;
   birthPlace: any;
-phoneNumber: any;
-email: any;
-children: any;
+  phoneNumber: any;
+  email: any;
+  children: any;
 
-respiratoryDisease: any;
-obstetrics: any;
-highBloodPressure: any;
-ophthalmological: any;
-urinaryDiseases: any;
-anemia: any;
-otorhinolaryngological: any;
-cranialNerves: any;
-headache: any;
-pharyngealSystemDisease: any;
-hernia: any;
-anyAllergies: any;
-cardiovascularDisease: any;
-rheumatism: any;
-irregalerMenstruation: any;
-heartDisease: any;
-fainting: any;
-tbTest: any;
-dental: any;
-diabetes: any;
-history: any;
-digestive: any;
-asthma: any;
-otherMajor: any;
-psychosomatic: any;
-vnsomnia: any;
-surgery: any;
-hematology: any;
-lowerBack: any;
-hospitalization: any;
+  respiratoryDisease: any;
+  obstetrics: any;
+  highBloodPressure: any;
+  ophthalmological: any;
+  urinaryDiseases: any;
+  anemia: any;
+  otorhinolaryngological: any;
+  cranialNerves: any;
+  headache: any;
+  pharyngealSystemDisease: any;
+  hernia: any;
+  anyAllergies: any;
+  cardiovascularDisease: any;
+  rheumatism: any;
+  irregalerMenstruation: any;
+  heartDisease: any;
+  fainting: any;
+  tbTest: any;
+  dental: any;
+  diabetes: any;
+  history: any;
+  digestive: any;
+  asthma: any;
+  otherMajor: any;
+  psychosomatic: any;
+  vnsomnia: any;
+  surgery: any;
+  hematology: any;
+  lowerBack: any;
+  hospitalization: any;
 
-others: any;
-moneyMonthFrom: any;
-moneyMonthTo: any;
-money3YearsFrom: any;
-money3YearsTo: any;
-religion: any;
-planMarried: any;
-crime: any;
-crimeDetail: any;
-fillInfo: any;
-
+  others: any;
+  moneyMonthFrom: any;
+  moneyMonthTo: any;
+  money3YearsFrom: any;
+  money3YearsTo: any;
+  religion: any;
+  planMarried: any;
+  crime: any;
+  crimeDetail: any;
+  fillInfo: any;
 };
 
 export type ITradeUnionItem = {
@@ -358,6 +361,13 @@ export type ICompanyItem = {
   country: string;
   description: string;
   tradeUnion: any;
+  // Dùng cho HĐLĐ: người đại diện và khối lương (Yên)
+  director?: string;
+  trainingAllowance?: number;
+  salary?: number;
+  tax?: number;
+  socialInsurance?: number;
+  housingFee?: number;
   createdAt: string;
 };
 

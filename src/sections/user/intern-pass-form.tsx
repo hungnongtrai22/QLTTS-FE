@@ -1,67 +1,49 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useCallback, useEffect, useMemo } from 'react';
+import { Controller, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { m } from 'framer-motion';
+import axios from 'axios';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import dayjs, { Dayjs } from 'dayjs';
+import 'dayjs/locale/vi';
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import axios from 'axios';
-
-import Grid from '@mui/material/Unstable_Grid2';
-// utils
-// types
-import { IInternItem, IStudyItem, IUserItem } from 'src/types/user';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { viVN } from '@mui/x-date-pickers/locales';
-// assets
-// components
-
-import FormProvider, {
-  RHFSelect,
-  RHFAutocomplete,
-  RHFEditor,
-  RHFTextField,
-} from 'src/components/hook-form';
-import {
-  CircularProgress,
-  IconButton,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import dayjs from 'dayjs';
-import 'dayjs/locale/vi';
-import { useLocales } from 'src/locales';
-import { useSnackbar } from 'src/components/snackbar';
-import { CustomFile } from 'src/components/upload';
-
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { characteristicList } from 'src/utils/characteristic';
-import { statusIntern, statusProfile, statusStudy } from 'src/utils/status';
-import RHFAutocompleteNew from 'src/components/hook-form/rhf-autocomplete-new';
-
-// import { current } from '@reduxjs/toolkit';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { viVN } from '@mui/x-date-pickers/locales';
+// types
+import { IInternItem } from 'src/types/user';
+// utils
+import { statusProfile, statusStudy } from 'src/utils/status';
+// locales
+import { useLocales } from 'src/locales';
+// components
+import { varFade } from 'src/components/animate';
+import { useSnackbar } from 'src/components/snackbar';
+import FormProvider, { RHFAutocomplete, RHFSelect, RHFTextField } from 'src/components/hook-form';
+//
+import InternContractButton from './intern-contract-button';
 
 // ----------------------------------------------------------------------
-
-interface FormValuesProps extends Omit<any, 'avatarUrl'> {
-  avatarUrl: CustomFile | string | null;
-}
-
-type Props = {
-  currentIntern?: IInternItem;
-};
+// Form "Hồ sơ xuất cảnh" trong tab "Thông tin bổ sung" (chỉ admin) của trang hồ sơ TTS.
+//
+// Lưu qua /api/user/updateLaborInfo. Trước đây form gửi tới updateTradeUnion, endpoint đó
+// chỉ lưu nghiệp đoàn/công ty/các ngày nên CCCD, hộ chiếu, số hợp đồng... đều bị bỏ đi.
+// Form này cố ý KHÔNG gửi nghiệp đoàn/công ty/trạng thái/ngày xuất cảnh: các trường đó do
+// InternCompanyTradeUnionForm và InternStatusForm ngay phía trên quản lý; gửi từ đây sẽ ghi
+// đè bằng giá trị cũ.
+// ----------------------------------------------------------------------
 
 dayjs.locale('vi');
 
-const fields = [
+const JOB_OPTIONS = [
   'Nông nghiệp cấy giống',
   'Nông nghiệp chăn nuôi',
   'Nghề cá đi tàu',
@@ -76,28 +58,98 @@ const fields = [
   'Dựng giàn giáo',
 ];
 
+const DATE_FIELDS = ['citizenDate', 'passportDate', 'contractDate'] as const;
+
+// Ngày: chuỗi ISO khi đọc từ hồ sơ, Dayjs sau khi người dùng chọn trên DatePicker.
+type DateValue = string | Date | Dayjs | null;
+
+type FormValues = {
+  field: string;
+  citizenId: string;
+  citizenDate: DateValue;
+  citizenPlace: string;
+  passportId: string;
+  passportDate: DateValue;
+  reff: string;
+  street: string;
+  state: string;
+  postelCode: string;
+  country: string;
+  phone: string;
+  emergencyContactName: string;
+  emergencyContactRelationship: string;
+  emergencyContactPhone: string;
+  contractId: string;
+  contractDate: DateValue;
+  contractPeriod: string;
+  contractResult: string;
+  profileStatus: string;
+};
+
+const GRID = {
+  display: 'grid',
+  rowGap: 3,
+  columnGap: 3,
+  gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+};
+
+// ----------------------------------------------------------------------
+
+function RHFDate({ name, label }: { name: string; label: string }) {
+  const { control } = useFormContext();
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => (
+        <LocalizationProvider
+          dateAdapter={AdapterDayjs}
+          adapterLocale="vi"
+          localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+        >
+          <DatePicker
+            label={label}
+            value={field.value ? dayjs(field.value as string) : null}
+            onChange={(newValue) => field.onChange(newValue || null)}
+            slotProps={{
+              textField: { fullWidth: true, error: !!error, helperText: error?.message },
+            }}
+          />
+        </LocalizationProvider>
+      )}
+    />
+  );
+}
+
+function SectionTitle({ children, first }: { children: React.ReactNode; first?: boolean }) {
+  return (
+    <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3, mt: first ? 0 : 4 }}>
+      {children}
+    </Typography>
+  );
+}
+
+function GroupTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <Typography variant="subtitle2" sx={{ color: 'text.secondary', mt: 3, mb: 2 }}>
+      {children}
+    </Typography>
+  );
+}
+
+// ----------------------------------------------------------------------
+
+type Props = {
+  currentIntern?: IInternItem;
+};
+
 export default function InternPassForm({ currentIntern }: Props) {
-  // const router = useRouter();
-
-  const [tradeUnionSelect, setTradeUnionSelect] = useState(currentIntern?.tradeUnion);
-  const [companySelect, setCompanySelect] = useState(currentIntern?.companySelect || '');
-
-  const [sourceSelect, setSourceSelect] = useState(currentIntern?.source);
-
-  const { t, currentLang } = useLocales();
+  const { t } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
-  // const values = watch();
-
-  // const [city, setCity] = useState('');
-  // const [currentStudy, setCurrentStudy] = useState<IStudyItem | null>(null);
-  // console.log(currentStudy);
-
-  const NewUserSchema = Yup.object().shape({});
-
-  const defaultValues = useMemo(
+  const defaultValues = useMemo<FormValues>(
     () => ({
-      name: currentIntern?.name || '',
       field: currentIntern?.field || '',
       citizenId: currentIntern?.citizenId || '',
       citizenDate: currentIntern?.citizenDate || null,
@@ -110,521 +162,163 @@ export default function InternPassForm({ currentIntern }: Props) {
       postelCode: currentIntern?.postelCode || '',
       country: currentIntern?.country || '',
       phone: currentIntern?.phone || '',
+      emergencyContactName: currentIntern?.emergencyContactName || '',
+      emergencyContactRelationship: currentIntern?.emergencyContactRelationship || '',
+      emergencyContactPhone: currentIntern?.emergencyContactPhone || '',
       contractId: currentIntern?.contractId || '',
       contractDate: currentIntern?.contractDate || null,
       contractPeriod: currentIntern?.contractPeriod || '',
       contractResult: currentIntern?.contractResult || '',
       profileStatus: currentIntern?.profileStatus || '',
-      orderId: currentIntern?.orderId || null,
-      description: currentIntern?.description || '',
     }),
     [currentIntern]
   );
 
-  const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(NewUserSchema),
+  const methods = useForm<FormValues>({
+    resolver: yupResolver(Yup.object().shape({})),
     defaultValues,
   });
 
   const {
     reset,
-    watch,
-    control,
-    setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty },
   } = methods;
 
-  const values = watch();
+  // Hồ sơ có thể tải xong sau khi form đã dựng — nạp lại giá trị ban đầu khi có dữ liệu.
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
-  const editIntern = useCallback(
-    async (value: any) => {
-      console.log('Source', sourceSelect);
-      const { data } = await axios.put(
-        `${process.env.REACT_APP_HOST_API}/api/user/updateTradeUnion`,
-        {
-          _id: currentIntern?._id,
-          field: currentIntern?.field,
-          companySelect,
-          job: value?.job,
-          interviewDate: value?.interviewDate,
-          studyDate: value?.studyDate,
-          startDate: value?.startDate,
-          source: sourceSelect,
-        }
-      );
-      return data;
-    },
-    [currentIntern, tradeUnionSelect, companySelect, sourceSelect]
-  );
+  const onSubmit = handleSubmit(async (values) => {
+    try {
+      const body: Record<string, unknown> = { _id: currentIntern?._id, ...values };
+      DATE_FIELDS.forEach((key) => {
+        body[key] = values[key] ? dayjs(values[key]).toISOString() : null;
+      });
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/updateLaborInfo`, body);
+      // Giá trị vừa lưu thành mốc mới: form hết "thay đổi chưa lưu", in hợp đồng được ngay.
+      reset(values);
+      enqueueSnackbar(t('save_success'));
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(error?.response?.data?.message || error?.message || t('save_failed'), {
+        variant: 'error',
+      });
+    }
+  });
 
-  const onSubmit = useCallback(
-    async (data: FormValuesProps) => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        await editIntern(data);
-        // reset();
-        enqueueSnackbar('Update success!');
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [enqueueSnackbar, reset, editIntern]
-  );
+  // In từ dữ liệu ĐÃ LƯU (lấy lại từ server) để bản in khớp đúng hồ sơ.
+  const loadIntern = useCallback(async () => {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_HOST_API}/api/user/${currentIntern?._id}`
+    );
+    return data?.intern ? [data.intern] : [];
+  }, [currentIntern?._id]);
 
-  // useEffect(() => {
-  //   setValue('tradeUnion', currentIntern?.tradeUnion);
-  //   setValue('company', currentIntern?.companySelect);
-  // }, []);
-
-  // useEffect(() => {
-  //   handleGetStudyByMonth();
-  // }, [handleGetStudyByMonth, reset]);
+  const canPrint = useCallback(() => {
+    if (isDirty) {
+      enqueueSnackbar(t('contract_save_first'), { variant: 'warning' });
+      return false;
+    }
+    return true;
+  }, [enqueueSnackbar, isDirty, t]);
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={3}>
-        <Grid xs={12} md={12}>
-          <Card sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-              Thông tin lao động:
-            </Typography>
-            <Box
-              rowGap={3}
-              columnGap={3}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-              }}
+    <FormProvider methods={methods} onSubmit={onSubmit}>
+      <m.div initial="initial" animate="animate" variants={varFade({ distance: 24 }).inUp}>
+        <Card sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
+          <SectionTitle first>{t('labor_info')}</SectionTitle>
+
+          <Box sx={GRID}>
+            <RHFAutocomplete
+              name="field"
+              label={t('field_accepted') || ''}
+              helperText={t('field_accepted_hint') || ''}
+              freeSolo
+              options={JOB_OPTIONS}
+              getOptionLabel={(option: any) => option}
+              isOptionEqualToValue={(option: any, value: any) => option === value}
+            />
+            <RHFTextField name="citizenId" label={t('citizen_id')} />
+            <RHFDate name="citizenDate" label={t('citizen_date')} />
+            <RHFTextField name="citizenPlace" label={t('citizen_place')} />
+            <RHFTextField name="passportId" label={t('passport_id')} />
+            <RHFDate name="passportDate" label={t('passport_date')} />
+          </Box>
+
+          <GroupTitle>{t('labor_contact')}</GroupTitle>
+          <Box sx={GRID}>
+            <RHFTextField
+              name="street"
+              label={t('permanent_address')}
+              placeholder={t('permanent_address_hint') || ''}
+            />
+            <RHFTextField name="state" label={t('province')} />
+            <RHFTextField name="postelCode" label={t('postal_code')} />
+            <RHFTextField name="country" label={t('country')} />
+            <RHFTextField name="phone" label={t('phone')} inputProps={{ inputMode: 'tel' }} />
+            <RHFTextField name="reff" label={t('referrer')} />
+          </Box>
+
+          <GroupTitle>{t('labor_emergency')}</GroupTitle>
+          <Box sx={GRID}>
+            <RHFTextField name="emergencyContactName" label={t('emergency_contact_name')} />
+            <RHFTextField
+              name="emergencyContactRelationship"
+              label={t('emergency_contact_relationship')}
+              placeholder={t('emergency_contact_relationship_hint') || ''}
+            />
+            <RHFTextField
+              name="emergencyContactPhone"
+              label={t('emergency_contact_phone')}
+              inputProps={{ inputMode: 'tel' }}
+            />
+          </Box>
+
+          <SectionTitle>{t('labor_contract')}</SectionTitle>
+          <Box sx={GRID}>
+            <RHFTextField
+              name="contractId"
+              label={t('contract_id')}
+              placeholder={t('contract_id_hint') || ''}
+            />
+            <RHFDate name="contractDate" label={t('contract_date')} />
+            <RHFTextField name="contractPeriod" label={t('contract_period')} />
+            <RHFSelect name="contractResult" label={t('profile_progress')}>
+              {statusProfile.map((option: any) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </RHFSelect>
+            <RHFSelect name="profileStatus" label={t('training_status')}>
+              {statusStudy.map((option: any) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </RHFSelect>
+          </Box>
+
+          <Stack
+            direction={{ xs: 'column-reverse', sm: 'row' }}
+            justifyContent="flex-end"
+            spacing={1.5}
+            sx={{ mt: 3 }}
+          >
+            <InternContractButton loadInterns={loadIntern} canPrint={canPrint} />
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+              sx={{ minHeight: 44 }}
             >
-              {/* <RHFSelect
-                fullWidth
-                name="status"
-                label={t('status')}
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-              >
-                {statusIntern.map((option: any) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </RHFSelect> */}
-
-              {fields.length > 0 && (
-                <RHFAutocomplete
-                  name="fields"
-                  label="Ngành trúng tuyển"
-                  freeSolo
-                  // disablePortal
-                  // value={tradeUnionSelect}
-                  // defaultValue={tradeUnionSelect._id}
-                  options={fields}
-                  getOptionLabel={(option: any) => option}
-                  renderOption={(props, option: any) => (
-                    <li {...props} key={option} value={option}>
-                      {option}
-                    </li>
-                  )}
-                  // changeState={handleSelectTradeUnion}
-                  isOptionEqualToValue={(option: any, value: any) => option === value}
-                />
-              )}
-
-              <RHFTextField name="citizenId" label="Số CCCD" />
-              <Controller
-                name="citizenDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <DatePicker
-                      label="Ngày cấp"
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(newValue) => {
-                        field.onChange(newValue || null);
-                      }}
-                      // views={['month', 'year']}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-
-              <RHFTextField name="citizenPlace" label="Nơi cấp" />
-              <RHFTextField name="passportId" label="Số hộ chiếu" />
-              <RHFTextField name="passportDate" label="Ngày cấp hộ chiếu" />
-              <RHFTextField name="reff" label="Người giới thiệu" />
-              <RHFTextField name="street" label="Địa chỉ thường trú" />
-              <RHFTextField name="state" label="Tỉnh/Thành Phố" />
-              <RHFTextField name="postelCode" label="Mã bưu điện" />
-              <RHFTextField name="country" label="Quốc gia" />
-              <RHFTextField name="phone" label="Điện thoại" />
-
-              {/* <RHFAutocompleteNew
-                name="company"
-                label={t('company_new') || ''}
-                // disablePortal
-                options={company}
-                getOptionLabel={(option: any) => option?.name || ''}
-                renderOption={(props, option: any) => (
-                  <li {...props} key={option._id} value={option._id}>
-                    {option.name}
-                  </li>
-                )}
-                changeState={handleSelectCompany}
-                isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
-              />
-
-              <RHFTextField name="job" label={t('job')} />
-
-              <Controller
-                name="studyDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <DatePicker
-                      label={t('studyDate')}
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(newValue) => {
-                        field.onChange(newValue || null);
-                      }}
-                      // views={['month', 'year']}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-
-              <Controller
-                name="startDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <DatePicker
-                      label={t('startDate')}
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(newValue) => {
-                        field.onChange(newValue || null);
-                      }}
-                      views={['month', 'year']}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-
-              {source.length > 0 && (
-                <RHFAutocompleteNew
-                  name="source"
-                  label={t('source') || ''}
-                  // disablePortal
-                  // value={tradeUnionSelect}
-                  // defaultValue={tradeUnionSelect._id}
-                  options={source}
-                  getOptionLabel={(option: any) => option?.name || ''}
-                  renderOption={(props, option: any) => (
-                    <li {...props} key={option._id} value={option._id}>
-                      {option.name}
-                    </li>
-                  )}
-                  changeState={handleSelectSource}
-                  isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
-                />
-              )} */}
-            </Box>
-
-            <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3, mt: 3 }}>
-              Thông tin hợp đồng:
-            </Typography>
-
-            <Box
-              rowGap={3}
-              columnGap={3}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-              }}
-            >
-              <RHFTextField name="contractId" label="Số hợp đồng" />
-              <Controller
-                name="contractDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <DatePicker
-                      label="Ngày hợp đồng"
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(newValue) => {
-                        field.onChange(newValue || null);
-                      }}
-                      // views={['month', 'year']}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-              <RHFTextField name="contractPeriod" label="Thời hạn hợp đồng" />
-              <Controller
-                name="departureDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <DatePicker
-                      label="Ngày xuất cảnh"
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(newValue) => {
-                        field.onChange(newValue || null);
-                      }}
-                      // views={['month', 'year']}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-              <RHFSelect
-                fullWidth
-                name="status"
-                label={t('status')}
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-              >
-                {statusIntern.map((option: any) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-              <RHFSelect
-                fullWidth
-                name="contractResult"
-                label="Tiến độ hồ sơ"
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-              >
-                {statusProfile.map((option: any) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-              <RHFSelect
-                fullWidth
-                name="profileStatus"
-                label="Đào tạo"
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-              >
-                {statusStudy.map((option: any) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-              {/* <RHFSelect
-                fullWidth
-                name="status"
-                label={t('status')}
-                PaperPropsSx={{ textTransform: 'capitalize' }}
-              >
-                {statusIntern.map((option: any) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </RHFSelect> */}
-
-              {/* {fields.length > 0 && (
-                <RHFAutocomplete
-                  name="fields"
-                  label="Ngành trúng tuyển"
-                  freeSolo
-                  // disablePortal
-                  // value={tradeUnionSelect}
-                  // defaultValue={tradeUnionSelect._id}
-                  options={fields}
-                  getOptionLabel={(option: any) => option}
-                  renderOption={(props, option: any) => (
-                    <li {...props} key={option} value={option}>
-                      {option}
-                    </li>
-                  )}
-                  // changeState={handleSelectTradeUnion}
-                  isOptionEqualToValue={(option: any, value: any) => option === value}
-                />
-              )}
-
-              <RHFTextField name="citizenId" label="Số CCCD" />
-
-              <RHFTextField name="citizenPlace" label="Nơi cấp" />
-              <RHFTextField name="passportId" label="Số hộ chiếu" />
-              <RHFTextField name="passportDate" label="Ngày cấp hộ chiếu" />
-              <RHFTextField name="reff" label="Người giới thiệu" />
-              <RHFTextField name="street" label="Địa chỉ thường trú" />
-              <RHFTextField name="state" label="Tỉnh/Thành Phố" />
-              <RHFTextField name="postelCode" label="Mã bưu điện" />
-              <RHFTextField name="country" label="Quốc gia" />
-              <RHFTextField name="phone" label="Điện thoại" /> */}
-
-              {/* <RHFAutocompleteNew
-                name="company"
-                label={t('company_new') || ''}
-                // disablePortal
-                options={company}
-                getOptionLabel={(option: any) => option?.name || ''}
-                renderOption={(props, option: any) => (
-                  <li {...props} key={option._id} value={option._id}>
-                    {option.name}
-                  </li>
-                )}
-                changeState={handleSelectCompany}
-                isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
-              />
-
-              <RHFTextField name="job" label={t('job')} />
-
-              <Controller
-                name="studyDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <DatePicker
-                      label={t('studyDate')}
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(newValue) => {
-                        field.onChange(newValue || null);
-                      }}
-                      // views={['month', 'year']}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-
-              <Controller
-                name="startDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="vi"
-                    localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <DatePicker
-                      label={t('startDate')}
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(newValue) => {
-                        field.onChange(newValue || null);
-                      }}
-                      views={['month', 'year']}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-
-              {source.length > 0 && (
-                <RHFAutocompleteNew
-                  name="source"
-                  label={t('source') || ''}
-                  // disablePortal
-                  // value={tradeUnionSelect}
-                  // defaultValue={tradeUnionSelect._id}
-                  options={source}
-                  getOptionLabel={(option: any) => option?.name || ''}
-                  renderOption={(props, option: any) => (
-                    <li {...props} key={option._id} value={option._id}>
-                      {option.name}
-                    </li>
-                  )}
-                  changeState={handleSelectSource}
-                  isOptionEqualToValue={(option: any, value: any) => option._id === value._id}
-                />
-              )} */}
-            </Box>
-
-            <Stack alignItems="flex-end" spacing={1.5}>
-              {/* <Button
-                size="small"
-                color="primary"
-                startIcon={<Iconify icon="mingcute:add-line" />}
-                onClick={handleAddFamily}
-                sx={{ flexShrink: 0 }}
-              >
-                Add Item
-              </Button> */}
-            </Stack>
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {t('edit_intern')}
-              </LoadingButton>
-            </Stack>
-          </Card>
-        </Grid>
-      </Grid>
+              {t('edit_intern')}
+            </LoadingButton>
+          </Stack>
+        </Card>
+      </m.div>
     </FormProvider>
   );
 }

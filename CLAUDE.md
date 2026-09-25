@@ -253,6 +253,16 @@ const [{ pdf }, { default: AllAttendancePDF }] = await Promise.all([
 
 Các form còn dùng `PDFDownloadLink` render thẳng trong JSX (`intern-new-edit-form.tsx`, `intern-view-form.tsx`, ...) thì **vẫn import tĩnh** — muốn nạp động phải bọc `React.lazy` + `Suspense`, chưa làm.
 
+#### Hợp đồng đưa người lao động đi làm việc (HĐLĐ, Mẫu số 03)
+
+In từ nút "In hợp đồng" ([intern-contract-button.tsx](src/sections/user/intern-contract-button.tsx), chỉ admin) ở form Hồ sơ xuất cảnh và ở thanh chọn nhiều dòng của danh sách TTS.
+
+- **Nguồn dữ liệu duy nhất:** [src/utils/contract.ts](src/utils/contract.ts) — thông tin Nhật Tân, bảng phí, điều khoản, cách đọc hồ sơ (`buildContractData`). Đổi phí/người đại diện chỉ sửa ở đây; cả PDF lẫn Excel đọc chung.
+- **Dữ liệu:** TTS dùng `field` (ngành nghề tiếng Việt), `citizen*`, `passport*`, `street`/`state`, `emergencyContact*`, `contractId`/`contractDate`; xí nghiệp dùng `director` + khối lương (`trainingAllowance`, `salary`, `tax`, `socialInsurance`, `housingFee`, đơn vị Yên). Form Hồ sơ xuất cảnh lưu qua `/api/user/updateLaborInfo` (admin).
+- **PDF** ([intern-pdf-contract.tsx](src/sections/invoice/intern-pdf-contract.tsx)): font Tinos (cùng số đo với Times New Roman của file mẫu). Tên nghiệp đoàn/xí nghiệp trong CSDL thường là **tiếng Nhật** mà Tinos không có chữ Nhật → chỉ khi hợp đồng có chữ Nhật mới bật font dự phòng Noto Sans JP (react-pdf tải mọi font dự phòng, mỗi file 5,7MB).
+- **Excel** ([ExportContract.ts](src/utils/ExportContract.ts)) nạp khuôn `public/assets/templates/hop-dong-lao-dong.xlsx`, ghi đè toàn bộ công thức sheet HĐLĐ **kèm kết quả tính sẵn** (ứng dụng xem trước trên điện thoại không tự tính công thức).
+- ⚠️ **Không bao giờ chép thẳng file mẫu gốc vào `public/`** — mọi thứ trong `public/` ai cũng tải được, còn file mẫu gốc chứa CCCD/SĐT người thật. Đổi mẫu thì chạy `node scripts/build-contract-template.js "MẪU HĐLĐ.xlsx"`: script gỡ dữ liệu cá nhân, tự dò lại file đầu ra và **dừng với lỗi nếu còn sót**. File mẫu gốc đã nằm trong `.gitignore`.
+
 ### Bundle
 
 Bundle khởi động (`main.js`) là thứ **mọi người tải mỗi lần vào app** — giữ nó nhỏ. Hai quy tắc:
