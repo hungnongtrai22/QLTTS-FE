@@ -55,7 +55,6 @@ export function useNavData() {
   const { user } = useAuthContext();
 
   const transListInternPath = () => {
-    console.log("ROLE", user?.role);
     if (user?.role === 'tradeunion') {
       return paths.dashboard.intern.listByTradeUnion;
     }

@@ -21,7 +21,7 @@ import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import axios from 'axios';
+import axios, { API_ENDPOINTS } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -66,21 +66,25 @@ export default function JwtLoginView() {
     async (newData: FormValuesProps) => {
       try {
         await login?.(newData.username, newData.password);
-        const { data } = await axios.post(
-          `${process.env.REACT_APP_HOST_API}/api/account/checkRole`,
-          {
-            username: newData.username,
-            password: newData.password,
-          }
-        );
-        // console.log('USER', newData);
-        if (data.role === 'admin') {
+
+        // Vai trò đọc từ chính phiên vừa đăng nhập. Trước đây chỗ này gọi
+        // `account/checkRole` và gửi lại username + password lần thứ hai; endpoint đó
+        // giờ chỉ dành cho admin nên mọi role khác nhận 403, rơi vào nhánh catch và
+        // bị GuestGuard đẩy về `/dashboard` thay vì trang danh sách của mình.
+        // `account/me` tự xác thực bằng token nên mọi role đều gọi được, và không
+        // phải truyền lại mật khẩu.
+        const { data } = await axios.get(API_ENDPOINTS.auth.me);
+        const { role } = data.user;
+
+        if (role === 'admin') {
           window.location.href = paths.dashboard.root;
-        } else if (data.role === 'source') {
+        } else if (role === 'tradeunion') {
+          window.location.href = paths.dashboard.intern.listByTradeUnion;
+        } else if (role === 'source') {
           window.location.href = paths.dashboard.intern.listBySource;
-        } else if (data.role === 'dongthap') {
+        } else if (role === 'dongthap') {
           window.location.href = paths.dashboard.intern.listByDongThap;
-        }else {
+        } else {
           window.location.href = returnTo || PATH_AFTER_LOGIN;
         }
       } catch (error) {
