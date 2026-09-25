@@ -186,6 +186,21 @@ Account đã xác thực được gắn vào `req.account`. Ngoài ra còn `requ
 
 **Secret và biến môi trường (BE):** `getJwtSecret()` trong `src/utils/auth.ts` là **nguồn duy nhất** của JWT secret — không có giá trị dự phòng cố định, thiếu biến thì ném lỗi 500 ngay. Tương tự `db.ts` chỉ đọc `MONGODB_URL`. **Tuyệt đối không đặt tên biến bí mật với tiền tố `NEXT_PUBLIC_`** — Next.js nhúng mọi biến `NEXT_PUBLIC_*` vào bundle phía trình duyệt.
 
+⚠️ **Biến môi trường trên Amplify KHÔNG tự xuống tới runtime của Next.js SSR.** Biến đặt trong Amplify Console chỉ tồn tại **lúc build**; AWS cố ý không chuyển chúng xuống Lambda chạy SSR. Vì vậy buildspec của app **QLTTS-BE** phải tự ghi chúng vào `.env.production` trước khi build:
+
+```yaml
+    build:
+      commands:
+        - env | grep -E '^(JWT_SECRET|MONGODB_URL|CORS_ORIGINS)=' >> .env.production
+        - yarn run build
+```
+
+`^` và `=` neo hai đầu để không quét trúng biến `NEXT_PUBLIC_*`. Cố ý **không** thêm `|| true`: thiếu biến thì build phải đỏ ngay, còn hơn deploy êm rồi mọi endpoint trả 500.
+
+Đây chính là lý do code cũ (`NEXT_PUBLIC_JWT_SECRET`) chạy được: tiền tố `NEXT_PUBLIC_` khiến Next.js nhúng giá trị vào bundle lúc build, nên runtime luôn có. Bỏ tiền tố đi là mất con đường vô tình đó — **bỏ tiền tố và sửa buildspec phải đi cùng nhau**, làm nửa vời sẽ sập toàn bộ API.
+
+Thêm biến bí mật mới cho BE thì phải thêm tên nó vào dòng `grep` trên, nếu không nó sẽ `undefined` lúc chạy dù Console đã có.
+
 **CORS:** `src/utils/cors.ts` đọc `CORS_ORIGINS` (danh sách origin phân tách bằng dấu phẩy). Bỏ trống = cho qua mọi origin kèm cảnh báo lúc khởi động. Origin không nằm trong danh sách thì **không được gắn header `Access-Control-Allow-Origin`** (trả `callback(null, false)`) thay vì ném Error — ném Error sẽ làm handler trả 500 kèm stack trace.
 
 #### ⏳ Ba việc bảo mật còn treo (đừng tự ý làm)
