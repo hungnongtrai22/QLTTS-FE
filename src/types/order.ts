@@ -1,12 +1,14 @@
 // ----------------------------------------------------------------------
 
-export type IOrderTableFilterValue = string | Date | null;
+export type IOrderTableFilterValue = string | string[] | Date | null;
 
 export type IOrderTableFilters = {
   name: string;
   status: string;
   startDate: Date | null;
   endDate: Date | null;
+  // Lọc TTS bên trong từng đơn theo tên nguồn ("Nhật Tân" = TTS chưa có nguồn).
+  source: string[];
 };
 
 // ----------------------------------------------------------------------
@@ -81,6 +83,10 @@ export type IOrderItem = {
   otherLivingConditions: string;
   listWorker: any;
   listIntern: any;
+  // ID các TTS đậu đơn này (một TTS có thể đậu nhiều đơn)
+  listInternPass?: string[];
+  // Số TTS đậu, tính ở FE để sắp xếp được theo cột "Đậu"
+  passCount?: number;
   taxes: number;
   status: string;
   shipping: number;

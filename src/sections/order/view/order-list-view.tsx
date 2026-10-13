@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import axios from 'axios';
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -32,6 +32,10 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { isDateError } from 'src/components/custom-date-range-picker';
 import { useSnackbar } from 'src/components/snackbar';
+// locales
+import { useLocales } from 'src/locales';
+// utils
+import { DEFAULT_SOURCE_NAME } from 'src/utils/source';
 
 import {
   useTable,
@@ -59,23 +63,27 @@ const STATUS_OPTIONS = [
   { value: 'Tạm ngưng tuyển', label: 'Tạm Ngưng Tuyển' },
   { value: 'Không tuyển nữa', label: 'Không Tuyển Nữa' },
 ];
-const TABLE_HEAD = [
-  { id: 'orderNumber', label: 'Tên' },
-  { id: 'name', label: 'Ưu tiên', width: 116 },
-  { id: 'recruitmentDate', label: 'Ngày Phỏng Vấn', width: 160 },
-  { id: 'totalQuantity', label: 'Phỏng Vấn', width: 120, align: 'center' },
-  { id: 'totalAmount', label: 'Số Lượng', width: 120 },
-  { id: 'status', label: 'Trạng Thái', width: 110 },
-  { id: 'createdAt', label: 'Ngày Tạo', width: 160 },
-
-  { id: '', width: 88 },
-];
-
-const defaultFilters = {
+const defaultFilters: IOrderTableFilters = {
   name: '',
   status: 'all',
   startDate: null,
   endDate: null,
+  source: [],
+};
+
+// Số TTS đậu đơn — chỉ tính người còn là ứng viên. Lưu vào dòng để cột "Đậu" sắp xếp được.
+const withPassCount = (order: IOrderItem): IOrderItem => {
+  const candidates = new Set((order.listIntern || []).map((intern: any) => String(intern._id)));
+  return {
+    ...order,
+    passCount: (order.listInternPass || []).filter((id) => candidates.has(String(id))).length,
+  };
+};
+
+const sourceIdOf = (intern: any) => {
+  const source = intern?.source;
+  if (!source) return '';
+  return String(typeof source === 'object' ? source._id : source);
 };
 
 // ----------------------------------------------------------------------
@@ -90,9 +98,79 @@ export default function OrderListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState([]);
+  const { t } = useLocales();
 
-  const [filters, setFilters] = useState(defaultFilters);
+  const [tableData, setTableData] = useState<IOrderItem[]>([]);
+
+  const [filters, setFilters] = useState<IOrderTableFilters>(defaultFilters);
+
+  const [sources, setSources] = useState<{ _id: string; name: string }[]>([]);
+
+  const tableHead = useMemo(
+    () => [
+      // "Đậu / Số lượng" (vd 1/3) thay cho cột "Số Lượng" cũ: số lượng vẫn hiện ở mẫu số,
+      // bớt một cột để cột Tên và ngày không bị bẻ dòng.
+      { id: 'orderNumber', label: 'Tên', minWidth: 180 },
+      { id: 'name', label: 'Ưu tiên', width: 100 },
+      { id: 'recruitmentDate', label: 'Ngày Phỏng Vấn', width: 150 },
+      { id: 'totalQuantity', label: 'Phỏng Vấn', width: 96, align: 'center' },
+      { id: 'passCount', label: t('order_col_passed'), width: 110 },
+      { id: 'status', label: 'Trạng Thái', width: 120 },
+      { id: 'createdAt', label: 'Ngày Tạo', width: 150 },
+      { id: '', width: 88 },
+    ],
+    [t]
+  );
+
+  // Bảng rộng tối thiểu 1000px: trên điện thoại/tablet phải cuộn ngang. Đo bề rộng khung để
+  // giữ danh sách TTS (khi mở đơn) luôn vừa màn hình — xem panelWidth ở OrderTableRow.
+  const tableBoxRef = useRef<HTMLDivElement>(null);
+  const [panelWidth, setPanelWidth] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    const element = tableBoxRef.current;
+    if (!element || typeof ResizeObserver === 'undefined') return undefined;
+    const update = () => {
+      const width = element.clientWidth;
+      setPanelWidth(width && width < 1000 ? width : undefined);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  // Lọc TTS bên trong từng đơn theo nguồn. "Nhật Tân" = TTS chưa có nguồn.
+  const sourceOptions = useMemo(
+    () => [
+      DEFAULT_SOURCE_NAME,
+      ...sources.map((item) => item.name).filter((item) => item !== DEFAULT_SOURCE_NAME),
+    ],
+    [sources]
+  );
+
+  const sourceNameById = useMemo(
+    () => new Map(sources.map((item) => [String(item._id), item.name])),
+    [sources]
+  );
+
+  const getSourceName = useCallback(
+    (intern: any) => sourceNameById.get(sourceIdOf(intern)) || DEFAULT_SOURCE_NAME,
+    [sourceNameById]
+  );
+
+  const matchesSource = useMemo(() => {
+    if (!filters.source.length) return null;
+    const ids = new Set(
+      sources.filter((item) => filters.source.includes(item.name)).map((item) => String(item._id))
+    );
+    const includeNone = filters.source.includes(DEFAULT_SOURCE_NAME);
+    return (intern: any) => {
+      const id = sourceIdOf(intern);
+      return id ? ids.has(id) : includeNone;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.source, sources]);
 
   const dateError = isDateError(filters.startDate, filters.endDate);
 
@@ -117,7 +195,10 @@ export default function OrderListView() {
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset =
-    !!filters.name || filters.status !== 'all' || (!!filters.startDate && !!filters.endDate);
+    !!filters.name ||
+    filters.status !== 'all' ||
+    (!!filters.startDate && !!filters.endDate) ||
+    filters.source.length > 0;
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
@@ -187,8 +268,47 @@ export default function OrderListView() {
 
   const handleGetAllOrder = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/order/list`);
-    setTableData(data.orders);
+    setTableData((data.orders || []).map(withPassCount));
   }, []);
+
+  const handleGetSources = useCallback(async () => {
+    const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/source/list`);
+    setSources(data.sources || []);
+  }, []);
+
+  // Đánh dấu / bỏ đánh dấu đậu: cập nhật tại chỗ thay vì tải lại cả danh sách đơn
+  // (mỗi đơn kèm hồ sơ đầy đủ của toàn bộ ứng viên — rất nặng).
+  const handleTogglePass = useCallback(
+    async (orderId: string, internId: string, pass: boolean) => {
+      try {
+        if (pass) {
+          await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/updateListInternPass`, {
+            _id: orderId,
+            listInternPass: [internId],
+          });
+        } else {
+          await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/removeInternPass`, {
+            orderId,
+            internId,
+          });
+        }
+        setTableData((prev) =>
+          prev.map((order) => {
+            if (order._id !== orderId) return order;
+            const ids = (order.listInternPass || []).map(String).filter((id) => id !== internId);
+            return withPassCount({ ...order, listInternPass: pass ? [...ids, internId] : ids });
+          })
+        );
+        enqueueSnackbar(pass ? t('order_pass_marked') : t('order_pass_unmarked'));
+      } catch (error) {
+        console.error(error);
+        enqueueSnackbar(error?.response?.data?.message || t('order_pass_failed'), {
+          variant: 'error',
+        });
+      }
+    },
+    [enqueueSnackbar, t]
+  );
 
   const handleRemoveInternInOrder = useCallback(
     async (orderId: any, internId: any) => {
@@ -204,7 +324,8 @@ export default function OrderListView() {
 
   useEffect(() => {
     handleGetAllOrder();
-  }, [handleGetAllOrder]);
+    handleGetSources();
+  }, [handleGetAllOrder, handleGetSources]);
 
   return (
     <>
@@ -256,14 +377,14 @@ export default function OrderListView() {
                   >
                     {tab.value === 'all' && tableData.length}
                     {tab.value === 'Đang tuyển' &&
-                      tableData.filter((order : any) => order.status === 'Đang tuyển').length}
+                      tableData.filter((order: any) => order.status === 'Đang tuyển').length}
 
                     {tab.value === 'Đã tuyển đủ' &&
-                      tableData.filter((order : any) => order.status === 'Đã tuyển đủ').length}
+                      tableData.filter((order: any) => order.status === 'Đã tuyển đủ').length}
                     {tab.value === 'Tạm ngưng tuyển' &&
-                      tableData.filter((order : any) => order.status === 'Tạm ngưng tuyển').length}
+                      tableData.filter((order: any) => order.status === 'Tạm ngưng tuyển').length}
                     {tab.value === 'Không tuyển nữa' &&
-                      tableData.filter((order : any) => order.status === 'Không tuyển nữa').length}
+                      tableData.filter((order: any) => order.status === 'Không tuyển nữa').length}
                   </Label>
                 }
               />
@@ -276,6 +397,7 @@ export default function OrderListView() {
             //
             canReset={canReset}
             onResetFilters={handleResetFilters}
+            sourceOptions={sourceOptions}
           />
 
           {canReset && (
@@ -290,7 +412,7 @@ export default function OrderListView() {
             />
           )}
 
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer ref={tableBoxRef} sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -311,11 +433,11 @@ export default function OrderListView() {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 1000 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
+                  headLabel={tableHead}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
@@ -345,6 +467,11 @@ export default function OrderListView() {
                         onViewInternRow={handleViewInternRow}
                         onRemoveIntern={handleRemoveInternInOrder}
                         onHandleGetOrder={handleGetAllOrder}
+                        onTogglePass={handleTogglePass}
+                        matchesSource={matchesSource}
+                        getSourceName={getSourceName}
+                        colSpan={tableHead.length + 1}
+                        panelWidth={panelWidth}
                       />
                     ))}
 

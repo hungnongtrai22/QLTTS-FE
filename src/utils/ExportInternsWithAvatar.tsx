@@ -56,6 +56,10 @@ export type Intern = {
 type Props = {
   interns: Intern[];
   name: any;
+  // Nhãn trên menu (mặc định "Xuất Excel") và trạng thái vô hiệu — trang Đơn hàng
+  // dùng để đặt tên theo nhóm và khoá khi danh sách in đang trống.
+  label?: string;
+  disabled?: boolean;
 };
 
 const changDateJP = (date: any) => {
@@ -89,7 +93,7 @@ function normalizeName(name: string): string {
     .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
 }
 
-const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
+const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name, label, disabled }) => {
   const fetchImageBuffer = async (url: string): Promise<import('exceljs').Buffer | undefined> => {
     try {
       const response = await axios.get(url, { responseType: 'arraybuffer' });
@@ -1022,9 +1026,9 @@ const ExportInternsWithAvatar: React.FC<Props> = ({ interns, name }) => {
   };
 
   return (
-    <MenuItem onClick={handleExport}>
+    <MenuItem onClick={handleExport} disabled={disabled}>
       <Iconify icon="file-icons:microsoft-excel" />
-      Xuất Excel
+      {label || 'Xuất Excel'}
     </MenuItem>
   );
 };

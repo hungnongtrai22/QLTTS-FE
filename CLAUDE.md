@@ -180,7 +180,7 @@ Account đã xác thực được gắn vào `req.account`. Ngoài ra còn `requ
 
 **Toàn bộ 141 endpoint đã được bọc**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
 
-22 endpoint yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource`, `company|tradeUnion|source /create|edit|delete`, `order/create|edit`, `pass/*`, `account/checkRole`). Số còn lại chỉ yêu cầu đăng nhập.
+25 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
 
 **Endpoint mới viết ra phải bọc `withAuth` ngay từ đầu.**
 
@@ -262,6 +262,13 @@ In từ nút "In hợp đồng" ([intern-contract-button.tsx](src/sections/user/
 - **PDF** ([intern-pdf-contract.tsx](src/sections/invoice/intern-pdf-contract.tsx)): font Tinos (cùng số đo với Times New Roman của file mẫu). Tên nghiệp đoàn/xí nghiệp trong CSDL thường là **tiếng Nhật** mà Tinos không có chữ Nhật → chỉ khi hợp đồng có chữ Nhật mới bật font dự phòng Noto Sans JP (react-pdf tải mọi font dự phòng, mỗi file 5,7MB).
 - **Excel** ([ExportContract.ts](src/utils/ExportContract.ts)) nạp khuôn `public/assets/templates/hop-dong-lao-dong.xlsx`, ghi đè toàn bộ công thức sheet HĐLĐ **kèm kết quả tính sẵn** (ứng dụng xem trước trên điện thoại không tự tính công thức).
 - ⚠️ **Không bao giờ chép thẳng file mẫu gốc vào `public/`** — mọi thứ trong `public/` ai cũng tải được, còn file mẫu gốc chứa CCCD/SĐT người thật. Đổi mẫu thì chạy `node scripts/build-contract-template.js "MẪU HĐLĐ.xlsx"`: script gỡ dữ liệu cá nhân, tự dò lại file đầu ra và **dừng với lỗi nếu còn sót**. File mẫu gốc đã nằm trong `.gitignore`.
+
+### Đơn hàng: ứng viên và danh sách đậu
+
+- `order.listIntern`: ứng viên (thứ tự trong mảng = số thứ tự hiển thị, "Đổi số thứ tự" hoán đổi trong mảng này).
+- `order.listInternPass`: TTS **đậu** đơn đó. Quan hệ nhiều-nhiều — một TTS đậu được nhiều đơn, nên danh sách nằm trên từng đơn, **không** ghi vào hồ sơ TTS (`intern.orderId` không dùng). Chỉ nhận người đang là ứng viên của đơn; gỡ ứng viên khỏi đơn (`removeIntern`, `removeInternFromAll`) thì gỡ luôn khỏi danh sách đậu.
+- Ghi danh sách bằng `$addToSet`/`$pull`, **không** gán mảng rồi `order.save()` — `save()` kiểm lại mọi trường bắt buộc của đơn, đơn cũ thiếu trường sẽ không lưu được.
+- Trang Đơn hàng: bộ lọc "Nguồn" chỉ lọc TTS **bên trong** từng đơn (danh sách khi mở đơn + file xuất), không lọc đơn. "Nhật Tân" = TTS chưa có nguồn, cùng quy ước với danh sách TTS. Menu In CV có nút chọn in *Ứng viên* hay *Đậu*; mọi mẫu CV/Excel dùng chung lựa chọn đó.
 
 ### Bundle
 

@@ -7,6 +7,13 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+// locales
+import { useLocales } from 'src/locales';
 // types
 import { IOrderTableFilters, IOrderTableFilterValue } from 'src/types/order';
 // components
@@ -21,6 +28,8 @@ type Props = {
   //
   canReset: boolean;
   onResetFilters: VoidFunction;
+  // Tên nguồn để lọc TTS bên trong từng đơn ("Nhật Tân" đứng đầu = TTS chưa có nguồn).
+  sourceOptions: string[];
 };
 
 export default function OrderTableToolbar({
@@ -29,8 +38,19 @@ export default function OrderTableToolbar({
   //
   canReset,
   onResetFilters,
+  sourceOptions,
 }: Props) {
   const popover = usePopover();
+
+  const { t } = useLocales();
+
+  const handleFilterSource = useCallback(
+    (event: SelectChangeEvent<string[]>) => {
+      const { value } = event.target;
+      onFilters('source', typeof value === 'string' ? value.split(',') : value);
+    },
+    [onFilters]
+  );
 
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +110,26 @@ export default function OrderTableToolbar({
             maxWidth: { md: 200 },
           }}
         /> */}
+
+        {/* Lọc TTS bên trong đơn — bảng vẫn hiện đủ đơn hàng. */}
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 240 } }}>
+          <InputLabel>{t('source')}</InputLabel>
+          <Select
+            multiple
+            value={filters.source}
+            onChange={handleFilterSource}
+            input={<OutlinedInput label={t('source')} />}
+            renderValue={(selected) => selected.join(', ')}
+            MenuProps={{ PaperProps: { sx: { maxHeight: 280 } } }}
+          >
+            {sourceOptions.map((option) => (
+              <MenuItem key={option} value={option}>
+                <Checkbox disableRipple size="small" checked={filters.source.includes(option)} />
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
