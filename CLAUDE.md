@@ -280,6 +280,18 @@ Mục "Hủy đơn" trong menu ⋮ của danh sách TTS (thay cho "Nhập Điể
 - Xóa cả `source` là chủ dự án chọn: tài khoản nguồn đó mất quyền xem TTS, và TTS rơi vào "Nhật Tân" ở bộ lọc.
 - **Không** đụng đơn hàng: TTS vẫn trong `listIntern`/`listInternPass`, gỡ tay ở trang Đơn hàng nếu cần.
 
+### Báo cáo học tập (trang theo dõi theo tháng)
+
+Mỗi báo cáo là một document `Study` = 1 TTS × 1 tháng (`monthAndYear` lưu 00:00 giờ VN, tức 17:00 UTC hôm trước). `total` = tổng 10 mục điểm (tối đa 1000), `isPublic` quyết định nghiệp đoàn/công ty có thấy hay không.
+
+Trang `paths.dashboard.intern.studyReport` (chỉ admin, [study-report-view.tsx](src/sections/user/view/study-report-view.tsx)) gọi **một** endpoint `GET /api/study/tracker?month=YYYY-MM`:
+
+- Liệt kê TTS `status: 'study'` đã nhập học (`studyDate`) trước cuối tháng, cộng mọi TTS đã có báo cáo trong tháng. Ranh giới tháng tính theo giờ VN.
+- Mỗi dòng kèm báo cáo của tháng (`null` = chưa nhập), `prevTotal` của tháng trước và `lastTeacher` (giáo viên gần nhất, cho dòng chưa nhập).
+- Trạng thái: Chưa nhập / Chưa công khai / Đã công khai. "Cần chú ý" = tổng điểm giảm ≥ `ATTENTION_DROP` (50) so với tháng trước — trên dữ liệu thật trung vị thay đổi là −6, ~12% lượt giảm từ 50.
+- Bấm "Nhập điểm/Sửa" mở **đúng form của tab "Nhập điểm"** (`intern-point-form.tsx`) trong hộp thoại, qua hai prop tùy chọn `initialMonth` + `onSaved`. Sửa form đó là sửa cả hai nơi.
+- Tên giáo viên là chữ tự gõ, rất nhiều cách viết cho cùng một người. Trước đây `study/create` gõ nhầm `tearcher` nên báo cáo tạo mới mất tên giáo viên (886/1308 báo cáo cũ để trống) — đã sửa, dữ liệu cũ chưa đụng.
+
 ### Bundle
 
 Bundle khởi động (`main.js`) là thứ **mọi người tải mỗi lần vào app** — giữ nó nhỏ. Hai quy tắc:

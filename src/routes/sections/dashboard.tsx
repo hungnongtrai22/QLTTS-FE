@@ -23,6 +23,7 @@ const DiaryCreatePage = lazy(() => import('src/pages/dashboard/diary/new'));
 const DiaryEditPage = lazy(() => import('src/pages/dashboard/diary/edit'));
 const DiaryProfileView = lazy(() => import('src/sections/user/view/diary-profile-view'));
 const InternListPointPage = lazy(() => import('src/pages/dashboard/intern/listPoint'));
+const StudyReportPage = lazy(() => import('src/pages/dashboard/intern/studyReport'));
 const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const GalleryEditPage = lazy(() => import('src/pages/dashboard/gallery/edit'));
 const ComparePage = lazy(() => import('src/pages/dashboard/intern/compare'));
@@ -164,6 +165,14 @@ export const dashboardRoutes = [
             ),
           },
           {
+            path: 'studyReport',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <StudyReportPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
             path: 'listByTradeUnion',
             element: (
               <RoleBasedGuard hasContent roles={['tradeunion']}>
@@ -184,7 +193,7 @@ export const dashboardRoutes = [
               </RoleBasedGuard>
             ),
           },
-             {
+          {
             path: 'newIsuzu',
             element: (
               <RoleBasedGuard hasContent roles={['admin']}>

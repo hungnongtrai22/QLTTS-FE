@@ -61,10 +61,10 @@ export function useNavData() {
     if (user?.role === 'source') {
       return paths.dashboard.intern.listBySource;
     }
-     if (user?.role === 'demo') {
+    if (user?.role === 'demo') {
       return paths.dashboard.intern.list;
     }
-    
+
     return paths.dashboard.intern.root;
   };
 
@@ -107,6 +107,11 @@ export function useNavData() {
               // { title: t('listCompare'), path: paths.dashboard.intern.compare, roles: ['admin'] },
 
               { title: t('listPoint'), path: paths.dashboard.intern.listPoint, roles: ['admin'] },
+              {
+                title: t('study_report'),
+                path: paths.dashboard.intern.studyReport,
+                roles: ['admin'],
+              },
               {
                 title: t('intern_by_trade_union'),
                 path: paths.dashboard.intern.listByTradeUnion,

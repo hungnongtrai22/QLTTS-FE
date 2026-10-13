@@ -400,3 +400,43 @@ export type IUserAccountChangePassword = {
   newPassword: string;
   confirmNewPassword: string;
 };
+
+// ----------------------------------------------------------------------
+// Trang "Báo cáo học tập" — mỗi dòng trả về từ GET /api/study/tracker?month=YYYY-MM.
+
+export type IStudyReportStatus = 'missing' | 'draft' | 'published';
+
+export type IStudyReportRow = {
+  _id: string;
+  name: string;
+  namejp: string;
+  avatar: string;
+  status: string;
+  studyDate: string | null;
+  tradeUnion: string;
+  company: string;
+  // null = chưa nhập báo cáo tháng này
+  report: {
+    _id: string;
+    total: number | null;
+    average: number | null;
+    level: string;
+    teacher: string;
+    isPublic: boolean;
+    updatedAt: string | null;
+  } | null;
+  prevTotal: number | null;
+  // Giáo viên của báo cáo tháng này, hoặc gần nhất trước đó (cho dòng chưa nhập)
+  lastTeacher: string;
+};
+
+export type IStudyReportFilters = {
+  name: string;
+  status: 'all' | IStudyReportStatus;
+  tradeUnion: string[];
+  company: string[];
+  teacher: string[];
+  attention: boolean;
+};
+
+export type IStudyReportFilterValue = string | string[] | boolean;

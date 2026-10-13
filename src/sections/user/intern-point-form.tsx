@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -82,11 +82,15 @@ interface FormValuesProps extends Omit<IStudyItem, 'avatarUrl'> {
 
 type Props = {
   internId?: string;
+  // Trang "Báo cáo học tập" mở form trong hộp thoại, chọn sẵn tháng đang xem.
+  initialMonth?: Date | null;
+  // Gọi sau khi lưu thành công (để trang theo dõi tải lại và đóng hộp thoại).
+  onSaved?: VoidFunction;
 };
 
 dayjs.locale('vi');
 
-export default function InternPointForm({ internId }: Props) {
+export default function InternPointForm({ internId, initialMonth = null, onSaved }: Props) {
   // const router = useRouter();
   // console.log('TEST', currentIntern);
   const { t, currentLang } = useLocales();
@@ -99,7 +103,11 @@ export default function InternPointForm({ internId }: Props) {
   // const [city, setCity] = useState('');
   // const [currentStudy, setCurrentStudy] = useState<IStudyItem | null>(null);
   // console.log(currentStudy);
-  const [monthSelect, setMonthSelect] = useState<Date | null>(null);
+  const [monthSelect, setMonthSelect] = useState<Date | null>(initialMonth);
+
+  // onSubmit bên dưới được tạo một lần (deps rỗng) nên đọc onSaved qua ref để luôn là bản mới.
+  const onSavedRef = useRef(onSaved);
+  onSavedRef.current = onSaved;
   const [learning, setLearning] = useState<any>('');
   const getNumber = (str: string) => {
     const match = str.match(/\d+/);
@@ -313,8 +321,14 @@ export default function InternPointForm({ internId }: Props) {
 
         // Nếu muốn reset cả monthSelect state
         setMonthSelect(null);
+
+        onSavedRef.current?.();
       } catch (error) {
         console.error(error);
+        // Trước đây lỗi chỉ ghi ra console, người nhập không biết là chưa lưu được.
+        enqueueSnackbar(error?.response?.data?.message || t('study_report_save_failed'), {
+          variant: 'error',
+        });
       }
     },
     []
@@ -439,7 +453,7 @@ export default function InternPointForm({ internId }: Props) {
               columnGap={3}
               display="grid"
               gridTemplateColumns={{
-                xs: 'repeat(3, 1fr)',
+                xs: 'repeat(1, 1fr)',
                 sm: 'repeat(3, 1fr)',
               }}
               // sx={{justifyContent: 'center'}}
