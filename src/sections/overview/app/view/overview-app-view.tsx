@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { m } from 'framer-motion';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -13,9 +14,11 @@ import { useSettingsContext } from 'src/components/settings';
 // assets
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useAuthContext } from 'src/auth/hooks';
-import { t } from 'i18next';
+import { useLocales } from 'src/locales';
+import { useSnackbar } from 'src/components/snackbar';
+import { MotionViewport, varFade } from 'src/components/animate';
 import axios from 'axios';
-import { Box, Card } from '@mui/material';
+import { Box } from '@mui/material';
 
 //
 import AppWidget from '../app-widget';
@@ -28,9 +31,10 @@ import AppAreaInstalled from '../app-area-installed';
 import AppWidgetSummary from '../app-widget-summary';
 import AppCurrentDownload from '../app-current-download';
 import AppTopInstalledCountries from '../app-top-installed-countries';
+import AppOverallStats from '../app-overall-stats';
+import AppProgramStats, { StatItem } from '../app-program-stats';
 import BankingBalanceStatistics from '../../banking/banking-balance-statistics';
 import AnalyticsConversionRates from '../../analytics/analytics-conversion-rates';
-import styles from './study-style.module.css';
 
 // ----------------------------------------------------------------------
 function getDaysOfCurrentMonthJP() {
@@ -101,9 +105,36 @@ interface TotalTokutei {
   waitSkill: number;
 }
 
+// Cơ sở đào tạo của từng chương trình: [tên hiển thị, trường trong số liệu BE].
+// Tên địa danh giữ nguyên ở mọi ngôn ngữ; riêng "Trung tâm TX01" có bản dịch (thêm ở dưới).
+const CENTERS_3YEAR: [string, keyof Total3Year][] = [
+  ['Trà Vinh', 'studyTV'],
+  ['Cần Thơ', 'studyCT'],
+  ['Traminco', 'studyTraminco'],
+  ['Ikigai', 'studyIkigai'],
+  ['BCN', 'studyBCN'],
+  ['NTC', 'studyNTC'],
+  ['Tiền Giang (Anh Nhân)', 'studyTG'],
+  ['TTVL Đồng Tháp', 'studyDT'],
+  ['Đà Nẵng', 'studyDN'],
+  ['Hà Nội', 'studyHN'],
+];
+
+const CENTERS_1YEAR: [string, keyof Total1Year][] = [
+  ['Trà Vinh', 'study1YearTV'],
+  ['Cần Thơ', 'study1YearCT'],
+  ['Traminco', 'study1YearTraminco'],
+];
+
+function toItems<T>(data: T | null, fields: [string, keyof T][]): StatItem[] {
+  return fields.map(([label, key]) => ({ label, value: Number(data?.[key]) || 0 }));
+}
+
 export default function OverviewAppView() {
   // const { user } = useMockedUser();
   const { user } = useAuthContext();
+  const { t } = useLocales();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [count, setCount] = useState();
   const [countSource, setCountSource] = useState();
@@ -127,9 +158,7 @@ export default function OverviewAppView() {
   // QLTTS-BE/src/pages/api/user/dashboardStats.ts
   const handleGetStats = useCallback(async () => {
     try {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_HOST_API}/api/user/dashboardStats`
-      );
+      const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/dashboardStats`);
 
       setCount(data.count);
       setCountSource(data.countSource);
@@ -145,14 +174,90 @@ export default function OverviewAppView() {
       setTotalTokutei(data.totalTokutei);
     } catch (error) {
       console.error('[Dashboard stats]', error);
+      enqueueSnackbar(t('dashboard_load_failed'), { variant: 'error' });
     }
-  }, []);
+  }, [enqueueSnackbar, t]);
 
   useEffect(() => {
     handleGetStats();
   }, [handleGetStats]);
 
-  // console.log((countSourceByMonth as any)?.study?.chart?.series);
+  // Dữ liệu cho các thẻ chương trình (thay cho 6 bảng HTML kẻ ô trước đây).
+  const programs = useMemo(() => {
+    const tx01 = t('dashboard_center_tx01');
+    return [
+      {
+        key: '3year',
+        title: t('dashboard_program_3year'),
+        icon: 'solar:users-group-rounded-bold-duotone',
+        wide: true,
+        loading: !total3Year,
+        departures: toItems(total3Year, [
+          ['2022', 'pass3Year2022'],
+          ['2023', 'pass3Year2023'],
+          ['2024', 'pass3Year2024'],
+          ['2025', 'pass3Year2025'],
+          ['2026', 'pass3Year2026'],
+        ]),
+        waiting: total3Year?.wait3Year || 0,
+        studying: [
+          { label: tx01, value: total3Year?.studyNT || 0 },
+          ...toItems(total3Year, CENTERS_3YEAR),
+        ],
+      },
+      {
+        key: '1year',
+        title: t('dashboard_program_1year'),
+        icon: 'solar:calendar-mark-bold-duotone',
+        loading: !total1Year,
+        departures: toItems(total1Year, [
+          ['2024', 'pass1Year2024'],
+          ['2025', 'pass1Year2025'],
+          ['2026', 'pass1Year2026'],
+        ]),
+        waiting: total1Year?.wait1Year || 0,
+        studying: [
+          { label: tx01, value: total1Year?.study1YearNT || 0 },
+          ...toItems(total1Year, CENTERS_1YEAR),
+        ],
+      },
+      {
+        key: 'engineer',
+        title: t('dashboard_program_engineer'),
+        icon: 'solar:case-round-bold-duotone',
+        loading: !totalEngineer,
+        departures: toItems(totalEngineer, [
+          ['2025', 'passKS2025'],
+          ['2026', 'passKS2026'],
+        ]),
+        waiting: totalEngineer?.waitKS || 0,
+        studying: [{ label: tx01, value: totalEngineer?.studyKS || 0 }],
+      },
+      {
+        key: 'tokuteiKS',
+        title: t('dashboard_program_tokutei_ks'),
+        icon: 'solar:diploma-verified-bold-duotone',
+        loading: !totalTokuteiKS,
+        departures: toItems(totalTokuteiKS, [['2025', 'passKS2025']]),
+        waiting: totalTokuteiKS?.waitKS || 0,
+        studying: [{ label: tx01, value: totalTokuteiKS?.studyKS || 0 }],
+      },
+      {
+        key: 'tokutei',
+        title: t('dashboard_program_tokutei'),
+        icon: 'solar:square-academic-cap-bold-duotone',
+        loading: !totalTokutei,
+        departures: toItems(totalTokutei, [
+          ['2023', 'pass2023'],
+          ['2024', 'pass2024'],
+          ['2025', 'pass2025'],
+          ['2026', 'pass2026'],
+        ]),
+        waiting: totalTokutei?.waitSkill || 0,
+        studying: [],
+      },
+    ];
+  }, [t, total3Year, total1Year, totalEngineer, totalTokuteiKS, totalTokutei]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -174,328 +279,30 @@ export default function OverviewAppView() {
           <AppFeatured list={_appFeatured} />
         </Grid>
 
-        <Grid xs={12} md={12}>
-          <Card sx={{ display: 'flex', p: 1.5 }}>
-            <Box sx={{ p: 1, flex: 1 }}>
-              <table className={styles.table}>
-                <thead className={styles.thead}>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2}>
-                      Nội dung
-                    </th>
-                    <th className={styles.th}>Số lượng</th>
-                  </tr>
-                </thead>
-                <tbody className={styles.tbody}>
-                  <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={17} style={{ fontWeight: 'bold' }}>
-                      Đơn hàng 3 năm
-                    </td>
-                    <td className={styles.td}>Xuất Cảnh 2022</td>
-                    <td className={styles.td}>{total3Year?.pass3Year2022 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2023</td>
-                    <td className={styles.td}>{total3Year?.pass3Year2023 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2024</td>
-                    <td className={styles.td}>{total3Year?.pass3Year2024 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2025</td>
-                    <td className={styles.td}>{total3Year?.pass3Year2025 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2026</td>
-                    <td className={styles.td}>{total3Year?.pass3Year2026 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Chờ bay</td>
-                    <td className={styles.td}>{total3Year?.wait3Year || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Đà Nẵng</td>
-                    <td className={styles.td}>{total3Year?.studyDN || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Trà Vinh</td>
-                    <td className={styles.td}>{total3Year?.studyTV || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Cần Thơ</td>
-                    <td className={styles.td}>{total3Year?.studyCT || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Hà Nội</td>
-                    <td className={styles.td}>{total3Year?.studyHN || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Traminco</td>
-                    <td className={styles.td}>{total3Year?.studyTraminco || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Ikigai</td>
-                    <td className={styles.td}>{total3Year?.studyIkigai || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở BCN</td>
-                    <td className={styles.td}>{total3Year?.studyBCN || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở NTC</td>
-                    <td className={styles.td}>{total3Year?.studyNTC || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Tiền Giang (Anh Nhân)</td>
-                    <td className={styles.td}>{total3Year?.studyTG || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở TTVL Đồng Tháp</td>
-                    <td className={styles.td}>{total3Year?.studyDT || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học tại Trung Tâm TX01</td>
-                    <td className={styles.td}>{total3Year?.studyNT || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2} style={{ backgroundColor: '#A6E3E9' }}>
-                      Tổng cộng
-                    </th>
-                    <th className={styles.th} style={{ backgroundColor: '#A6E3E9' }}>
-                      {total3Year ? Object.values(total3Year).reduce((s, n) => s + n, 0) : 0}
-                    </th>
-                  </tr>
-                </tbody>
-              </table>
-              <table className={styles.table} style={{ marginTop: '15px' }}>
-                <thead className={styles.thead}>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2}>
-                      Nội dung
-                    </th>
-                    <th className={styles.th}>Số lượng</th>
-                  </tr>
-                </thead>
-                <tbody className={styles.tbody}>
-                  <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={6} style={{ fontWeight: 'bold' }}>
-                      Tất Cả
-                    </td>
-                    <td className={styles.td}>Đã Xuất Cảnh</td>
-                    <td className={styles.td}>{total?.pass || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất cảnh {new Date().getFullYear()}</td>
-                    <td className={styles.td}>{total?.passCurrentYear || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Hoàn thành hợp đồng</td>
-                    <td className={styles.td}>{total?.complete || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Về nước trước hạn</td>
-                    <td className={styles.td}>{total?.soon || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Chờ bay</td>
-                    <td className={styles.td}>{total?.wait || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học</td>
-                    <td className={styles.td}>{total?.study || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2} style={{ backgroundColor: '#A6E3E9' }}>
-                      Tổng cộng
-                    </th>
-                    <th className={styles.th} style={{ backgroundColor: '#A6E3E9' }}>
-                      {total ? Object.values(total).reduce((s, n) => s + n, 0) : 0}
-                    </th>
-                  </tr>
-                </tbody>
-              </table>
-            </Box>
-            <Box sx={{ p: 1, flex: 1 }}>
-              <table className={styles.table}>
-                <thead className={styles.thead}>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2}>
-                      Nội dung
-                    </th>
-                    <th className={styles.th}>Số lượng</th>
-                  </tr>
-                </thead>
-                <tbody className={styles.tbody}>
-                  <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={8} style={{ fontWeight: 'bold' }}>
-                      Đơn hàng 1 năm
-                    </td>
-                    <td className={styles.td}>Xuất Cảnh 2024</td>
-                    <td className={styles.td}>{total1Year?.pass1Year2024 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2025</td>
-                    <td className={styles.td}>{total1Year?.pass1Year2025 || 0}</td>
-                  </tr>
-                    <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2026</td>
-                    <td className={styles.td}>{total1Year?.pass1Year2026 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Chờ bay</td>
-                    <td className={styles.td}>{total1Year?.wait1Year || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Trà Vinh</td>
-                    <td className={styles.td}>{total1Year?.study1YearTV || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Cần Thơ</td>
-                    <td className={styles.td}>{total1Year?.study1YearCT || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Traminco</td>
-                    <td className={styles.td}>{total1Year?.study1YearTraminco || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở TX01</td>
-                    <td className={styles.td}>{total1Year?.study1YearNT || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2} style={{ backgroundColor: '#A6E3E9' }}>
-                      Tổng cộng
-                    </th>
-                    <th className={styles.th} style={{ backgroundColor: '#A6E3E9' }}>
-                      {total1Year ? Object.values(total1Year).reduce((s, n) => s + n, 0) : 0}
-                    </th>
-                  </tr>
-                </tbody>
-              </table>
-              <table className={styles.table} style={{ marginTop: '15px' }}>
-                <thead className={styles.thead}>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2}>
-                      Nội dung
-                    </th>
-                    <th className={styles.th}>Số lượng</th>
-                  </tr>
-                </thead>
-                <tbody className={styles.tbody}>
-                  <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={4} style={{ fontWeight: 'bold' }}>
-                      Kỹ sư
-                    </td>
-                    <td className={styles.td}>Xuất Cảnh 2025</td>
-                    <td className={styles.td}>{totalEngineer?.passKS2025 || 0}</td>
-                  </tr>
-                      <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2026</td>
-                    <td className={styles.td}>{totalEngineer?.passKS2026 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Chờ bay</td>
-                    <td className={styles.td}>{totalEngineer?.waitKS || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Trung Tâm TX01</td>
-                    <td className={styles.td}>{totalEngineer?.studyKS || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2} style={{ backgroundColor: '#A6E3E9' }}>
-                      Tổng cộng
-                    </th>
-                    <th className={styles.th} style={{ backgroundColor: '#A6E3E9' }}>
-                      {totalEngineer ? Object.values(totalEngineer).reduce((s, n) => s + n, 0) : 0}
-                    </th>
-                  </tr>
-                </tbody>
-              </table>
-              <table className={styles.table} style={{ marginTop: '15px' }}>
-                <thead className={styles.thead}>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2}>
-                      Nội dung
-                    </th>
-                    <th className={styles.th}>Số lượng</th>
-                  </tr>
-                </thead>
-                <tbody className={styles.tbody}>
-                  <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={3} style={{ fontWeight: 'bold' }}>
-                      Tokutei KS
-                    </td>
-                    <td className={styles.td}>Xuất Cảnh 2025</td>
-                    <td className={styles.td}>{totalTokuteiKS?.passKS2025 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Chờ bay</td>
-                    <td className={styles.td}>{totalTokuteiKS?.waitKS || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Đang học ở Trung Tâm TX01</td>
-                    <td className={styles.td}>{totalTokuteiKS?.studyKS || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2} style={{ backgroundColor: '#A6E3E9' }}>
-                      Tổng cộng
-                    </th>
-                    <th className={styles.th} style={{ backgroundColor: '#A6E3E9' }}>
-                      {totalTokuteiKS
-                        ? Object.values(totalTokuteiKS).reduce((s, n) => s + n, 0)
-                        : 0}
-                    </th>
-                  </tr>
-                </tbody>
-              </table>
-              <table className={styles.table} style={{ marginTop: '15px' }}>
-                <thead className={styles.thead}>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2}>
-                      Nội dung
-                    </th>
-                    <th className={styles.th}>Số lượng</th>
-                  </tr>
-                </thead>
-                <tbody className={styles.tbody}>
-                  <tr className={styles.tr}>
-                    <td className={styles.td} rowSpan={5} style={{ fontWeight: 'bold' }}>
-                      Đặc định
-                    </td>
-                    <td className={styles.td}>Xuất Cảnh 2023</td>
-                    <td className={styles.td}>{totalTokutei?.pass2023 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2024</td>
-                    <td className={styles.td}>{totalTokutei?.pass2024 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2025</td>
-                    <td className={styles.td}>{totalTokutei?.pass2025 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Xuất Cảnh 2026</td>
-                    <td className={styles.td}>{totalTokutei?.pass2026 || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <td className={styles.td}>Chờ bay</td>
-                    <td className={styles.td}>{totalTokutei?.waitSkill || 0}</td>
-                  </tr>
-                  <tr className={styles.tr}>
-                    <th className={styles.th} colSpan={2} style={{ backgroundColor: '#A6E3E9' }}>
-                      Tổng cộng
-                    </th>
-                    <th className={styles.th} style={{ backgroundColor: '#A6E3E9' }}>
-                      {totalTokutei ? Object.values(totalTokutei).reduce((s, n) => s + n, 0) : 0}
-                    </th>
-                  </tr>
-                </tbody>
-              </table>
-            </Box>
-          </Card>
-          {/* <Card sx={{ display: 'flex', alignItems: 'center', p: 1.5 }}>
-             
-          </Card> */}
+        {/* Số liệu theo trạng thái và theo chương trình. Lưới: thẻ 3 năm rộng 8/12 cạnh thẻ
+            1 năm trên màn hình lớn; từ tablet các thẻ nhỏ 2 thẻ/hàng; điện thoại 1 thẻ/hàng. */}
+        <Grid xs={12}>
+          <Box component={MotionViewport}>
+            <Grid container spacing={3}>
+              <Grid xs={12}>
+                <m.div variants={varFade({ distance: 24 }).inUp}>
+                  <AppOverallStats data={total} />
+                </m.div>
+              </Grid>
+
+              {programs.map(({ key, ...program }) => (
+                <Grid key={key} xs={12} sm={program.wide ? 12 : 6} lg={program.wide ? 8 : 4}>
+                  <Box
+                    component={m.div}
+                    variants={varFade({ distance: 24 }).inUp}
+                    sx={{ height: 1 }}
+                  >
+                    <AppProgramStats {...program} />
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
         </Grid>
 
         {/* <Grid xs={12} md={4}>
