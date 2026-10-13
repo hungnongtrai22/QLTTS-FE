@@ -336,7 +336,15 @@ Logic của từng phép thống kê nằm trong chính file endpoint lẻ, đư
 - Bộ lọc trên giao diện dùng **tên** nghiệp đoàn/nguồn/xí nghiệp, còn Intern lưu ObjectId — endpoint tự tra tên → id.
 - Tìm kiếm bỏ dấu do `src/utils/search.ts` bên BE lo (`\p{Mn}` + nở lớp ký tự), **không** còn lọc ở client.
 - `statusCounts` tính trên tập đã lọc nhưng **bỏ qua chính bộ lọc trạng thái**, nếu không thì tab đang chọn sẽ là tab duy nhất khác 0.
-- **`age` không có trong CSDL** (tính từ `birthday` lúc trả kết quả). Sắp xếp theo `age` được ánh xạ sang `birthday` với thứ tự đảo ngược. Thêm cột sắp xếp mới thì kiểm tra field đó có thật trong model không.
+- **Không sắp xếp/lọc theo trường `age` trong CSDL** — xem mục "Tuổi của TTS" bên dưới. Sắp xếp theo `age` được ánh xạ sang `birthday` với thứ tự đảo ngược. Thêm cột sắp xếp mới thì kiểm tra field đó có thật trong model không.
+
+#### Tuổi của TTS
+
+Model Intern **có** trường `age`, nhưng nó chỉ được ghi khi bấm lưu hồ sơ (`user/create|edit`) nên **cũ dần** — đừng đọc nó. Tuổi đúng luôn tính lại từ `birthday` lúc trả kết quả, bằng helper dùng chung `QLTTS-BE/src/utils/age.ts`:
+
+- `calculateAge(birthday)` tính theo **ngày ở Việt Nam** (UTC+7). Ngày sinh lưu dạng 00:00 giờ VN (= 17:00 UTC hôm trước) mà máy chủ AWS chạy UTC — so ngày theo giờ máy chủ thì tuổi tăng sớm một ngày.
+- `withAge(intern)` cho endpoint trả TTS (`user/list`, `user/listBy*`, `user/[id]`); `withListInternAges(doc)` cho document có `listIntern` đã populate (`order/list`, `order/[id]`, `compare/list`, `compare/getByAccountId`). Hàm sau đi qua `doc.toJSON()` nên payload giữ nguyên như trước, chỉ thay `age`.
+- **Endpoint mới trả hồ sơ TTS phải đi qua một trong hai hàm trên.** Mọi mẫu CV/Excel in `intern.age` của dữ liệu được truyền vào, không tự tính — trước khi có helper, file in từ trang Đơn hàng mang tuổi của lần lưu cuối (216/389 TTS sai).
 - Thao tác hàng loạt (xuất Excel, PDF điểm danh) nhận prop `fetchAllInterns` / `fetchInterns` để tự lấy trọn bộ lúc bấm — **không** dựa vào prop `interns` vì nó chỉ là trang hiện tại.
 - "Chọn tất cả" giờ chỉ chọn trong trang hiện tại, đúng như cách bảng phân trang thường hoạt động.
 
