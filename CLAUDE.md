@@ -286,7 +286,7 @@ Mỗi báo cáo là một document `Study` = 1 TTS × 1 tháng (`monthAndYear` l
 
 Trang `paths.dashboard.intern.studyReport` (chỉ admin, [study-report-view.tsx](src/sections/user/view/study-report-view.tsx)) gọi **một** endpoint `GET /api/study/tracker?month=YYYY-MM`:
 
-- Liệt kê TTS `status: 'study'` đã nhập học (`studyDate`) trước cuối tháng, cộng mọi TTS đã có báo cáo trong tháng. Ranh giới tháng tính theo giờ VN.
+- Liệt kê TTS `status: 'study'` đã nhập học (`studyDate`) trước cuối tháng, cộng mọi TTS đã có báo cáo trong tháng. Ranh giới tháng tính theo giờ VN. Lọc khoảng tháng dùng index `monthAndYear_1` (explain: IXSCAN, đọc đúng số báo cáo của tháng thay vì quét cả 1308 document).
 - Mỗi dòng kèm báo cáo của tháng (`null` = chưa nhập), `prevTotal` của tháng trước và `lastTeacher` (giáo viên gần nhất, cho dòng chưa nhập).
 - Lọc theo nghiệp đoàn / công ty / nguồn / giáo viên (lựa chọn lấy từ chính các dòng của tháng). Nguồn trống = "Nhật Tân" (`DEFAULT_SOURCE_NAME`), đứng đầu danh sách — cùng quy ước với danh sách TTS.
 - Trạng thái: Chưa nhập / Chưa công khai / Đã công khai. "Cần chú ý" = tổng điểm giảm ≥ `ATTENTION_DROP` (50) so với tháng trước — trên dữ liệu thật trung vị thay đổi là −6, ~12% lượt giảm từ 50.
