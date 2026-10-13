@@ -9,8 +9,11 @@ import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+// locales
+import { useLocales } from 'src/locales';
 // types
 import { IInternItem } from 'src/types/user';
 // components
@@ -20,6 +23,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import InternQuickEditForm from './intern-quick-edit-form';
 import ContactQuickEditForm from './contact-quick-edit-form';
 import StudyQuickEditForm from './study-quick-edit-form';
+import InternCancelOrderDialog from './intern-cancel-order-dialog';
 //
 
 // ----------------------------------------------------------------------
@@ -27,12 +31,14 @@ import StudyQuickEditForm from './study-quick-edit-form';
 type Props = {
   selected: boolean;
   onEditRow: (id: string) => void;
-    onEditIsuzuRow: (id: string) => void;
+  onEditIsuzuRow: (id: string) => void;
 
   row: IInternItem;
   onSelectRow: (id: string) => void;
   onDeleteRow: (id: string) => void;
   onViewRow: (id: string) => void;
+  // Không truyền thì ẩn mục "Hủy đơn" (tài khoản demo). Trả về true khi hủy thành công.
+  onCancelOrder?: (id: string) => Promise<boolean>;
 };
 
 const changDateJP = (date: any) => {
@@ -50,12 +56,19 @@ function InternTableRow({
   onSelectRow,
   onDeleteRow,
   onViewRow,
-    onEditIsuzuRow,
-
+  onEditIsuzuRow,
+  onCancelOrder,
 }: Props) {
   const { name, namejp, avatar, city, birthday, age, height, weight, createdAt } = row;
 
+  const { t } = useLocales();
+
   const confirm = useBoolean();
+
+  const cancelOrder = useBoolean();
+
+  // Chỉ hủy đơn được khi TTS đang học (BE cũng kiểm tra lại).
+  const canCancelOrder = row.status === 'study';
 
   const quickEdit = useBoolean();
 
@@ -172,7 +185,7 @@ function InternTableRow({
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
-        sx={{ width: 140 }}
+        sx={{ width: 200 }}
       >
         <MenuItem
           onClick={() => {
@@ -195,7 +208,7 @@ function InternTableRow({
           Chỉnh Sửa
         </MenuItem>
 
-         <MenuItem
+        <MenuItem
           onClick={() => {
             onEditIsuzuRow(row._id);
             popover.onClose();
@@ -205,15 +218,26 @@ function InternTableRow({
           Chỉnh Sửa Isuzu
         </MenuItem>
 
-         <MenuItem
-          onClick={() => {
-            onEditRow(row._id);
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="material-symbols:school" />
-          Nhập Điểm
-        </MenuItem>
+        {onCancelOrder && (
+          <MenuItem
+            disabled={!canCancelOrder}
+            onClick={() => {
+              cancelOrder.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'warning.main' }}
+          >
+            <Iconify icon="solar:close-circle-bold" />
+            <div>
+              {t('intern_cancel_order')}
+              {!canCancelOrder && (
+                <Typography variant="caption" component="div" sx={{ color: 'text.secondary' }}>
+                  {t('intern_cancel_order_hint')}
+                </Typography>
+              )}
+            </div>
+          </MenuItem>
+        )}
 
         {/* <MenuItem
           onClick={() => {
@@ -225,6 +249,15 @@ function InternTableRow({
           Nghiệp đoàn
         </MenuItem> */}
       </CustomPopover>
+
+      {onCancelOrder && (
+        <InternCancelOrderDialog
+          open={cancelOrder.value}
+          name={name}
+          onClose={cancelOrder.onFalse}
+          onConfirm={() => onCancelOrder(row._id)}
+        />
+      )}
 
       <ConfirmDialog
         open={confirm.value}

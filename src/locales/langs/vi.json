@@ -476,5 +476,13 @@
   "order_excel_detail": "Hồ sơ chi tiết (mẫu đậu)",
   "order_edit": "Chỉnh sửa đơn hàng",
   "order_print_empty": "Danh sách này đang trống",
-  "order_export_failed": "Không tạo được file"
+  "order_export_failed": "Không tạo được file",
+  "intern_cancel_order": "Hủy đơn",
+  "intern_cancel_order_hint": "Chỉ khi đang học",
+  "intern_cancel_order_title": "Hủy đơn của thực tập sinh",
+  "intern_cancel_order_content": "{{name}} sẽ chuyển về trạng thái Phỏng vấn và bị xóa các thông tin nghiệp đoàn, công ty bên dưới.",
+  "intern_cancel_order_cleared": "Thông tin bị xóa",
+  "intern_cancel_order_note": "Không hoàn tác được. Danh sách ứng viên và danh sách đậu của đơn hàng giữ nguyên — cần gỡ thì làm ở trang Đơn hàng.",
+  "intern_cancel_order_success": "Đã hủy đơn, thực tập sinh chuyển về Phỏng vấn",
+  "intern_cancel_order_failed": "Không hủy được đơn"
 }

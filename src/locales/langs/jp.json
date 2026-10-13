@@ -424,5 +424,13 @@
   "order_excel_detail": "詳細プロフィール（合格者様式）",
   "order_edit": "求人を編集",
   "order_print_empty": "対象者がいません",
-  "order_export_failed": "ファイルを作成できませんでした"
+  "order_export_failed": "ファイルを作成できませんでした",
+  "intern_cancel_order": "内定取消",
+  "intern_cancel_order_hint": "勉強中のみ可能",
+  "intern_cancel_order_title": "実習生の内定取消",
+  "intern_cancel_order_content": "{{name}} のステータスを「面接」に戻し、下記の組合・会社情報を削除します。",
+  "intern_cancel_order_cleared": "削除される情報",
+  "intern_cancel_order_note": "元に戻せません。オーダーの候補者リスト・合格者リストは変更されません（必要ならオーダー画面で外してください）。",
+  "intern_cancel_order_success": "内定を取り消し、面接に戻しました",
+  "intern_cancel_order_failed": "内定取消に失敗しました"
 }

@@ -81,6 +81,9 @@ export default function InternListView() {
 
   const { user: userRole } = useAuthContext();
 
+  // Hủy đơn chỉ dành cho admin (endpoint cũng chỉ nhận admin); tài khoản demo không thấy mục này.
+  const isAdmin = userRole?.role === 'admin';
+
   const { enqueueSnackbar } = useSnackbar();
 
   const TABLE_HEAD = [
@@ -234,6 +237,29 @@ export default function InternListView() {
       reload();
     },
     [reload]
+  );
+
+  // Hủy đơn: TTS về "Phỏng vấn", xóa thông tin nghiệp đoàn/công ty. Tải lại để số đếm các
+  // tab trạng thái và trang hiện tại đúng với server.
+  const handleCancelOrder = useCallback(
+    async (id: string) => {
+      try {
+        await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/cancelOrder`, { _id: id });
+        enqueueSnackbar(t('intern_cancel_order_success'));
+        reload();
+        return true;
+      } catch (error) {
+        console.error(error);
+        enqueueSnackbar(
+          (error as any)?.response?.data?.message || t('intern_cancel_order_failed'),
+          {
+            variant: 'error',
+          }
+        );
+        return false;
+      }
+    },
+    [enqueueSnackbar, reload, t]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -564,6 +590,7 @@ export default function InternListView() {
                       onEditRow={handleEditRow}
                       onEditIsuzuRow={handleEditIsuzuRow}
                       onViewRow={handleViewRow}
+                      onCancelOrder={isAdmin ? handleCancelOrder : undefined}
                     />
                   ))}
 

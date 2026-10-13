@@ -25,7 +25,7 @@ Bốn quy tắc dưới đây do chủ dự án đặt ra, áp dụng cho mọi 
 cd D:\github\QLTTS-BE && READ_ONLY=1 npx next dev -p 7272
 ```
 
-Server sẽ từ chối (403) mọi endpoint ghi — `create`, `edit`, `delete`, `update*`, `remove*`, `register`, `resetPassword`, `importExcel`, `swapIntern`… Đọc và đăng nhập vẫn bình thường. Nhờ vậy có thể bấm thử bằng tài khoản admin trên CSDL thật mà không sợ lỡ tay ghi.
+Server sẽ từ chối (403) mọi endpoint ghi — `create`, `edit`, `delete`, `update*`, `remove*`, `register`, `resetPassword`, `importExcel`, `swapIntern`, `cancelOrder`… Đọc và đăng nhập vẫn bình thường. Chặn theo **tên** endpoint (`WRITE_PATTERN`), nên endpoint ghi mới có tên ngoài các mẫu trên phải thêm vào `WRITE_PATTERN`, rồi thăm dò bằng body rỗng `{}` để thấy 403 trước khi bấm thử. Nhờ vậy có thể bấm thử bằng tài khoản admin trên CSDL thật mà không sợ lỡ tay ghi.
 
 Kiểm tra nằm trong `requireAccount()` (`src/utils/auth.ts`), **không phải** trong `withAuth` — nhóm `/api/account/*` gọi `requireRole` trực tiếp nên đặt ở `withAuth` sẽ sót nhánh đó. Không chặn theo phương thức HTTP được: codebase dùng POST cho cả việc đọc (`user/listBySource`, `company/listByTradeUnion`).
 
@@ -180,7 +180,7 @@ Account đã xác thực được gắn vào `req.account`. Ngoài ra còn `requ
 
 **Toàn bộ 141 endpoint đã được bọc**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
 
-25 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
+26 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
 
 **Endpoint mới viết ra phải bọc `withAuth` ngay từ đầu.**
 
@@ -270,6 +270,15 @@ In từ nút "In hợp đồng" ([intern-contract-button.tsx](src/sections/user/
 - Ghi danh sách bằng `$addToSet`/`$pull`, **không** gán mảng rồi `order.save()` — `save()` kiểm lại mọi trường bắt buộc của đơn, đơn cũ thiếu trường sẽ không lưu được.
 - Trang Đơn hàng: bộ lọc "Nguồn" chỉ lọc TTS **bên trong** từng đơn (danh sách khi mở đơn + file xuất), không lọc đơn. "Nhật Tân" = TTS chưa có nguồn, cùng quy ước với danh sách TTS. Menu In CV có nút chọn in *Ứng viên* hay *Đậu*; mọi mẫu CV/Excel dùng chung lựa chọn đó.
 - **File xuất luôn in số thứ tự gốc trong đơn**, kể cả khi chỉ in danh sách đậu hay đang lọc nguồn (vd chỉ in người số 2 thì file vẫn ghi 2, không đánh lại thành 1). `order-table-row.tsx` gắn `orderNo` (vị trí trong `listIntern`, tính từ 1) vào từng TTS trước khi in; 8 mẫu `AllInternsPDF*`, 5 trang tổng hợp `intern-pdf-home*` và 2 mẫu Excel `ExportInternsWithAvatar`/`ExportInternsPass` đọc `intern.orderNo ?? <số đếm>`. Thêm mẫu mới thì giữ đúng dạng này; nơi không truyền `orderNo` (in từ form TTS) vẫn đánh 1..N như cũ.
+
+### Hủy đơn của TTS
+
+Mục "Hủy đơn" trong menu ⋮ của danh sách TTS (thay cho "Nhập Điểm" cũ, chỉ admin thấy) gọi `/api/user/cancelOrder` (admin):
+
+- Chỉ hủy được khi TTS đang `status: 'study'` (Đang học). Điều kiện nằm trong bộ lọc của `findOneAndUpdate` → kiểm tra và ghi là một thao tác; sai trạng thái trả 409.
+- Đưa `status` về `'interview'` và `$unset` đúng 7 trường của khối "Thông tin nghiệp đoàn và công ty": `tradeUnion`, `companySelect`, `job`, `interviewDate`, `studyDate`, `startDate`, `source`. Danh sách nằm ở `CLEARED_FIELDS` (BE) và `CLEARED_FIELD_KEYS` ([intern-cancel-order-dialog.tsx](src/sections/user/intern-cancel-order-dialog.tsx)) — sửa thì sửa cả hai.
+- Xóa cả `source` là chủ dự án chọn: tài khoản nguồn đó mất quyền xem TTS, và TTS rơi vào "Nhật Tân" ở bộ lọc.
+- **Không** đụng đơn hàng: TTS vẫn trong `listIntern`/`listInternPass`, gỡ tay ở trang Đơn hàng nếu cần.
 
 ### Bundle
 
