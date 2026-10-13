@@ -45,6 +45,7 @@ import { Box, Stack, TextField } from '@mui/material';
 
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
+import { DEFAULT_SOURCE_NAME } from 'src/utils/source';
 
 //
 import InternTableRow from '../intern-table-row';
@@ -119,7 +120,7 @@ export default function InternListView() {
 
   const [tableData, setTableData] = useState<IInternItem[]>([]);
   const [tradeUnion, setTradeUnion] = useState([]);
-  const [source, setSource] = useState([]);
+  const [source, setSource] = useState<string[]>([]);
   const [company, setCompany] = useState([]);
   const [orderSelect, setOrderSelect] = useState<Order | null>(null);
   const [orders, setOrders] = useState([]);
@@ -378,8 +379,9 @@ export default function InternListView() {
 
   const handleGetSource = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/source/list`);
-    setSource(data.sources.map((item: any) => item.name));
-    // console.log(data.tradeUnions);
+    // "Nhật Tân" đứng đầu: nhóm TTS chưa gán nguồn (đông nhất) — xem src/utils/source.ts.
+    const names: string[] = data.sources.map((item: any) => item.name);
+    setSource([DEFAULT_SOURCE_NAME, ...names.filter((name) => name !== DEFAULT_SOURCE_NAME)]);
   }, []);
 
   const handleGetOrder = useCallback(async () => {
