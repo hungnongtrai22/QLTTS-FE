@@ -29,6 +29,8 @@ export type StudyReportViewRow = IStudyReportRow & {
   delta: number | null;
   attention: boolean;
   teacherName: string;
+  // Tên nguồn để lọc; TTS chưa có nguồn là "Nhật Tân"
+  sourceName: string;
   // TTS nhập học ngay trong tháng đang xem
   isNew: boolean;
 };

@@ -288,6 +288,7 @@ Trang `paths.dashboard.intern.studyReport` (chỉ admin, [study-report-view.tsx]
 
 - Liệt kê TTS `status: 'study'` đã nhập học (`studyDate`) trước cuối tháng, cộng mọi TTS đã có báo cáo trong tháng. Ranh giới tháng tính theo giờ VN.
 - Mỗi dòng kèm báo cáo của tháng (`null` = chưa nhập), `prevTotal` của tháng trước và `lastTeacher` (giáo viên gần nhất, cho dòng chưa nhập).
+- Lọc theo nghiệp đoàn / công ty / nguồn / giáo viên (lựa chọn lấy từ chính các dòng của tháng). Nguồn trống = "Nhật Tân" (`DEFAULT_SOURCE_NAME`), đứng đầu danh sách — cùng quy ước với danh sách TTS.
 - Trạng thái: Chưa nhập / Chưa công khai / Đã công khai. "Cần chú ý" = tổng điểm giảm ≥ `ATTENTION_DROP` (50) so với tháng trước — trên dữ liệu thật trung vị thay đổi là −6, ~12% lượt giảm từ 50.
 - Bấm "Nhập điểm/Sửa" mở **đúng form của tab "Nhập điểm"** (`intern-point-form.tsx`) trong hộp thoại, qua hai prop tùy chọn `initialMonth` + `onSaved`. Sửa form đó là sửa cả hai nơi.
 - Tên giáo viên là chữ tự gõ, rất nhiều cách viết cho cùng một người. Trước đây `study/create` gõ nhầm `tearcher` nên báo cáo tạo mới mất tên giáo viên (886/1308 báo cáo cũ để trống) — đã sửa, dữ liệu cũ chưa đụng.

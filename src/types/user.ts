@@ -415,6 +415,8 @@ export type IStudyReportRow = {
   studyDate: string | null;
   tradeUnion: string;
   company: string;
+  // Rỗng = chưa có nguồn (hiển thị/lọc là "Nhật Tân")
+  source: string;
   // null = chưa nhập báo cáo tháng này
   report: {
     _id: string;
@@ -435,6 +437,7 @@ export type IStudyReportFilters = {
   status: 'all' | IStudyReportStatus;
   tradeUnion: string[];
   company: string[];
+  source: string[];
   teacher: string[];
   attention: boolean;
 };

@@ -28,6 +28,8 @@ import { paths } from 'src/routes/paths';
 import { useResponsive } from 'src/hooks/use-responsive';
 // locales
 import { useLocales } from 'src/locales';
+// utils
+import { DEFAULT_SOURCE_NAME } from 'src/utils/source';
 // types
 import {
   IStudyReportRow,
@@ -70,6 +72,7 @@ const defaultFilters: IStudyReportFilters = {
   status: 'all',
   tradeUnion: [],
   company: [],
+  source: [],
   teacher: [],
   attention: false,
 };
@@ -114,6 +117,8 @@ const toViewRow = (row: IStudyReportRow, month: Date): StudyReportViewRow => {
     delta,
     attention: delta !== null && delta <= -ATTENTION_DROP,
     teacherName: row.report?.teacher || row.lastTeacher,
+    // TTS chưa có nguồn thuộc "Nhật Tân" — cùng quy ước với bộ lọc danh sách TTS.
+    sourceName: row.source || DEFAULT_SOURCE_NAME,
     isNew: !!studyDate && studyDate >= month && studyDate < addMonths(month, 1),
   };
 };
@@ -219,12 +224,19 @@ export default function StudyReportView() {
     () => ({
       tradeUnion: uniqueSorted(viewRows.map((row) => row.tradeUnion)),
       company: uniqueSorted(viewRows.map((row) => row.company)),
+      // "Nhật Tân" luôn đứng đầu như ở danh sách TTS.
+      source: [
+        DEFAULT_SOURCE_NAME,
+        ...uniqueSorted(viewRows.map((row) => row.source)).filter(
+          (name) => name !== DEFAULT_SOURCE_NAME
+        ),
+      ],
       teacher: uniqueSorted(viewRows.map((row) => row.teacherName)),
     }),
     [viewRows]
   );
 
-  // Bộ lọc "phạm vi" (nghiệp đoàn, công ty, giáo viên, tên): tiến độ tính trên phạm vi này,
+  // Bộ lọc "phạm vi" (nghiệp đoàn, công ty, nguồn, giáo viên, tên): tiến độ tính trên phạm vi này,
   // để giáo viên lọc lớp mình là thấy ngay lớp mình đã nhập được bao nhiêu.
   const scopedRows = useMemo(() => {
     const keyword = normalize(filters.name.trim());
@@ -232,12 +244,20 @@ export default function StudyReportView() {
       (row) =>
         (!filters.tradeUnion.length || filters.tradeUnion.includes(row.tradeUnion)) &&
         (!filters.company.length || filters.company.includes(row.company)) &&
+        (!filters.source.length || filters.source.includes(row.sourceName)) &&
         (!filters.teacher.length || filters.teacher.includes(row.teacherName)) &&
         (!keyword ||
           normalize(row.name).includes(keyword) ||
           normalize(row.namejp).includes(keyword))
     );
-  }, [viewRows, filters.name, filters.tradeUnion, filters.company, filters.teacher]);
+  }, [
+    viewRows,
+    filters.name,
+    filters.tradeUnion,
+    filters.company,
+    filters.source,
+    filters.teacher,
+  ]);
 
   // Số trên các tab: theo phạm vi + "Cần chú ý", bỏ qua chính bộ lọc trạng thái.
   const tabRows = useMemo(
@@ -287,6 +307,7 @@ export default function StudyReportView() {
     filters.attention ||
     filters.tradeUnion.length > 0 ||
     filters.company.length > 0 ||
+    filters.source.length > 0 ||
     filters.teacher.length > 0;
 
   const notFound = !loading && !dataFiltered.length;

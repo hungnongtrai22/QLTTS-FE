@@ -24,7 +24,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-type MultiFilterKey = 'tradeUnion' | 'company' | 'teacher';
+type MultiFilterKey = 'tradeUnion' | 'company' | 'source' | 'teacher';
 
 type Props = {
   filters: IStudyReportFilters;
@@ -49,7 +49,7 @@ export default function StudyReportTableToolbar({
 
   const renderMultiSelect = useCallback(
     (key: MultiFilterKey, label: string) => (
-      <FormControl key={key} sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
+      <FormControl key={key} sx={{ flex: { md: 1 }, minWidth: 0, width: { xs: 1, md: 'auto' } }}>
         <InputLabel>{label}</InputLabel>
         <Select
           multiple
@@ -75,57 +75,63 @@ export default function StudyReportTableToolbar({
   );
 
   return (
-    <Stack
-      spacing={2}
-      alignItems={{ xs: 'stretch', md: 'center' }}
-      direction={{ xs: 'column', md: 'row' }}
-      sx={{ p: 2.5, pr: { xs: 2.5, md: 1.5 } }}
-    >
-      {renderMultiSelect('tradeUnion', t('trade_union'))}
-      {renderMultiSelect('company', t('company_new'))}
-      {renderMultiSelect('teacher', t('teacher'))}
+    // Hai hàng trên desktop: 4 bộ lọc chia đều một hàng, ô tìm + "Cần chú ý" hàng dưới
+    // (một hàng không đủ chỗ ở laptop 1440px). Điện thoại: xếp dọc.
+    <Stack spacing={2} sx={{ p: 2.5 }}>
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+        {renderMultiSelect('tradeUnion', t('trade_union'))}
+        {renderMultiSelect('company', t('company_new'))}
+        {renderMultiSelect('source', t('source'))}
+        {renderMultiSelect('teacher', t('teacher'))}
+      </Stack>
 
-      <TextField
-        fullWidth
-        value={searchName.value}
-        onChange={(event) => searchName.onChange(event.target.value)}
-        placeholder={t('study_report_search') || ''}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      <Stack direction="row" alignItems="center" justifyContent="space-between" flexShrink={0}>
-        <FormControlLabel
-          sx={{ mr: 1, whiteSpace: 'nowrap' }}
-          control={
-            <Switch
-              checked={filters.attention}
-              onChange={(event) => onFilters('attention', event.target.checked)}
-            />
-          }
-          label={
-            <Stack direction="row" alignItems="center" spacing={0.75}>
-              <span>{t('study_report_attention')}</span>
-              <Label color="warning">{attentionCount}</Label>
-            </Stack>
-          }
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        spacing={2}
+      >
+        <TextField
+          fullWidth
+          value={searchName.value}
+          onChange={(event) => searchName.onChange(event.target.value)}
+          placeholder={t('study_report_search') || ''}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
 
-        {canReset && (
-          <Button
-            color="error"
-            onClick={onResetFilters}
-            startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-            sx={{ flexShrink: 0, minHeight: 44 }}
-          >
-            {t('study_report_clear')}
-          </Button>
-        )}
+        <Stack direction="row" alignItems="center" justifyContent="space-between" flexShrink={0}>
+          <FormControlLabel
+            sx={{ mr: 1, whiteSpace: 'nowrap' }}
+            control={
+              <Switch
+                checked={filters.attention}
+                onChange={(event) => onFilters('attention', event.target.checked)}
+              />
+            }
+            label={
+              <Stack direction="row" alignItems="center" spacing={0.75}>
+                <span>{t('study_report_attention')}</span>
+                <Label color="warning">{attentionCount}</Label>
+              </Stack>
+            }
+          />
+
+          {canReset && (
+            <Button
+              color="error"
+              onClick={onResetFilters}
+              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+              sx={{ flexShrink: 0, minHeight: 44 }}
+            >
+              {t('study_report_clear')}
+            </Button>
+          )}
+        </Stack>
       </Stack>
     </Stack>
   );
