@@ -54,19 +54,19 @@ export default function AllInternsPDFNoScoreIsuzu1Year({ interns }: { interns: a
         <React.Fragment key={`detail-${index}`}>
           <Page size="A4" style={styles.page}>
             <View style={styles.pageBorder}>
-              <InternPDFIsuzu invoice={intern} stt={index + 1} />
+              <InternPDFIsuzu invoice={intern} stt={intern.orderNo ?? index + 1} />
             </View>
           </Page>
 
           <Page size="A4" style={styles.page}>
             <View style={styles.pageBorder}>
-              <InternPDFIsuzuPage2 invoice={intern} stt={index + 1} />
+              <InternPDFIsuzuPage2 invoice={intern} stt={intern.orderNo ?? index + 1} />
             </View>
           </Page>
 
           <Page size="A4" style={styles.page}>
             <View style={styles.pageBorder}>
-              <InternPDFIsuzuPage31Year invoice={intern} stt={index + 1} />
+              <InternPDFIsuzuPage31Year invoice={intern} stt={intern.orderNo ?? index + 1} />
             </View>
           </Page>
         </React.Fragment>

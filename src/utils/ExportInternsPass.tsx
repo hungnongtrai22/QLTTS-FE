@@ -13,6 +13,8 @@ import Iconify from 'src/components/iconify';
 import dayjs from 'dayjs';
 
 export type Intern = {
+  // Số thứ tự gốc trong đơn hàng (trang Đơn hàng truyền vào); thiếu thì đánh số 1..N.
+  orderNo?: number;
   name: string;
   namejp: string;
   gender: string;
@@ -160,7 +162,7 @@ const ExportInternsPass: React.FC<Props> = ({ interns, name, label, disabled }) 
         );
 
         // gán dữ liệu
-        sheet.getCell(`A${currentRow}`).value = i + 1;
+        sheet.getCell(`A${currentRow}`).value = it.orderNo ?? i + 1;
         sheet.getCell(`B${currentRow}`).value = normalizeName(it.name);
         sheet.getCell(`B${currentRow + 2}`).value = it.namejp;
         sheet.getCell(`C${currentRow}`).value = changDateJP(it.birthday);
@@ -215,7 +217,9 @@ const ExportInternsPass: React.FC<Props> = ({ interns, name, label, disabled }) 
 
       for (let i = 0; i < list.length; i++) {
         const it = list[i];
-        const sheetIntern = workbook.addWorksheet(`${i + 1}. ${normalizeName(it.name)}`);
+        const sheetIntern = workbook.addWorksheet(
+          `${it.orderNo ?? i + 1}. ${normalizeName(it.name)}`
+        );
         const numberSchool = it.school.length;
         const numberCompany = it.company.length;
         const numberFamily = it.family.length;
@@ -246,7 +250,7 @@ const ExportInternsPass: React.FC<Props> = ({ interns, name, label, disabled }) 
         const headerIntern = [
           `${it?.type === 'engineer' ? 'エンジンア' : '技能実習'}生履歴書`,
           `履歴書日 ${changDateJP(new Date().toISOString())}`,
-          `面接番号: ${i + 1}`,
+          `面接番号: ${it.orderNo ?? i + 1}`,
         ];
 
         // Gộp ô cho tiêu đề thành 3 khối ngang

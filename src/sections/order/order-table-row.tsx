@@ -143,7 +143,12 @@ export default function OrderTableRow({
   const othersVisible = visible.filter((c: any) => !passSet.has(String(c.intern._id)));
   const passedTotal = candidates.filter((c: any) => passSet.has(String(c.intern._id))).length;
 
-  const printInterns = (printList === 'passed' ? passedVisible : visible).map((c: any) => c.intern);
+  // Gắn số thứ tự gốc (orderNo) để file xuất in đúng số trong đơn, kể cả khi in danh sách
+  // đậu hay đang lọc nguồn — các mẫu CV/Excel dùng orderNo thay cho số đếm 1..N.
+  const printInterns = (printList === 'passed' ? passedVisible : visible).map((c: any) => ({
+    ...c.intern,
+    orderNo: c.no,
+  }));
 
   const cvTemplates: CvTemplate[] = [
     {

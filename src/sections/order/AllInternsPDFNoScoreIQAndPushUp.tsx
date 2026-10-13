@@ -51,7 +51,7 @@ export default function AllInternsPDFIQAndPushUp({ interns }: { interns: any[] }
       {interns.map((intern, index) => (
         <Page key={`detail-${index}`} size="A4" style={styles.page}>
           <View style={styles.pageBorder}>
-            <InternPDFAll invoice={intern} stt={index + 1} />
+            <InternPDFAll invoice={intern} stt={intern.orderNo ?? index + 1} />
           </View>
         </Page>
       ))}

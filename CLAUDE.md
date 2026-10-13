@@ -269,6 +269,7 @@ In từ nút "In hợp đồng" ([intern-contract-button.tsx](src/sections/user/
 - `order.listInternPass`: TTS **đậu** đơn đó. Quan hệ nhiều-nhiều — một TTS đậu được nhiều đơn, nên danh sách nằm trên từng đơn, **không** ghi vào hồ sơ TTS (`intern.orderId` không dùng). Chỉ nhận người đang là ứng viên của đơn; gỡ ứng viên khỏi đơn (`removeIntern`, `removeInternFromAll`) thì gỡ luôn khỏi danh sách đậu.
 - Ghi danh sách bằng `$addToSet`/`$pull`, **không** gán mảng rồi `order.save()` — `save()` kiểm lại mọi trường bắt buộc của đơn, đơn cũ thiếu trường sẽ không lưu được.
 - Trang Đơn hàng: bộ lọc "Nguồn" chỉ lọc TTS **bên trong** từng đơn (danh sách khi mở đơn + file xuất), không lọc đơn. "Nhật Tân" = TTS chưa có nguồn, cùng quy ước với danh sách TTS. Menu In CV có nút chọn in *Ứng viên* hay *Đậu*; mọi mẫu CV/Excel dùng chung lựa chọn đó.
+- **File xuất luôn in số thứ tự gốc trong đơn**, kể cả khi chỉ in danh sách đậu hay đang lọc nguồn (vd chỉ in người số 2 thì file vẫn ghi 2, không đánh lại thành 1). `order-table-row.tsx` gắn `orderNo` (vị trí trong `listIntern`, tính từ 1) vào từng TTS trước khi in; 8 mẫu `AllInternsPDF*`, 5 trang tổng hợp `intern-pdf-home*` và 2 mẫu Excel `ExportInternsWithAvatar`/`ExportInternsPass` đọc `intern.orderNo ?? <số đếm>`. Thêm mẫu mới thì giữ đúng dạng này; nơi không truyền `orderNo` (in từ form TTS) vẫn đánh 1..N như cũ.
 
 ### Bundle
 

@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import {  View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
+import { View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 // utils
-
 
 // ----------------------------------------------------------------------
 
@@ -244,8 +243,8 @@ export default function InternPDFHomeNoScore({ invoice, startIndex = 0 }: Props)
       <View style={[styles.gridContainer]}>
         <View style={styles.table1}>
           <View>
-            <View style={[styles.tableRow, {borderTopWidth: 1}]}>
-              <View style={[styles.tableCell_9, styles.titleBackground, {borderLeftWidth: 1}]}>
+            <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
+              <View style={[styles.tableCell_9, styles.titleBackground, { borderLeftWidth: 1 }]}>
                 <Text style={[styles.subtitle2]}>順番</Text>
               </View>
 
@@ -291,36 +290,39 @@ export default function InternPDFHomeNoScore({ invoice, startIndex = 0 }: Props)
                 <Text style={styles.subtitle2}>写真</Text>
               </View>
             </View>
-           {invoice.map((intern: any, index : any) => <View style={styles.tableRow}>
-              <View style={[styles.tableCell_9, styles.titleNoBackground, {borderLeftWidth: 1}]}>
-                <Text style={styles.subtitle3}>{startIndex + index + 1}</Text>
-              </View>
+            {invoice.map((intern: any, index: any) => (
+              <View style={styles.tableRow}>
+                <View
+                  style={[styles.tableCell_9, styles.titleNoBackground, { borderLeftWidth: 1 }]}
+                >
+                  <Text style={styles.subtitle3}>{intern.orderNo ?? startIndex + index + 1}</Text>
+                </View>
 
-              <View style={[styles.tableCell_5, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{normalizeName(intern.name)}</Text>
-                <Text style={styles.subtitle3}>{intern.namejp}</Text>
-              </View>
+                <View style={[styles.tableCell_5, styles.titleNoBackground]}>
+                  <Text style={styles.subtitle3}>{normalizeName(intern.name)}</Text>
+                  <Text style={styles.subtitle3}>{intern.namejp}</Text>
+                </View>
 
-              <View style={[styles.tableCell_4, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{intern.city}</Text>
-              </View>
+                <View style={[styles.tableCell_4, styles.titleNoBackground]}>
+                  <Text style={styles.subtitle3}>{intern.city}</Text>
+                </View>
 
-              <View style={[styles.tableCell_3, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{changDateJP(intern.birthday)}</Text>
-              </View>
-              <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{intern.age}</Text>
-                <Text style={styles.subtitle3}>(歳)</Text>
-              </View>
-              <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{intern.height}</Text>
-                <Text style={styles.subtitle3}>(Cm)</Text>
-              </View>
-              <View style={[styles.tableCell_9, styles.titleNoBackground]}>
-                <Text style={styles.subtitle3}>{intern.weight}</Text>
-                <Text style={styles.subtitle3}>(Kg)</Text>
-              </View>
-              {/* <View style={[styles.tableCell_9, styles.titleNoBackground]}>
+                <View style={[styles.tableCell_3, styles.titleNoBackground]}>
+                  <Text style={styles.subtitle3}>{changDateJP(intern.birthday)}</Text>
+                </View>
+                <View style={[styles.tableCell_9, styles.titleNoBackground]}>
+                  <Text style={styles.subtitle3}>{intern.age}</Text>
+                  <Text style={styles.subtitle3}>(歳)</Text>
+                </View>
+                <View style={[styles.tableCell_9, styles.titleNoBackground]}>
+                  <Text style={styles.subtitle3}>{intern.height}</Text>
+                  <Text style={styles.subtitle3}>(Cm)</Text>
+                </View>
+                <View style={[styles.tableCell_9, styles.titleNoBackground]}>
+                  <Text style={styles.subtitle3}>{intern.weight}</Text>
+                  <Text style={styles.subtitle3}>(Kg)</Text>
+                </View>
+                {/* <View style={[styles.tableCell_9, styles.titleNoBackground]}>
                 <Text style={styles.subtitle3}>{intern?.iq || ""}</Text>
               </View>
               <View style={[styles.tableCell_9, styles.titleNoBackground]}>
@@ -330,17 +332,18 @@ export default function InternPDFHomeNoScore({ invoice, startIndex = 0 }: Props)
                 <Text style={styles.subtitle3}>{intern?.kraepelin1 || ""}</Text>
                 <Text style={styles.subtitle3}>{intern?.kraepelin2 || ""}</Text>
               </View> */}
-              <View style={[styles.tableCell_3, styles.titleNoBackground]}>
-                <Image
-                  src={intern.avatar}
-                  style={{
-                    width: '100%',
-                    height: '50px',
-                    objectFit: 'contain',
-                  }}
-                />
+                <View style={[styles.tableCell_3, styles.titleNoBackground]}>
+                  <Image
+                    src={intern.avatar}
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      objectFit: 'contain',
+                    }}
+                  />
+                </View>
               </View>
-            </View>)}
+            ))}
             {/* <View style={styles.tableRow}>
               <View style={[styles.tableCell_9, styles.titleBackground]}>
                 <Text style={styles.subtitle2}>1</Text>
