@@ -24,6 +24,7 @@ const DiaryEditPage = lazy(() => import('src/pages/dashboard/diary/edit'));
 const DiaryProfileView = lazy(() => import('src/sections/user/view/diary-profile-view'));
 const InternListPointPage = lazy(() => import('src/pages/dashboard/intern/listPoint'));
 const StudyReportPage = lazy(() => import('src/pages/dashboard/intern/studyReport'));
+const StudyBulkPage = lazy(() => import('src/pages/dashboard/intern/studyBulk'));
 const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const GalleryEditPage = lazy(() => import('src/pages/dashboard/gallery/edit'));
 const ComparePage = lazy(() => import('src/pages/dashboard/intern/compare'));
@@ -169,6 +170,15 @@ export const dashboardRoutes = [
             element: (
               <RoleBasedGuard hasContent roles={['admin']}>
                 <StudyReportPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            // Mở từ nút "Nhập hàng loạt" ở trang Báo cáo học tập (không có mục menu riêng).
+            path: 'studyBulk',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <StudyBulkPage />
               </RoleBasedGuard>
             ),
           },

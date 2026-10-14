@@ -180,7 +180,7 @@ Account đã xác thực được gắn vào `req.account`. Ngoài ra còn `requ
 
 **Toàn bộ 141 endpoint đã được bọc**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
 
-26 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
+29 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `study/tracker|bulk|updateBulk`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
 
 **Endpoint mới viết ra phải bọc `withAuth` ngay từ đầu.**
 
@@ -292,6 +292,21 @@ Trang `paths.dashboard.intern.studyReport` (chỉ admin, [study-report-view.tsx]
 - Trạng thái: Chưa nhập / Chưa công khai / Đã công khai. "Cần chú ý" = tổng điểm giảm ≥ `ATTENTION_DROP` (50) so với tháng trước — trên dữ liệu thật trung vị thay đổi là −6, ~12% lượt giảm từ 50.
 - Bấm "Nhập điểm/Sửa" mở **đúng form của tab "Nhập điểm"** (`intern-point-form.tsx`) trong hộp thoại, qua hai prop tùy chọn `initialMonth` + `onSaved`. Sửa form đó là sửa cả hai nơi.
 - Tên giáo viên là chữ tự gõ, rất nhiều cách viết cho cùng một người. Trước đây `study/create` gõ nhầm `tearcher` nên báo cáo tạo mới mất tên giáo viên (886/1308 báo cáo cũ để trống) — đã sửa, dữ liệu cũ chưa đụng.
+- Ranh giới tháng + danh sách TTS của tháng dùng chung ở `QLTTS-BE/src/utils/studyMonth.ts` (`parseStudyMonth`, `findMonthInterns`, `internBasics`) cho cả `tracker`, `bulk`, `updateBulk` — sửa quy tắc "TTS nào thuộc tháng" thì sửa ở đó.
+
+### Nhập điểm hàng loạt
+
+Trang `paths.dashboard.intern.studyBulk?month=YYYY-MM` (chỉ admin, mở từ nút "Nhập hàng loạt" ở trang Báo cáo học tập; [study-bulk-view.tsx](src/sections/user/view/study-bulk-view.tsx)). Logic dùng chung nằm ở [study-bulk-utils.ts](src/sections/user/study-bulk-utils.ts).
+
+- **Quy tắc "đủ mới lưu"** (chủ dự án chọn, giữ nguyên model): một dòng chỉ lưu khi đủ 10 điểm + trình độ + tiến độ + tính cách + nhận xét, đúng như form nhập điểm và các trường `required` của model `Study`. Lưu điểm trước / nhận xét sau là phải bỏ `required` trong model → cần hỏi lại chủ dự án.
+- `GET /api/study/bulk` trả đủ báo cáo tháng này + tháng trước (`prev`), `nextTime` (tháng học cho báo cáo mới = báo cáo gần nhất trước đó + 1) và danh sách giáo viên đã gộp các cách viết chỉ khác dấu cách/dấu chấm.
+- `PUT /api/study/updateBulk` `{ month, publish, reports }`: kiểm tra lại toàn bộ ở server (cùng quy tắc với FE), tháng đó đã có báo cáo thì `$set` đúng báo cáo đó, chưa có thì tạo mới; tổng/trung bình/tháng học do server tính; `publish: true` mới bật công khai, không bao giờ tắt; không xóa gì. Báo cáo lỗi trả về riêng từng dòng. Tên bắt đầu bằng `update` nên READ_ONLY tự chặn.
+- Chưa có báo cáo thì trình độ / tiến độ / tính cách / giáo viên **điền sẵn từ tháng trước** (đánh dấu "gợi ý", chưa tính là thay đổi); nút "Lấy điểm tháng trước làm gốc" điền thêm 10 điểm dạng gợi ý.
+- Dán khối ô từ Excel (Tab/xuống dòng) vào một ô điểm: rải sang phải/xuống dưới theo thứ tự dòng đang hiện, ô không phải số bỏ qua.
+- Phần nhập dở giữ trong `localStorage` theo tháng (`qltts.studyBulk.draft.v1.<YYYY-MM>`), kèm `updatedAt` của báo cáo lúc bắt đầu sửa: báo cáo đã bị ai lưu lại sau đó thì bỏ bản nháp dòng đó, không ghi đè.
+- Dòng bảng (`study-bulk-table-row.tsx`) bọc `memo`; mọi handler từ view phải ổn định (`useCallback` + `setWork` dạng hàm, danh sách đang hiện đọc qua ref) — đưa state vào deps là mỗi phím gõ vẽ lại cả bảng.
+- Điện thoại/tablet (dưới `md`): dạng thẻ từng TTS (`study-bulk-mobile.tsx`), nút −/+ (Đọc hiểu bước 10, còn lại 5), "Lưu & người sau" lưu ngay dòng đó.
+- `Card` của trang đặt `overflow: visible` — mặc định `hidden` làm thanh Lưu `position: sticky` không dính đáy màn hình.
 
 ### Bundle
 

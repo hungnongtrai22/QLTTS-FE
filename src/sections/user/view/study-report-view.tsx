@@ -1,10 +1,6 @@
 import { m } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import dayjs from 'dayjs';
-import 'dayjs/locale/vi';
-import 'dayjs/locale/ja';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -15,15 +11,13 @@ import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import TableContainer from '@mui/material/TableContainer';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 // routes
 import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
+import { useSearchParams } from 'src/routes/hook';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // locales
@@ -54,6 +48,15 @@ import {
 } from 'src/components/table';
 //
 import StudyReportDialog from '../study-report-dialog';
+import StudyMonthPicker from '../study-month-picker';
+import {
+  addMonths,
+  currentMonth,
+  monthKey,
+  normalizeSearch,
+  parseMonthKey,
+  uniqueSorted,
+} from '../study-report-utils';
 import StudyReportTableToolbar from '../study-report-table-toolbar';
 import StudyReportTableRow, { STATUS_COLOR, StudyReportViewRow } from '../study-report-table-row';
 
@@ -78,28 +81,6 @@ const defaultFilters: IStudyReportFilters = {
 };
 
 const fadeInUp = varFade({ distance: 24 }).inUp;
-
-// Ngày 1 lúc 00:00 giờ máy — cùng dạng giá trị DatePicker và form nhập điểm dùng.
-const addMonths = (date: Date, count: number) =>
-  new Date(date.getFullYear(), date.getMonth() + count, 1);
-
-// Tháng hiện tại theo giờ Việt Nam.
-const currentMonth = () => {
-  const vn = new Date(Date.now() + 7 * 60 * 60 * 1000);
-  return new Date(vn.getUTCFullYear(), vn.getUTCMonth(), 1);
-};
-
-const monthKey = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
-// Bỏ dấu để tìm "cuong" ra "CƯỜNG".
-const normalize = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/\p{Mn}/gu, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-    .toLowerCase();
 
 const toViewRow = (row: IStudyReportRow, month: Date): StudyReportViewRow => {
   const total = row.report?.total ?? null;
@@ -159,13 +140,10 @@ const compareRows = (order: 'asc' | 'desc', orderBy: string) => {
   };
 };
 
-const uniqueSorted = (values: string[]) =>
-  Array.from(new Set(values.filter(Boolean))).sort((a, b) => a.localeCompare(b, 'vi'));
-
 // ----------------------------------------------------------------------
 
 export default function StudyReportView() {
-  const { t, currentLang } = useLocales();
+  const { t } = useLocales();
 
   const settings = useSettingsContext();
 
@@ -179,7 +157,13 @@ export default function StudyReportView() {
 
   const thisMonth = useMemo(() => currentMonth(), []);
 
-  const [month, setMonth] = useState<Date>(thisMonth);
+  const searchParams = useSearchParams();
+
+  // Mở đúng tháng khi quay về từ trang Nhập điểm hàng loạt (?month=YYYY-MM).
+  const [month, setMonth] = useState<Date>(() => {
+    const fromUrl = parseMonthKey(searchParams.get('month'));
+    return fromUrl && fromUrl <= thisMonth ? fromUrl : thisMonth;
+  });
 
   const [rows, setRows] = useState<IStudyReportRow[]>([]);
 
@@ -188,8 +172,6 @@ export default function StudyReportView() {
   const [filters, setFilters] = useState<IStudyReportFilters>(defaultFilters);
 
   const [editing, setEditing] = useState<IStudyReportRow | null>(null);
-
-  const isThisMonth = monthKey(month) === monthKey(thisMonth);
 
   const monthLabel = t('study_report_month_label', {
     month: month.getMonth() + 1,
@@ -239,7 +221,7 @@ export default function StudyReportView() {
   // Bộ lọc "phạm vi" (nghiệp đoàn, công ty, nguồn, giáo viên, tên): tiến độ tính trên phạm vi này,
   // để giáo viên lọc lớp mình là thấy ngay lớp mình đã nhập được bao nhiêu.
   const scopedRows = useMemo(() => {
-    const keyword = normalize(filters.name.trim());
+    const keyword = normalizeSearch(filters.name.trim());
     return viewRows.filter(
       (row) =>
         (!filters.tradeUnion.length || filters.tradeUnion.includes(row.tradeUnion)) &&
@@ -247,8 +229,8 @@ export default function StudyReportView() {
         (!filters.source.length || filters.source.includes(row.sourceName)) &&
         (!filters.teacher.length || filters.teacher.includes(row.teacherName)) &&
         (!keyword ||
-          normalize(row.name).includes(keyword) ||
-          normalize(row.namejp).includes(keyword))
+          normalizeSearch(row.name).includes(keyword) ||
+          normalizeSearch(row.namejp).includes(keyword))
     );
   }, [
     viewRows,
@@ -372,6 +354,17 @@ export default function StudyReportView() {
           { name: t('intern') || '', href: paths.dashboard.intern.list },
           { name: t('study_report') || '' },
         ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={`${paths.dashboard.intern.studyBulk}?month=${monthKey(month)}`}
+            variant="contained"
+            startIcon={<Iconify icon="solar:pen-new-square-bold" />}
+            sx={{ minHeight: 44 }}
+          >
+            {t('study_bulk_open')}
+          </Button>
+        }
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
@@ -385,56 +378,7 @@ export default function StudyReportView() {
             spacing={2.5}
             sx={{ p: 2.5 }}
           >
-            {/* Điện thoại: nút "Tháng này" xuống dòng riêng để ô chọn tháng không bị bóp. */}
-            <Stack direction="row" alignItems="center" flexWrap="wrap" gap={1}>
-              <IconButton
-                onClick={() => handleChangeMonth(addMonths(month, -1))}
-                sx={{ p: { xs: 1.5, md: 1 } }}
-              >
-                <Iconify icon="eva:arrow-ios-back-fill" />
-              </IconButton>
-
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale={currentLang.value === 'jp' ? 'ja' : 'vi'}
-              >
-                <DatePicker
-                  label={t('study_report_month')}
-                  views={['year', 'month']}
-                  openTo="month"
-                  format="MM/YYYY"
-                  value={dayjs(month)}
-                  maxDate={dayjs(thisMonth)}
-                  onChange={(value) => {
-                    if (value && value.isValid()) {
-                      handleChangeMonth(new Date(value.year(), value.month(), 1));
-                    }
-                  }}
-                  slotProps={{
-                    textField: {
-                      sx: { flex: { xs: 1, sm: 'none' }, width: { sm: 180 }, minWidth: 0 },
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-
-              <IconButton
-                disabled={isThisMonth}
-                onClick={() => handleChangeMonth(addMonths(month, 1))}
-                sx={{ p: { xs: 1.5, md: 1 } }}
-              >
-                <Iconify icon="eva:arrow-ios-forward-fill" />
-              </IconButton>
-
-              {!isThisMonth && (
-                <Button
-                  onClick={() => handleChangeMonth(thisMonth)}
-                  sx={{ flexShrink: 0, minHeight: 44, width: { xs: 1, sm: 'auto' } }}
-                >
-                  {t('study_report_this_month')}
-                </Button>
-              )}
-            </Stack>
+            <StudyMonthPicker month={month} maxMonth={thisMonth} onChange={handleChangeMonth} />
 
             <Stack spacing={1} sx={{ width: { xs: 1, md: 380 } }}>
               <Stack direction="row" justifyContent="space-between" alignItems="baseline">

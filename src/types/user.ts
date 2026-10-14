@@ -443,3 +443,53 @@ export type IStudyReportFilters = {
 };
 
 export type IStudyReportFilterValue = string | string[] | boolean;
+
+// ----------------------------------------------------------------------
+// Trang "Nhập điểm hàng loạt" — mỗi dòng trả về từ GET /api/study/bulk?month=YYYY-MM.
+
+export type IStudyScoreKey =
+  | 'health'
+  | 'cooperation'
+  | 'attend'
+  | 'discipline'
+  | 'attitude'
+  | 'acquiringKnowledge'
+  | 'write'
+  | 'read'
+  | 'listen'
+  | 'speak';
+
+export type IStudyJlptKey = 'kanji' | 'grammarAndReading' | 'listeningComprehension';
+
+export type IStudyBulkReport = Record<IStudyScoreKey | IStudyJlptKey, number | null> & {
+  _id: string;
+  total: number | null;
+  level: string;
+  time: number | null;
+  learningProcess: string;
+  characteristic: string;
+  teacher: string;
+  comment: string;
+  updatedAt: string | null;
+  // Chỉ báo cáo tháng đang xem có
+  isPublic?: boolean;
+};
+
+export type IStudyBulkRow = {
+  _id: string;
+  name: string;
+  namejp: string;
+  avatar: string;
+  status: string;
+  studyDate: string | null;
+  tradeUnion: string;
+  company: string;
+  source: string;
+  // null = chưa có báo cáo tháng này
+  report: IStudyBulkReport | null;
+  // Báo cáo tháng trước — để lấy điểm làm gốc và điền sẵn tính cách / tiến độ / trình độ
+  prev: IStudyBulkReport | null;
+  // "Tháng học" khi tạo báo cáo mới
+  nextTime: number;
+  lastTeacher: string;
+};

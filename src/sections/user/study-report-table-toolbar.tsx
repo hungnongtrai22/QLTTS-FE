@@ -32,7 +32,8 @@ type Props = {
   canReset: boolean;
   onResetFilters: VoidFunction;
   options: Record<MultiFilterKey, string[]>;
-  attentionCount: number;
+  // Không truyền = ẩn công tắc "Cần chú ý" (trang Nhập điểm hàng loạt)
+  attentionCount?: number;
 };
 
 export default function StudyReportTableToolbar({
@@ -105,21 +106,23 @@ export default function StudyReportTableToolbar({
         />
 
         <Stack direction="row" alignItems="center" justifyContent="space-between" flexShrink={0}>
-          <FormControlLabel
-            sx={{ mr: 1, whiteSpace: 'nowrap' }}
-            control={
-              <Switch
-                checked={filters.attention}
-                onChange={(event) => onFilters('attention', event.target.checked)}
-              />
-            }
-            label={
-              <Stack direction="row" alignItems="center" spacing={0.75}>
-                <span>{t('study_report_attention')}</span>
-                <Label color="warning">{attentionCount}</Label>
-              </Stack>
-            }
-          />
+          {attentionCount !== undefined && (
+            <FormControlLabel
+              sx={{ mr: 1, whiteSpace: 'nowrap' }}
+              control={
+                <Switch
+                  checked={filters.attention}
+                  onChange={(event) => onFilters('attention', event.target.checked)}
+                />
+              }
+              label={
+                <Stack direction="row" alignItems="center" spacing={0.75}>
+                  <span>{t('study_report_attention')}</span>
+                  <Label color="warning">{attentionCount}</Label>
+                </Stack>
+              }
+            />
+          )}
 
           {canReset && (
             <Button
