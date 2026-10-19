@@ -422,6 +422,8 @@ export type IStudyReportRow = {
     _id: string;
     total: number | null;
     average: number | null;
+    // Điểm chuyên cần (0–100) — thấp thì đánh dấu "Cần chú ý"
+    attend: number | null;
     level: string;
     teacher: string;
     isPublic: boolean;
@@ -440,7 +442,12 @@ export type IStudyReportFilters = {
   source: string[];
   teacher: string[];
   attention: boolean;
+  // Thu hẹp "Cần chú ý" theo một lý do; rỗng = mọi lý do
+  attentionReason: '' | IStudyAttentionReason;
 };
+
+// Lý do "Cần chú ý": tụt điểm mạnh / chuyên cần thấp / chưa nhập báo cáo 2 tháng liền.
+export type IStudyAttentionReason = 'drop' | 'attend' | 'missing2';
 
 export type IStudyReportFilterValue = string | string[] | boolean;
 

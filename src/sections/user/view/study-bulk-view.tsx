@@ -86,6 +86,7 @@ const defaultFilters: IStudyReportFilters = {
   source: [],
   teacher: [],
   attention: false,
+  attentionReason: '',
 };
 
 const fadeInUp = varFade({ distance: 24 }).inUp;

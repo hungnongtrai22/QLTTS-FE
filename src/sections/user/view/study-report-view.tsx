@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
@@ -31,6 +32,7 @@ import {
   IStudyReportStatus,
   IStudyReportFilters,
   IStudyReportFilterValue,
+  IStudyAttentionReason,
 } from 'src/types/user';
 // components
 import Label from 'src/components/label';
@@ -65,9 +67,14 @@ import StudyReportTableRow, { STATUS_COLOR, StudyReportViewRow } from '../study-
 
 // ----------------------------------------------------------------------
 
-// Tổng điểm (10 mục, tối đa 1000) giảm từ mức này trở lên so với tháng trước thì đánh dấu
-// "Cần chú ý". Trên dữ liệu thật trung vị thay đổi là -6, chỉ ~12% lượt giảm từ 50 điểm.
+// "Cần chú ý" — ba lý do, ngưỡng chọn theo dữ liệu thật:
+// - Tổng điểm (10 mục, tối đa 1000) giảm từ ATTENTION_DROP trở lên so với tháng trước. Trung vị
+//   thay đổi là -6, chỉ ~12% lượt giảm từ 50 điểm.
+// - Điểm chuyên cần (0–100) dưới ATTEND_LOW. Trung vị 100, chỉ ~2% báo cáo dưới 80.
+// - Chưa nhập báo cáo cả tháng trước lẫn tháng này, dù đã nhập học từ trước tháng trước.
 const ATTENTION_DROP = 50;
+
+const ATTEND_LOW = 80;
 
 const STATUS_TABS: Array<'all' | IStudyReportStatus> = ['all', 'missing', 'draft', 'published'];
 
@@ -81,6 +88,7 @@ const defaultFilters: IStudyReportFilters = {
   source: [],
   teacher: [],
   attention: false,
+  attentionReason: '',
 };
 
 const fadeInUp = varFade({ distance: 24 }).inUp;
@@ -94,12 +102,24 @@ const toViewRow = (row: IStudyReportRow, month: Date): StudyReportViewRow => {
 
   const studyDate = row.studyDate ? new Date(row.studyDate) : null;
 
+  const attend = row.report?.attend ?? null;
+
+  const reasons: IStudyAttentionReason[] = [];
+  if (delta !== null && delta <= -ATTENTION_DROP) reasons.push('drop');
+  if (attend !== null && attend < ATTEND_LOW) reasons.push('attend');
+  // prevTotal null = tháng trước không có báo cáo (total là trường bắt buộc). Chỉ tính TTS đã
+  // học trọn tháng trước — mới nhập học thì chưa có báo cáo là bình thường.
+  if (!row.report && row.prevTotal === null && !!studyDate && studyDate < addMonths(month, -1)) {
+    reasons.push('missing2');
+  }
+
   return {
     ...row,
     reportStatus,
     total,
     delta,
-    attention: delta !== null && delta <= -ATTENTION_DROP,
+    reasons,
+    attention: reasons.length > 0,
     teacherName: row.report?.teacher || row.lastTeacher,
     // TTS chưa có nguồn thuộc "Nhật Tân" — cùng quy ước với bộ lọc danh sách TTS.
     sourceName: row.source || DEFAULT_SOURCE_NAME,
@@ -252,10 +272,11 @@ export default function StudyReportView() {
   ]);
 
   // Số trên các tab: theo phạm vi + "Cần chú ý", bỏ qua chính bộ lọc trạng thái.
-  const tabRows = useMemo(
-    () => (filters.attention ? scopedRows.filter((row) => row.attention) : scopedRows),
-    [scopedRows, filters.attention]
-  );
+  const tabRows = useMemo(() => {
+    const reason = filters.attentionReason;
+    if (reason) return scopedRows.filter((row) => row.reasons.includes(reason));
+    return filters.attention ? scopedRows.filter((row) => row.attention) : scopedRows;
+  }, [scopedRows, filters.attention, filters.attentionReason]);
 
   const counts = useMemo(() => {
     const result: Record<'all' | IStudyReportStatus, number> = {
@@ -276,10 +297,49 @@ export default function StudyReportView() {
     return { done, total, percent: total ? Math.round((done / total) * 100) : 0 };
   }, [scopedRows]);
 
-  const attentionCount = useMemo(
-    () => scopedRows.filter((row) => row.attention).length,
-    [scopedRows]
-  );
+  // Một TTS có thể có nhiều lý do: "all" đếm người, từng lý do đếm riêng.
+  const attentionCounts = useMemo(() => {
+    const result: Record<'all' | IStudyAttentionReason, number> = {
+      all: 0,
+      drop: 0,
+      attend: 0,
+      missing2: 0,
+    };
+    scopedRows.forEach((row) => {
+      if (row.attention) result.all += 1;
+      row.reasons.forEach((reason) => {
+        result[reason] += 1;
+      });
+    });
+    return result;
+  }, [scopedRows]);
+
+  const attentionFilters: Array<{
+    value: '' | IStudyAttentionReason;
+    label: string;
+    hint: string;
+    count: number;
+  }> = [
+    { value: '', label: t('study_report_tab_all') || '', hint: '', count: attentionCounts.all },
+    {
+      value: 'drop',
+      label: t('study_attention_filter_drop', { points: ATTENTION_DROP }) || '',
+      hint: t('study_report_attention_hint', { points: ATTENTION_DROP }) || '',
+      count: attentionCounts.drop,
+    },
+    {
+      value: 'attend',
+      label: t('study_attention_filter_attend', { value: ATTEND_LOW }) || '',
+      hint: t('study_attention_hint_attend', { value: ATTEND_LOW }) || '',
+      count: attentionCounts.attend,
+    },
+    {
+      value: 'missing2',
+      label: t('study_attention_filter_missing2') || '',
+      hint: t('study_attention_hint_missing2') || '',
+      count: attentionCounts.missing2,
+    },
+  ];
 
   const dataFiltered = useMemo(
     () =>
@@ -350,7 +410,25 @@ export default function StudyReportView() {
   const handleFilters = useCallback(
     (name: string, value: IStudyReportFilterValue) => {
       onResetPage();
-      setFilters((prev) => ({ ...prev, [name]: value }));
+      setFilters((prev) => ({
+        ...prev,
+        [name]: value,
+        // Tắt "Cần chú ý" thì bỏ luôn lý do đang chọn.
+        ...(name === 'attention' && !value && { attentionReason: '' }),
+      }));
+    },
+    [onResetPage]
+  );
+
+  const handleAttentionReason = useCallback(
+    (reason: '' | IStudyAttentionReason) => {
+      onResetPage();
+      setFilters((prev) => ({
+        ...prev,
+        attention: true,
+        // Bấm lại lý do đang chọn = quay về mọi lý do.
+        attentionReason: prev.attentionReason === reason ? '' : reason,
+      }));
     },
     [onResetPage]
   );
@@ -492,8 +570,45 @@ export default function StudyReportView() {
             canReset={canReset}
             onResetFilters={handleResetFilters}
             options={options}
-            attentionCount={attentionCount}
+            attentionCount={attentionCounts.all}
           />
+
+          {/* Đang bật "Cần chú ý": thu hẹp theo từng lý do để giáo viên xử lý từng nhóm. */}
+          {filters.attention && (
+            <Stack
+              component={m.div}
+              variants={fadeInUp}
+              direction="row"
+              flexWrap="wrap"
+              alignItems="center"
+              gap={1}
+              sx={{ px: 2.5, pb: 2 }}
+            >
+              {attentionFilters.map((item) => {
+                const active = filters.attentionReason === item.value;
+                return (
+                  <Tooltip key={item.value || 'all'} title={item.hint} arrow>
+                    {/* span: Tooltip vẫn hiện khi nút bị vô hiệu (lý do không có ai). */}
+                    <span>
+                      <Button
+                        variant={active ? 'soft' : 'outlined'}
+                        color={active ? 'warning' : 'inherit'}
+                        aria-pressed={active}
+                        disabled={!item.count && !active}
+                        onClick={() => handleAttentionReason(item.value)}
+                        sx={{ minHeight: { xs: 44, md: 36 } }}
+                      >
+                        {item.label}
+                        <Label variant={active ? 'filled' : 'soft'} color="warning" sx={{ ml: 1 }}>
+                          {item.count}
+                        </Label>
+                      </Button>
+                    </span>
+                  </Tooltip>
+                );
+              })}
+            </Stack>
+          )}
 
           {!loading && draftInView.length > 0 && (
             <Stack

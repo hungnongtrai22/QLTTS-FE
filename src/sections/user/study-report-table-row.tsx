@@ -1,5 +1,5 @@
 // @mui
-import { alpha } from '@mui/material/styles';
+import { alpha, Theme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -17,7 +17,7 @@ import { useLocales } from 'src/locales';
 // utils
 import { fDate } from 'src/utils/format-time';
 // types
-import { IStudyReportRow, IStudyReportStatus } from 'src/types/user';
+import { IStudyAttentionReason, IStudyReportRow, IStudyReportStatus } from 'src/types/user';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -28,6 +28,8 @@ export type StudyReportViewRow = IStudyReportRow & {
   reportStatus: IStudyReportStatus;
   total: number | null;
   delta: number | null;
+  // Lý do "Cần chú ý" (rỗng = không cần chú ý)
+  reasons: IStudyAttentionReason[];
   attention: boolean;
   teacherName: string;
   // Tên nguồn để lọc; TTS chưa có nguồn là "Nhật Tân"
@@ -41,6 +43,10 @@ export const STATUS_COLOR: Record<IStudyReportStatus, 'error' | 'warning' | 'suc
   draft: 'warning',
   published: 'success',
 };
+
+// Chữ cảnh báo: màu đậm trên nền sáng, màu nhạt trên nền tối để vẫn đọc được.
+const warningText = (theme: Theme) =>
+  theme.palette.mode === 'light' ? theme.palette.warning.dark : theme.palette.warning.light;
 
 type Props = {
   row: StudyReportViewRow;
@@ -75,6 +81,13 @@ export default function StudyReportTableRow({
     row.isNew && row.studyDate
       ? t('study_report_new_intern', { date: fDate(row.studyDate, 'dd/MM') })
       : '';
+
+  // Vd "Tụt 73 điểm", "Chuyên cần 60" — để giáo viên biết ngay vì sao dòng này cần chú ý.
+  const reasonTexts = row.reasons.map((reason) => {
+    if (reason === 'drop') return t('study_attention_reason_drop', { points: -(delta ?? 0) });
+    if (reason === 'attend') return t('study_attention_reason_attend', { value: report?.attend });
+    return t('study_attention_reason_missing2');
+  });
 
   // Bấm tên để mở hồ sơ (tab mới). Tên dài bị cắt "..." nên tooltip hiện tên đầy đủ.
   const nameLink = (
@@ -145,7 +158,7 @@ export default function StudyReportTableRow({
         <Typography variant="subtitle2" sx={{ color, whiteSpace: 'nowrap' }}>
           {delta > 0 ? `+${delta}` : delta}
         </Typography>
-        {row.attention && (
+        {row.reasons.includes('drop') && (
           <Tooltip title={t('study_report_attention_hint', { points: attentionDrop })} arrow>
             <Iconify icon="solar:danger-triangle-bold" width={18} sx={{ color: 'warning.main' }} />
           </Tooltip>
@@ -174,6 +187,14 @@ export default function StudyReportTableRow({
                   </Typography>
                 )}
               </Stack>
+              {reasonTexts.length > 0 && (
+                <Typography
+                  variant="caption"
+                  sx={{ color: warningText, fontWeight: 600, whiteSpace: 'pre-line' }}
+                >
+                  {reasonTexts.join('\n')}
+                </Typography>
+              )}
             </Stack>
           </Stack>
         </TableCell>
@@ -208,12 +229,17 @@ export default function StudyReportTableRow({
           <Avatar alt={name} src={avatar} />
           <ListItemText
             primary={nameLink}
-            secondary={newIntern || namejp}
+            // Ưu tiên lý do cần chú ý > TTS mới nhập học > tên tiếng Nhật.
+            secondary={reasonTexts.join('\n') || newIntern || namejp}
             primaryTypographyProps={{ component: 'div' }}
             secondaryTypographyProps={{
               component: 'span',
-              noWrap: true,
-              color: newIntern ? 'info.main' : 'text.disabled',
+              // Mỗi lý do một dòng, không cắt "...": không phải rê chuột mới đọc được (tiếng Nhật
+              // không có dấu cách nên nối chung một dòng sẽ bị ngắt giữa chữ).
+              noWrap: !reasonTexts.length,
+              sx: reasonTexts.length
+                ? { color: warningText, fontWeight: 600, whiteSpace: 'pre-line' }
+                : { color: newIntern ? 'info.main' : 'text.disabled' },
             }}
             sx={{ minWidth: 0 }}
           />

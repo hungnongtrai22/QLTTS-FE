@@ -289,7 +289,13 @@ Trang `paths.dashboard.intern.studyReport` (chỉ admin, [study-report-view.tsx]
 - Liệt kê TTS `status: 'study'` đã nhập học (`studyDate`) trước cuối tháng, cộng mọi TTS đã có báo cáo trong tháng. Ranh giới tháng tính theo giờ VN. Lọc khoảng tháng dùng index `monthAndYear_1` (explain: IXSCAN, đọc đúng số báo cáo của tháng thay vì quét cả 1308 document).
 - Mỗi dòng kèm báo cáo của tháng (`null` = chưa nhập), `prevTotal` của tháng trước và `lastTeacher` (giáo viên gần nhất, cho dòng chưa nhập).
 - Lọc theo nghiệp đoàn / công ty / nguồn / giáo viên (lựa chọn lấy từ chính các dòng của tháng). Nguồn trống = "Nhật Tân" (`DEFAULT_SOURCE_NAME`), đứng đầu danh sách — cùng quy ước với danh sách TTS.
-- Trạng thái: Chưa nhập / Chưa công khai / Đã công khai. "Cần chú ý" = tổng điểm giảm ≥ `ATTENTION_DROP` (50) so với tháng trước — trên dữ liệu thật trung vị thay đổi là −6, ~12% lượt giảm từ 50.
+- Trạng thái: Chưa nhập / Chưa công khai / Đã công khai.
+- **"Cần chú ý"** có ba lý do, tính ở FE trong `toViewRow` (ngưỡng chọn theo dữ liệu thật):
+  - `drop`: tổng điểm giảm ≥ `ATTENTION_DROP` (50) so với tháng trước. Trung vị thay đổi là −6; khoảng 12% lượt giảm từ 50 trở lên.
+  - `attend`: điểm chuyên cần của báo cáo tháng này < `ATTEND_LOW` (80/100). Trung vị 100; khoảng 2% báo cáo dưới 80. `tracker` trả `report.attend` cho việc này.
+  - `missing2`: chưa có báo cáo cả tháng này lẫn tháng trước (`prevTotal === null`), dù đã nhập học trước đầu tháng trước. Người mới nhập học chưa có báo cáo là bình thường nên không tính.
+
+  Lý do hiện ngay dưới tên TTS, mỗi lý do một dòng, không cắt "…". Tiếng Nhật không có dấu cách nên nối chung một dòng sẽ bị ngắt giữa chữ. Bật công tắc "Cần chú ý" thì hiện thêm dải nút để thu hẹp theo từng lý do (`filters.attentionReason`). Thêm lý do mới thì sửa ở: `IStudyAttentionReason`, `toViewRow`, `attentionFilters` và `reasonTexts` trong dòng bảng.
 - Bấm "Nhập điểm/Sửa" mở **đúng form của tab "Nhập điểm"** (`intern-point-form.tsx`) trong hộp thoại, qua hai prop tùy chọn `initialMonth` + `onSaved`. Sửa form đó là sửa cả hai nơi.
 - Tên giáo viên là chữ tự gõ, rất nhiều cách viết cho cùng một người. Trước đây `study/create` gõ nhầm `tearcher` nên báo cáo tạo mới mất tên giáo viên (886/1308 báo cáo cũ để trống) — đã sửa, dữ liệu cũ chưa đụng.
 - Ranh giới tháng + danh sách TTS của tháng dùng chung ở `QLTTS-BE/src/utils/studyMonth.ts` (`parseStudyMonth`, `findMonthInterns`, `internBasics`) cho cả `tracker`, `bulk`, `updateBulk` — sửa quy tắc "TTS nào thuộc tháng" thì sửa ở đó.
