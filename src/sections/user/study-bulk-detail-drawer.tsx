@@ -42,6 +42,9 @@ type Props = {
   row: IStudyBulkRow | null;
   entry: BulkEntry | null;
   saveError?: string;
+  // Báo cáo đã công khai chưa mở khóa: chỉ xem
+  locked: boolean;
+  onUnlock: VoidFunction;
   monthLabel: string;
   teachers: string[];
   onField: (id: string, key: BulkFieldKey, value: string | number | null) => void;
@@ -105,6 +108,8 @@ export default function StudyBulkDetailDrawer({
   row,
   entry,
   saveError,
+  locked,
+  onUnlock,
   monthLabel,
   teachers,
   onField,
@@ -115,8 +120,8 @@ export default function StudyBulkDetailDrawer({
   const { t } = useLocales();
 
   const state = useMemo(
-    () => (row && entry ? rowState(row, entry, saveError) : null),
-    [row, entry, saveError]
+    () => (row && entry ? rowState(row, entry, saveError, locked) : null),
+    [row, entry, saveError, locked]
   );
 
   const open = !!row && !!entry && !!state;
@@ -200,116 +205,148 @@ export default function StudyBulkDetailDrawer({
             </Alert>
           )}
           {saveError && <Alert severity="error">{saveError}</Alert>}
-
-          <Box display="grid" gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={2}>
-            <TextField
-              select
-              label={t('level')}
-              value={values.level}
-              onChange={(event) => set('level')(event.target.value)}
-              SelectProps={{ native: true }}
-              error={state.dirty && check.missingText.includes('level')}
-              helperText={origin.level === 'suggested' ? t('study_bulk_prefilled') : ' '}
-            >
-              <option value="" disabled>
-                —
-              </option>
-              {LEVELS.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </TextField>
-            <TextField
-              label={t('study_bulk_time_auto')}
-              value={row.report?.time ?? row.nextTime}
-              disabled
-              helperText=" "
-            />
-          </Box>
-
-          <FreeTextField
-            label={t('learningProcess')}
-            value={values.learningProcess}
-            options={LESSONS}
-            suggested={origin.learningProcess === 'suggested'}
-            error={state.dirty && check.missingText.includes('learningProcess')}
-            onChange={set('learningProcess')}
-          />
-          <FreeTextField
-            label={t('characteristic')}
-            value={values.characteristic}
-            options={characteristicList}
-            suggested={origin.characteristic === 'suggested'}
-            error={state.dirty && check.missingText.includes('characteristic')}
-            onChange={set('characteristic')}
-          />
-          <FreeTextField
-            label={t('teacher')}
-            value={values.teacher}
-            options={teachers}
-            suggested={origin.teacher === 'suggested'}
-            error={false}
-            onChange={set('teacher')}
-          />
-
-          <Stack spacing={1}>
-            <Typography variant="subtitle2">
-              {t('study_bulk_jlpt')}{' '}
-              <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>
-                {t('study_bulk_jlpt_note')}
-              </Box>
-            </Typography>
-            <Box display="grid" gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1.5}>
-              {JLPT_KEYS.map((key) => (
-                <TextField
-                  key={key}
-                  label={`${t(`study_bulk_jlpt_${key}`)} ${jlptLevel}`}
-                  value={values[key] === null ? '' : String(values[key])}
-                  onChange={(event) => set(key)(parseScore(event.target.value))}
-                  error={!!check.errors[key]}
-                  helperText={check.errors[key] ? t(check.errors[key] as string) : ' '}
-                  inputProps={{ inputMode: 'numeric', style: { textAlign: 'center' } }}
-                  InputLabelProps={{ shrink: true }}
-                />
-              ))}
-            </Box>
-          </Stack>
-
-          <Stack spacing={1}>
-            <Stack direction="row" alignItems="baseline" justifyContent="space-between">
-              <Typography variant="subtitle2">{t('study_bulk_comment')}</Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: commentLength > COMMENT_MAX ? 'error.main' : 'text.secondary' }}
-              >
-                {commentLength}/{COMMENT_MAX}
-              </Typography>
-            </Stack>
-            {!!row.prev?.comment && (
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                startIcon={<Iconify icon="solar:copy-bold" />}
-                onClick={() => set('comment')(row.prev?.comment || '')}
-                sx={{ alignSelf: 'flex-start', minHeight: 36 }}
-              >
-                {t('study_bulk_copy_prev_comment')}
-              </Button>
-            )}
-            <Editor
-              simple
-              id="study-bulk-comment"
-              key={row._id}
-              value={values.comment}
-              onChange={(html: string) => set('comment')(html)}
-              error={
-                !!check.errors.comment || (state.dirty && check.missingText.includes('comment'))
+          {locked && (
+            <Alert
+              severity="info"
+              icon={<Iconify icon="solar:lock-keyhole-minimalistic-bold" />}
+              action={
+                <Button color="inherit" size="small" onClick={onUnlock}>
+                  {t('study_unlock')}
+                </Button>
               }
-              helperText={check.errors.comment ? t(check.errors.comment) : undefined}
+            >
+              {t('study_lock_notice')}
+            </Alert>
+          )}
+          {!locked && row.report?.isPublic && (
+            <Alert severity="warning">{t('study_unlocked_notice')}</Alert>
+          )}
+
+          {/* Khóa: fieldset disabled tắt mọi ô nhập; pointerEvents chặn cả trình soạn thảo. */}
+          <Box
+            component="fieldset"
+            disabled={locked}
+            sx={{
+              border: 0,
+              m: 0,
+              p: 0,
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2.5,
+              ...(locked && { opacity: 0.6, pointerEvents: 'none' }),
+            }}
+          >
+            <Box display="grid" gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={2}>
+              <TextField
+                select
+                label={t('level')}
+                value={values.level}
+                onChange={(event) => set('level')(event.target.value)}
+                SelectProps={{ native: true }}
+                error={state.dirty && check.missingText.includes('level')}
+                helperText={origin.level === 'suggested' ? t('study_bulk_prefilled') : ' '}
+              >
+                <option value="" disabled>
+                  —
+                </option>
+                {LEVELS.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
+              </TextField>
+              <TextField
+                label={t('study_bulk_time_auto')}
+                value={row.report?.time ?? row.nextTime}
+                disabled
+                helperText=" "
+              />
+            </Box>
+
+            <FreeTextField
+              label={t('learningProcess')}
+              value={values.learningProcess}
+              options={LESSONS}
+              suggested={origin.learningProcess === 'suggested'}
+              error={state.dirty && check.missingText.includes('learningProcess')}
+              onChange={set('learningProcess')}
             />
-          </Stack>
+            <FreeTextField
+              label={t('characteristic')}
+              value={values.characteristic}
+              options={characteristicList}
+              suggested={origin.characteristic === 'suggested'}
+              error={state.dirty && check.missingText.includes('characteristic')}
+              onChange={set('characteristic')}
+            />
+            <FreeTextField
+              label={t('teacher')}
+              value={values.teacher}
+              options={teachers}
+              suggested={origin.teacher === 'suggested'}
+              error={false}
+              onChange={set('teacher')}
+            />
+
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">
+                {t('study_bulk_jlpt')}{' '}
+                <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                  {t('study_bulk_jlpt_note')}
+                </Box>
+              </Typography>
+              <Box display="grid" gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1.5}>
+                {JLPT_KEYS.map((key) => (
+                  <TextField
+                    key={key}
+                    label={`${t(`study_bulk_jlpt_${key}`)} ${jlptLevel}`}
+                    value={values[key] === null ? '' : String(values[key])}
+                    onChange={(event) => set(key)(parseScore(event.target.value))}
+                    error={!!check.errors[key]}
+                    helperText={check.errors[key] ? t(check.errors[key] as string) : ' '}
+                    inputProps={{ inputMode: 'numeric', style: { textAlign: 'center' } }}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                ))}
+              </Box>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Stack direction="row" alignItems="baseline" justifyContent="space-between">
+                <Typography variant="subtitle2">{t('study_bulk_comment')}</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: commentLength > COMMENT_MAX ? 'error.main' : 'text.secondary' }}
+                >
+                  {commentLength}/{COMMENT_MAX}
+                </Typography>
+              </Stack>
+              {!!row.prev?.comment && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<Iconify icon="solar:copy-bold" />}
+                  onClick={() => set('comment')(row.prev?.comment || '')}
+                  sx={{ alignSelf: 'flex-start', minHeight: 36 }}
+                >
+                  {t('study_bulk_copy_prev_comment')}
+                </Button>
+              )}
+              <Editor
+                simple
+                id="study-bulk-comment"
+                key={row._id}
+                value={values.comment}
+                onChange={(html: string) => set('comment')(html)}
+                error={
+                  !!check.errors.comment || (state.dirty && check.missingText.includes('comment'))
+                }
+                helperText={check.errors.comment ? t(check.errors.comment) : undefined}
+              />
+            </Stack>
+          </Box>
         </Stack>
 
         <Divider />

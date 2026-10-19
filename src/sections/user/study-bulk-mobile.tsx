@@ -28,6 +28,7 @@ import {
   BulkTextKey,
   LEVELS,
   SCORE_KEYS,
+  isLocked,
   rowState,
 } from './study-bulk-utils';
 
@@ -37,6 +38,8 @@ type Props = {
   rows: IStudyBulkRow[];
   work: Record<string, BulkEntry>;
   saveErrors: Record<string, string>;
+  unlocked: Record<string, boolean>;
+  onUnlock: (id: string) => void;
   index: number;
   onIndex: (index: number) => void;
   scoreLabels: string[];
@@ -54,6 +57,8 @@ export default function StudyBulkMobile({
   rows,
   work,
   saveErrors,
+  unlocked,
+  onUnlock,
   index,
   onIndex,
   scoreLabels,
@@ -71,8 +76,11 @@ export default function StudyBulkMobile({
   const entry = current ? work[current._id] : undefined;
 
   const state = useMemo(
-    () => (current && entry ? rowState(current, entry, saveErrors[current._id]) : null),
-    [current, entry, saveErrors]
+    () =>
+      current && entry
+        ? rowState(current, entry, saveErrors[current._id], isLocked(current, unlocked))
+        : null,
+    [current, entry, saveErrors, unlocked]
   );
 
   if (!current || !entry || !state) {
@@ -136,12 +144,14 @@ export default function StudyBulkMobile({
         <IconButton
           aria-label={t('study_bulk_decrease', { label }) || ''}
           onClick={() => step(key, -1)}
+          disabled={state.locked}
           sx={{ width: 44, height: 44, border: (theme) => `solid 1px ${theme.palette.divider}` }}
         >
           <Iconify icon="eva:minus-fill" />
         </IconButton>
         <ScoreInput
           inputMode="numeric"
+          disabled={state.locked}
           autoComplete="off"
           aria-label={label}
           data-state={dataState}
@@ -152,6 +162,7 @@ export default function StudyBulkMobile({
         <IconButton
           aria-label={t('study_bulk_increase', { label }) || ''}
           onClick={() => step(key, 1)}
+          disabled={state.locked}
           sx={{ width: 44, height: 44, border: (theme) => `solid 1px ${theme.palette.divider}` }}
         >
           <Iconify icon="eva:plus-fill" />
@@ -187,9 +198,23 @@ export default function StudyBulkMobile({
         )}
       </Stack>
 
-      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-        {t('study_bulk_mobile_hint')}
-      </Typography>
+      {state.locked ? (
+        <Alert
+          severity="info"
+          icon={<Iconify icon="solar:lock-keyhole-minimalistic-bold" />}
+          action={
+            <Button color="inherit" size="small" onClick={() => onUnlock(current._id)}>
+              {t('study_unlock')}
+            </Button>
+          }
+        >
+          {t('study_lock_notice')}
+        </Alert>
+      ) : (
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          {t('study_bulk_mobile_hint')}
+        </Typography>
+      )}
 
       <Box>
         <Typography variant="overline" sx={{ color: 'text.secondary' }}>
@@ -208,6 +233,7 @@ export default function StudyBulkMobile({
         value={values.level}
         onChange={(event) => onField(current._id, 'level', event.target.value)}
         SelectProps={{ native: true }}
+        disabled={state.locked}
         helperText={origin.level === 'suggested' ? t('study_bulk_prefilled') : undefined}
       >
         <option value="" disabled>

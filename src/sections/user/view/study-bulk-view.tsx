@@ -63,6 +63,7 @@ import {
   BulkEntry,
   BulkFieldKey,
   baselineEntry,
+  isLocked,
   commentText,
   isDirty,
   loadDraft,
@@ -156,6 +157,15 @@ export default function StudyBulkView() {
   const [publishNow, setPublishNow] = useState(false);
 
   const [detailId, setDetailId] = useState<string | null>(null);
+
+  // Báo cáo đã công khai bị khóa; dòng nào người nhập đã "Mở khóa để sửa" (trong phiên này) thì
+  // nằm ở đây. Không lưu vào bản nháp: tải lại trang là khóa lại.
+  const [unlocked, setUnlocked] = useState<Record<string, boolean>>({});
+
+  const [unlockAsk, setUnlockAsk] = useState<string | null>(null);
+
+  const unlockedRef = useRef(unlocked);
+  unlockedRef.current = unlocked;
 
   const [mobileIndex, setMobileIndex] = useState(0);
 
@@ -253,10 +263,12 @@ export default function StudyBulkView() {
     const result: Record<string, ReturnType<typeof rowState>> = {};
     rows.forEach((row) => {
       const entry = work[row._id];
-      if (entry) result[row._id] = rowState(row, entry, saveErrors[row._id]);
+      if (entry) {
+        result[row._id] = rowState(row, entry, saveErrors[row._id], isLocked(row, unlocked));
+      }
     });
     return result;
-  }, [rows, work, saveErrors]);
+  }, [rows, work, saveErrors, unlocked]);
 
   const options = useMemo(
     () => ({
@@ -393,8 +405,14 @@ export default function StudyBulkView() {
       const updates: Array<{ id: string; field: IStudyScoreKey; value: number }> = [];
       let skipped = 0;
       let cols = 0;
+      let lockedRows = 0;
 
       table.slice(0, targets.length).forEach((cells, r) => {
+        // Dòng báo cáo đã công khai chưa mở khóa: không dán vào.
+        if (isLocked(targets[r], unlockedRef.current)) {
+          lockedRows += 1;
+          return;
+        }
         cells.slice(0, SCORE_KEYS.length - colIndex).forEach((cell, c) => {
           cols = Math.max(cols, c + 1);
           const trimmed = cell.trim();
@@ -430,11 +448,10 @@ export default function StudyBulkView() {
         )
       );
 
-      const pasted = t('study_bulk_pasted', { rows: targets.length, cols });
-      setBanner({
-        severity: skipped ? 'warning' : 'info',
-        text: skipped ? `${pasted} ${t('study_bulk_pasted_skipped', { count: skipped })}` : pasted,
-      });
+      const notes = [t('study_bulk_pasted', { rows: targets.length - lockedRows, cols })];
+      if (skipped) notes.push(t('study_bulk_pasted_skipped', { count: skipped }));
+      if (lockedRows) notes.push(t('study_bulk_pasted_locked', { count: lockedRows }));
+      setBanner({ severity: skipped || lockedRows ? 'warning' : 'info', text: notes.join(' ') });
     },
     [t]
   );
@@ -480,12 +497,15 @@ export default function StudyBulkView() {
   const saveReports = useCallback(
     async (ids: string[], publish: boolean) => {
       if (!ids.length) return false;
+      const rowById = new Map(rows.map((row) => [row._id, row]));
       setSaving(true);
       try {
         const { data } = await axios.put(`${process.env.REACT_APP_HOST_API}/api/study/updateBulk`, {
           month: key,
           publish,
-          reports: ids.map((id) => toPayload(id, work[id].values)),
+          reports: ids.map((id) =>
+            toPayload(id, work[id].values, !!rowById.get(id)?.report?.isPublic)
+          ),
         });
         const results: Array<{ internId: string; ok: boolean; message?: string }> =
           data.results || [];
@@ -516,7 +536,7 @@ export default function StudyBulkView() {
         setSaving(false);
       }
     },
-    [key, work, fetchData, enqueueSnackbar, t]
+    [key, work, rows, fetchData, enqueueSnackbar, t]
   );
 
   const savableIds = useMemo(
@@ -556,6 +576,7 @@ export default function StudyBulkView() {
       // Phần đang nhập của tháng cũ đã nằm trong bản nháp trên máy, đổi tháng không mất.
       setMonth(next);
       setDetailId(null);
+      setUnlocked({});
       setMobileIndex(0);
       setBanner(null);
       setSaveErrors({});
@@ -575,6 +596,8 @@ export default function StudyBulkView() {
   }, []);
 
   const handleOpenDetail = useCallback((id: string) => setDetailId(id), []);
+
+  const handleUnlockAsk = useCallback((id: string) => setUnlockAsk(id), []);
 
   const detailIndex = detailId ? visibleRows.findIndex((row) => row._id === detailId) : -1;
   const detailRow = detailIndex >= 0 ? visibleRows[detailIndex] : null;
@@ -757,6 +780,8 @@ export default function StudyBulkView() {
               rows={visibleRows}
               work={work}
               saveErrors={saveErrors}
+              unlocked={unlocked}
+              onUnlock={handleUnlockAsk}
               loading={loading}
               scoreLabels={scoreLabels}
               onScore={handleScore}
@@ -769,6 +794,8 @@ export default function StudyBulkView() {
               rows={visibleRows}
               work={work}
               saveErrors={saveErrors}
+              unlocked={unlocked}
+              onUnlock={handleUnlockAsk}
               index={mobileIndex}
               onIndex={setMobileIndex}
               scoreLabels={scoreLabels}
@@ -848,6 +875,8 @@ export default function StudyBulkView() {
         row={detailRow}
         entry={detailRow ? work[detailRow._id] : null}
         saveError={detailRow ? saveErrors[detailRow._id] : undefined}
+        locked={!!detailRow && isLocked(detailRow, unlocked)}
+        onUnlock={() => detailRow && setUnlockAsk(detailRow._id)}
         monthLabel={monthLabel}
         teachers={teachers}
         onField={handleField}
@@ -857,6 +886,25 @@ export default function StudyBulkView() {
           detailIndex >= 0 && detailIndex < visibleRows.length - 1
             ? () => setDetailId(visibleRows[detailIndex + 1]._id)
             : undefined
+        }
+      />
+
+      <ConfirmDialog
+        open={!!unlockAsk}
+        onClose={() => setUnlockAsk(null)}
+        title={t('study_unlock_title')}
+        content={t('study_unlock_content')}
+        action={
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => {
+              if (unlockAsk) setUnlocked((prev) => ({ ...prev, [unlockAsk]: true }));
+              setUnlockAsk(null);
+            }}
+          >
+            {t('study_unlock')}
+          </Button>
         }
       />
 

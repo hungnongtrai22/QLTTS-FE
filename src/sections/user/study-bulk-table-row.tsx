@@ -63,6 +63,15 @@ export const ScoreInput = styled('input')(({ theme }) => ({
     color: theme.palette.error.dark,
     fontWeight: theme.typography.fontWeightSemiBold,
   },
+  // Báo cáo đã công khai, chưa mở khóa: chỉ xem.
+  '&:disabled': {
+    borderStyle: 'solid',
+    borderColor: 'transparent',
+    backgroundColor: alpha(theme.palette.grey[500], 0.08),
+    color: theme.palette.text.secondary,
+    fontStyle: 'normal',
+    cursor: 'not-allowed',
+  },
 }));
 
 type Props = {
@@ -70,6 +79,8 @@ type Props = {
   entry: BulkEntry;
   saveError?: string;
   rowIndex: number;
+  locked: boolean;
+  onUnlock: (id: string) => void;
   onScore: (id: string, key: IStudyScoreKey, raw: string) => void;
   onField: (id: string, key: BulkFieldKey, value: string | number | null) => void;
   onOpenDetail: (id: string) => void;
@@ -84,6 +95,8 @@ function StudyBulkTableRow({
   entry,
   saveError,
   rowIndex,
+  locked,
+  onUnlock,
   onScore,
   onField,
   onOpenDetail,
@@ -94,7 +107,10 @@ function StudyBulkTableRow({
 }: Props) {
   const { t } = useLocales();
 
-  const state = useMemo(() => rowState(row, entry, saveError), [row, entry, saveError]);
+  const state = useMemo(
+    () => rowState(row, entry, saveError, locked),
+    [row, entry, saveError, locked]
+  );
 
   const { values, origin } = entry;
 
@@ -149,6 +165,7 @@ function StudyBulkTableRow({
               ref={(el) => registerInput(rowIndex, colIndex, el)}
               inputMode="numeric"
               autoComplete="off"
+              disabled={locked}
               value={values[key] === null ? '' : String(values[key])}
               data-state={dataState}
               title={
@@ -214,9 +231,10 @@ function StudyBulkTableRow({
           value={values.level}
           onChange={(event) => onField(row._id, 'level', event.target.value)}
           SelectProps={{ native: true }}
+          disabled={locked}
           inputProps={{ 'aria-label': `${row.name} – ${t('study_bulk_col_level')}` }}
           sx={{
-            width: 76,
+            width: 68,
             '& select': {
               py: 1,
               ...(origin.level === 'suggested' && { color: 'text.secondary', fontStyle: 'italic' }),
@@ -260,12 +278,27 @@ function StudyBulkTableRow({
         </Tooltip>
       </TableCell>
 
-      <TableCell sx={{ pl: 1 }}>
-        <Tooltip title={saveError || ''} arrow>
-          <Label variant="soft" color={state.status.tone}>
-            {t(state.status.key, { ...state.status.params })}
-          </Label>
-        </Tooltip>
+      <TableCell sx={{ pl: 1, whiteSpace: 'nowrap' }}>
+        <Stack direction="row" alignItems="center" spacing={0.25}>
+          {/* Ổ khóa là nút "Mở khóa để sửa" luôn — gộp lại cho cột vừa laptop. */}
+          {locked && (
+            <Tooltip title={`${t('study_lock_hint')} · ${t('study_unlock')}`} arrow>
+              <IconButton
+                size="small"
+                aria-label={`${t('study_unlock')} – ${row.name}`}
+                onClick={() => onUnlock(row._id)}
+                sx={{ color: 'success.dark', ml: -0.5 }}
+              >
+                <Iconify icon="solar:lock-keyhole-minimalistic-bold" width={18} />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Tooltip title={saveError || ''} arrow>
+            <Label variant="soft" color={state.status.tone}>
+              {t(state.status.key, { ...state.status.params })}
+            </Label>
+          </Tooltip>
+        </Stack>
       </TableCell>
     </TableRow>
   );

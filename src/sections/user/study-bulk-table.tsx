@@ -15,7 +15,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { TableNoData, TableSkeleton } from 'src/components/table';
 //
 import StudyBulkTableRow from './study-bulk-table-row';
-import { BulkEntry, BulkFieldKey } from './study-bulk-utils';
+import { BulkEntry, BulkFieldKey, isLocked } from './study-bulk-utils';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +23,9 @@ type Props = {
   rows: IStudyBulkRow[];
   work: Record<string, BulkEntry>;
   saveErrors: Record<string, string>;
+  // Dòng báo cáo đã công khai được người nhập mở khóa trong phiên này
+  unlocked: Record<string, boolean>;
+  onUnlock: (id: string) => void;
   loading: boolean;
   scoreLabels: string[];
   onScore: (id: string, key: IStudyScoreKey, raw: string) => void;
@@ -37,6 +40,8 @@ export default function StudyBulkTable({
   rows,
   work,
   saveErrors,
+  unlocked,
+  onUnlock,
   loading,
   scoreLabels,
   onScore,
@@ -87,19 +92,24 @@ export default function StudyBulkTable({
               <TableCell rowSpan={2} align="center" sx={{ ...headCell, width: 72 }}>
                 {t('study_report_col_total')}
               </TableCell>
-              <TableCell rowSpan={2} sx={{ ...headCell, width: 84, px: 1 }}>
+              <TableCell rowSpan={2} sx={{ ...headCell, width: 76, px: 1 }}>
                 {t('study_bulk_col_level')}
               </TableCell>
               <TableCell rowSpan={2} align="center" sx={{ ...headCell, width: 56 }}>
                 {t('study_bulk_col_detail')}
               </TableCell>
-              <TableCell rowSpan={2} sx={{ ...headCell, width: 140, pl: 1 }}>
+              <TableCell rowSpan={2} sx={{ ...headCell, width: 150, pl: 1 }}>
                 {t('status')}
               </TableCell>
             </TableRow>
             <TableRow>
               {scoreLabels.map((label) => (
-                <TableCell key={label} align="center" sx={{ ...headCell, width: 50 }}>
+                <TableCell
+                  key={label}
+                  align="center"
+                  // Nhãn dài (Chuyên cần, Sức khỏe…) xuống 2 dòng thay vì đẩy cột rộng ra.
+                  sx={{ ...headCell, width: 50, whiteSpace: 'normal', lineHeight: 1.3 }}
+                >
                   {label}
                 </TableCell>
               ))}
@@ -115,6 +125,8 @@ export default function StudyBulkTable({
                     row={row}
                     entry={work[row._id]}
                     saveError={saveErrors[row._id]}
+                    locked={isLocked(row, unlocked)}
+                    onUnlock={onUnlock}
                     rowIndex={rowIndex}
                     scoreLabels={scoreLabels}
                     onScore={onScore}

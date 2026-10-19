@@ -33,6 +33,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import Button from '@mui/material/Button';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useSnackbar } from 'src/components/snackbar';
 import { useAuthContext } from 'src/auth/hooks';
 
 import { Tooltip } from '@mui/material';
@@ -130,17 +131,27 @@ export default function StudyPostItem({ study, intern, onRemove, onUpdate }: Pro
 
   const [message, setMessage] = useState('');
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const onDeleteRow = useCallback(
     async (id: string) => {
-      // console.log('DELETE', id);
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/delete`, {
-        id,
-      });
-
-      confirm.onToggle();
-      onRemove(id);
+      try {
+        // Báo cáo đã công khai bị khóa bên BE: hộp thoại xác nhận đã cảnh báo riêng trường hợp
+        // này, nên bấm Xóa ở đó là đã mở khóa (xem studyLock bên BE).
+        await axios.post(`${process.env.REACT_APP_HOST_API}/api/study/delete`, {
+          id,
+          unlockPublished: !!study?.isPublic,
+        });
+        confirm.onToggle();
+        onRemove(id);
+      } catch (error) {
+        console.error(error);
+        enqueueSnackbar(error?.response?.data?.message || t('study_delete_failed'), {
+          variant: 'error',
+        });
+      }
     },
-    [confirm, onRemove]
+    [confirm, onRemove, study?.isPublic, enqueueSnackbar]
   );
 
   const normalizeDate = (date: any) => {
@@ -743,7 +754,7 @@ export default function StudyPostItem({ study, intern, onRemove, onUpdate }: Pro
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Xóa"
-        content="Bạn có chắc muốn xóa?"
+        content={study?.isPublic ? t('study_delete_published_confirm') : 'Bạn có chắc muốn xóa?'}
         action={
           <Button
             variant="contained"

@@ -59,6 +59,8 @@ export type BulkRowState = {
   check: BulkCheck;
   dirty: boolean;
   savable: boolean;
+  // Báo cáo đã công khai chưa "Mở khóa để sửa": không sửa, không lưu được
+  locked: boolean;
   status: { key: string; tone: BulkTone; params?: Record<string, number> };
 };
 
@@ -153,14 +155,29 @@ export function isDirty(row: IStudyBulkRow, entry: BulkEntry) {
   return SCORE_KEYS.some((key) => entry.values[key] !== null);
 }
 
-export function rowState(row: IStudyBulkRow, entry: BulkEntry, saveError?: string): BulkRowState {
+// Báo cáo đã công khai bị khóa cho tới khi người nhập bấm "Mở khóa để sửa" (xem studyLock bên BE).
+export const isLocked = (row: IStudyBulkRow, unlocked: Record<string, boolean>) =>
+  !!row.report?.isPublic && !unlocked[row._id];
+
+export function rowState(
+  row: IStudyBulkRow,
+  entry: BulkEntry,
+  saveError?: string,
+  locked = false
+): BulkRowState {
   const check = checkValues(entry.values);
   const dirty = isDirty(row, entry);
-  const savable = dirty && check.complete;
+  const savable = dirty && check.complete && !locked;
 
   let status: BulkRowState['status'];
   if (saveError) status = { key: 'study_bulk_status_save_failed', tone: 'error' };
-  else if (check.errorCount) {
+  else if (locked) {
+    // Bản nháp cũ của một dòng nay đã bị khóa (ví dụ đã mở khóa, tải lại trang) thì vẫn báo có
+    // thay đổi, nhưng phải mở khóa lại mới lưu được.
+    status = dirty
+      ? { key: 'study_bulk_status_locked_dirty', tone: 'warning' }
+      : { key: 'study_bulk_status_published', tone: 'success' };
+  } else if (check.errorCount) {
     status = {
       key: 'study_bulk_status_errors',
       tone: 'error',
@@ -183,11 +200,13 @@ export function rowState(row: IStudyBulkRow, entry: BulkEntry, saveError?: strin
     status = { key: 'study_bulk_status_missing_info', tone: 'warning' };
   } else status = { key: 'study_bulk_status_unsaved', tone: 'warning' };
 
-  return { check, dirty, savable, status };
+  return { check, dirty, savable, locked, status };
 }
 
-export const toPayload = (internId: string, values: BulkValues) => ({
+// unlockPublished: dòng sửa một báo cáo đã công khai (người nhập đã mở khóa) — BE đòi cờ này.
+export const toPayload = (internId: string, values: BulkValues, unlockPublished = false) => ({
   internId,
+  unlockPublished,
   ...Object.fromEntries(NUMBER_KEYS.map((key) => [key, values[key]])),
   level: values.level,
   learningProcess: values.learningProcess.trim(),

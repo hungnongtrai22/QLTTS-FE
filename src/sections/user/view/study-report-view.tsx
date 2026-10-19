@@ -14,6 +14,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import TableContainer from '@mui/material/TableContainer';
+import LoadingButton from '@mui/lab/LoadingButton';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -36,6 +37,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { MotionContainer, varFade } from 'src/components/animate';
@@ -44,6 +46,7 @@ import {
   TableNoData,
   TableSkeleton,
   TableHeadCustom,
+  TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 //
@@ -153,7 +156,7 @@ export default function StudyReportView() {
 
   const table = useTable({ defaultOrderBy: 'name', defaultRowsPerPage: 25 });
 
-  const { onResetPage } = table;
+  const { onResetPage, selected, onSelectRow, onSelectAllRows } = table;
 
   const thisMonth = useMemo(() => currentMonth(), []);
 
@@ -172,6 +175,13 @@ export default function StudyReportView() {
   const [filters, setFilters] = useState<IStudyReportFilters>(defaultFilters);
 
   const [editing, setEditing] = useState<IStudyReportRow | null>(null);
+
+  // Công khai / thu hồi hàng loạt: chờ xác nhận (reportIds = id báo cáo, không phải id TTS).
+  const [publishAsk, setPublishAsk] = useState<{ isPublic: boolean; reportIds: string[] } | null>(
+    null
+  );
+
+  const [publishing, setPublishing] = useState(false);
 
   const monthLabel = t('study_report_month_label', {
     month: month.getMonth() + 1,
@@ -284,6 +294,27 @@ export default function StudyReportView() {
     table.page * table.rowsPerPage + table.rowsPerPage
   );
 
+  // Ô chọn ở đầu bảng chỉ chọn trong trang hiện tại, và chỉ dòng đã có báo cáo.
+  const pageSelectableIds = dataInPage.filter((row) => row.report).map((row) => row._id);
+
+  const selectedReports = useMemo(
+    () => viewRows.filter((row) => row.report && selected.includes(row._id)),
+    [viewRows, selected]
+  );
+
+  const selectedDraftIds = selectedReports
+    .filter((row) => !row.report?.isPublic)
+    .map((row) => row.report?._id as string);
+
+  const selectedPublishedIds = selectedReports
+    .filter((row) => row.report?.isPublic)
+    .map((row) => row.report?._id as string);
+
+  // "Công khai tất cả": mọi báo cáo chưa công khai trong danh sách đang lọc (mọi trang).
+  const draftInView = dataFiltered
+    .filter((row) => row.reportStatus === 'draft')
+    .map((row) => row.report?._id as string);
+
   const canReset =
     !!filters.name ||
     filters.attention ||
@@ -298,14 +329,15 @@ export default function StudyReportView() {
     () =>
       mdUp
         ? [
-            { id: 'name', label: t('study_report_col_intern'), minWidth: 200, width: 230 },
-            { id: 'company', label: t('study_report_col_company'), width: 200 },
+            // Có thêm ô chọn ở đầu dòng: thu cột Tên / Công ty cho bảng vẫn vừa laptop.
+            { id: 'name', label: t('study_report_col_intern'), minWidth: 180, width: 200 },
+            { id: 'company', label: t('study_report_col_company'), width: 185 },
             { id: 'teacherName', label: t('teacher'), width: 150 },
             // Ngày cập nhật hiện ngay dưới nhãn trạng thái (bớt một cột cho vừa laptop).
             { id: 'reportStatus', label: t('status'), width: 150 },
             { id: 'total', label: t('study_report_col_total'), width: 90 },
             { id: 'delta', label: t('study_report_col_change'), width: 110 },
-            { id: '', width: 130 },
+            { id: '', width: 120 },
           ]
         : // Điện thoại: dòng gộp (xem StudyReportTableRow compact) — không phải cuộn ngang.
           [
@@ -331,14 +363,41 @@ export default function StudyReportView() {
   const handleChangeMonth = useCallback(
     (next: Date) => {
       onResetPage();
+      onSelectAllRows(false, []);
       setMonth(next);
     },
-    [onResetPage]
+    [onResetPage, onSelectAllRows]
   );
 
   const handleViewProfile = useCallback((id: string) => {
     window.open(paths.dashboard.intern.profile(id), '_blank');
   }, []);
+
+  const handlePublish = async () => {
+    if (!publishAsk) return;
+    setPublishing(true);
+    try {
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_HOST_API}/api/study/updatePublicBulk`,
+        { ids: publishAsk.reportIds, isPublic: publishAsk.isPublic }
+      );
+      enqueueSnackbar(
+        t(publishAsk.isPublic ? 'study_publish_done' : 'study_unpublish_done', {
+          count: data.modified ?? publishAsk.reportIds.length,
+        })
+      );
+      setPublishAsk(null);
+      onSelectAllRows(false, []);
+      fetchRows();
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(error?.response?.data?.message || t('study_publish_failed'), {
+        variant: 'error',
+      });
+    } finally {
+      setPublishing(false);
+    }
+  };
 
   const handleSaved = useCallback(() => {
     setEditing(null);
@@ -436,13 +495,73 @@ export default function StudyReportView() {
             attentionCount={attentionCount}
           />
 
+          {!loading && draftInView.length > 0 && (
+            <Stack
+              component={m.div}
+              variants={fadeInUp}
+              direction={{ xs: 'column', sm: 'row' }}
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              justifyContent="space-between"
+              spacing={1.5}
+              sx={{ px: 2.5, pb: 2 }}
+            >
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {t('study_publish_pending', { count: draftInView.length })}
+              </Typography>
+              <Button
+                variant="soft"
+                color="success"
+                startIcon={<Iconify icon="solar:global-bold" />}
+                onClick={() => setPublishAsk({ isPublic: true, reportIds: draftInView })}
+                sx={{ minHeight: 44, flexShrink: 0 }}
+              >
+                {t('study_publish_all', { count: draftInView.length })}
+              </Button>
+            </Stack>
+          )}
+
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={selected.length}
+              rowCount={pageSelectableIds.length}
+              onSelectAllRows={(checked) => onSelectAllRows(checked, pageSelectableIds)}
+              action={
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="success"
+                    disabled={!selectedDraftIds.length}
+                    sx={{ minHeight: { xs: 44, md: 30 } }}
+                    onClick={() => setPublishAsk({ isPublic: true, reportIds: selectedDraftIds })}
+                  >
+                    {t('study_publish_n', { count: selectedDraftIds.length })}
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="inherit"
+                    disabled={!selectedPublishedIds.length}
+                    sx={{ minHeight: { xs: 44, md: 30 } }}
+                    onClick={() =>
+                      setPublishAsk({ isPublic: false, reportIds: selectedPublishedIds })
+                    }
+                  >
+                    {t('study_unpublish_n', { count: selectedPublishedIds.length })}
+                  </Button>
+                </Stack>
+              }
+            />
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: mdUp ? 960 : 0 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={tableHead}
+                  rowCount={pageSelectableIds.length}
+                  numSelected={selected.length}
+                  onSelectAllRows={(checked) => onSelectAllRows(checked, pageSelectableIds)}
                   onSort={table.onSort}
                   sx={{ '& th': { whiteSpace: 'nowrap' } }}
                 />
@@ -458,6 +577,8 @@ export default function StudyReportView() {
                           attentionDrop={ATTENTION_DROP}
                           onEnter={setEditing}
                           onViewProfile={handleViewProfile}
+                          selected={selected.includes(row._id)}
+                          onSelectRow={onSelectRow}
                         />
                       ))}
 
@@ -479,6 +600,29 @@ export default function StudyReportView() {
           />
         </Card>
       </MotionContainer>
+
+      <ConfirmDialog
+        open={!!publishAsk}
+        onClose={() => setPublishAsk(null)}
+        title={t(publishAsk?.isPublic === false ? 'study_unpublish_title' : 'study_publish_title', {
+          count: publishAsk?.reportIds.length ?? 0,
+        })}
+        content={t(
+          publishAsk?.isPublic === false ? 'study_unpublish_content' : 'study_publish_content'
+        )}
+        action={
+          <LoadingButton
+            variant="contained"
+            color={publishAsk?.isPublic === false ? 'inherit' : 'success'}
+            loading={publishing}
+            onClick={handlePublish}
+          >
+            {t(publishAsk?.isPublic === false ? 'study_unpublish_n' : 'study_publish_n', {
+              count: publishAsk?.reportIds.length ?? 0,
+            })}
+          </LoadingButton>
+        }
+      />
 
       <StudyReportDialog
         row={editing}

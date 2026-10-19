@@ -180,7 +180,7 @@ Account đã xác thực được gắn vào `req.account`. Ngoài ra còn `requ
 
 **Toàn bộ 141 endpoint đã được bọc**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
 
-29 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `study/tracker|bulk|updateBulk`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
+30 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `study/tracker|bulk|updateBulk|updatePublicBulk`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
 
 **Endpoint mới viết ra phải bọc `withAuth` ngay từ đầu.**
 
@@ -307,6 +307,14 @@ Trang `paths.dashboard.intern.studyBulk?month=YYYY-MM` (chỉ admin, mở từ n
 - Dòng bảng (`study-bulk-table-row.tsx`) bọc `memo`; mọi handler từ view phải ổn định (`useCallback` + `setWork` dạng hàm, danh sách đang hiện đọc qua ref) — đưa state vào deps là mỗi phím gõ vẽ lại cả bảng.
 - Điện thoại/tablet (dưới `md`): dạng thẻ từng TTS (`study-bulk-mobile.tsx`), nút −/+ (Đọc hiểu bước 10, còn lại 5), "Lưu & người sau" lưu ngay dòng đó.
 - `Card` của trang đặt `overflow: visible` — mặc định `hidden` làm thanh Lưu `position: sticky` không dính đáy màn hình.
+
+### Công khai & khóa báo cáo học tập
+
+Báo cáo `isPublic: true` là thứ nghiệp đoàn / công ty đã thấy nên **bị khóa sửa và xóa** ở mọi nơi. Mở khóa **không đổi dữ liệu** — báo cáo vẫn công khai, đối tác thấy bản mới ngay khi lưu (chủ dự án chọn cách này, thay vì thu hồi công khai rồi mới sửa).
+
+- **BE** ([QLTTS-BE/src/utils/studyLock.ts](../QLTTS-BE/src/utils/studyLock.ts)): `study/edit`, `study/delete`, `study/updateBulk` từ chối báo cáo đang công khai (409 `STUDY_LOCKED`, hoặc lỗi riêng dòng với updateBulk) trừ khi request kèm `unlockPublished: true` (đúng kiểu boolean). Công khai / thu hồi (`study/updatePublic`, `study/updatePublicBulk`) không phải sửa nội dung nên không cần cờ. **Thêm endpoint sửa/xóa nội dung báo cáo mới thì phải đi qua cùng kiểm tra này.**
+- **FE** chỉ gửi `unlockPublished` sau khi người dùng bấm "Mở khóa để sửa" và xác nhận: form Nhập điểm (`intern-point-form.tsx` — khóa theo trạng thái **đã lưu**, bật công tắc Công khai mà chưa lưu thì chưa khóa), trang Nhập điểm hàng loạt (mở khóa từng dòng, chỉ trong phiên — tải lại trang là khóa lại; dán từ Excel bỏ qua dòng đang khóa), nút Xóa ở hồ sơ TTS (`study-post-item.tsx`, hộp thoại cảnh báo riêng cho báo cáo đã công khai).
+- **Công khai hàng loạt** ở trang Báo cáo học tập: ô chọn đầu dòng (chỉ dòng đã có báo cáo, chọn trong trang hiện tại) → "Công khai (n)" / "Thu hồi (n)"; hoặc "Công khai tất cả (n)" cho mọi báo cáo chưa công khai trong danh sách đang lọc (mọi trang). Gọi `PUT /api/study/updatePublicBulk { ids: [id báo cáo], isPublic }` (admin) — `updateMany` chỉ `$set` đúng `isPublic`.
 
 ### Bundle
 

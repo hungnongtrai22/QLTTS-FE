@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import Checkbox from '@mui/material/Checkbox';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
@@ -48,6 +49,9 @@ type Props = {
   attentionDrop: number;
   onEnter: (row: StudyReportViewRow) => void;
   onViewProfile: (id: string) => void;
+  // Chọn nhiều dòng để công khai / thu hồi — chỉ dòng đã có báo cáo mới chọn được.
+  selected: boolean;
+  onSelectRow: (id: string) => void;
 };
 
 export default function StudyReportTableRow({
@@ -56,6 +60,8 @@ export default function StudyReportTableRow({
   attentionDrop,
   onEnter,
   onViewProfile,
+  selected,
+  onSelectRow,
 }: Props) {
   const { t } = useLocales();
 
@@ -95,10 +101,32 @@ export default function StudyReportTableRow({
     </Tooltip>
   );
 
+  // Đã công khai = đang khóa sửa (xem studyLock bên BE): hiện ổ khóa để người nhập biết.
   const statusLabel = (
-    <Label variant="soft" color={STATUS_COLOR[reportStatus]}>
-      {t(`study_report_status_${reportStatus}`)}
-    </Label>
+    <Tooltip title={reportStatus === 'published' ? t('study_lock_hint') : ''} arrow>
+      <Label
+        variant="soft"
+        color={STATUS_COLOR[reportStatus]}
+        startIcon={
+          reportStatus === 'published' ? (
+            <Iconify icon="solar:lock-keyhole-minimalistic-bold" />
+          ) : null
+        }
+      >
+        {t(`study_report_status_${reportStatus}`)}
+      </Label>
+    </Tooltip>
+  );
+
+  const selectCell = (
+    <TableCell padding="checkbox">
+      <Checkbox
+        checked={selected}
+        disabled={!report}
+        onClick={() => onSelectRow(row._id)}
+        inputProps={{ 'aria-label': `${t('study_publish_select')}: ${name}` }}
+      />
+    </TableCell>
   );
 
   const renderChange = () => {
@@ -128,7 +156,8 @@ export default function StudyReportTableRow({
 
   if (compact) {
     return (
-      <TableRow hover>
+      <TableRow hover selected={selected}>
+        {selectCell}
         {/* width 100% + maxWidth 0: ô co theo màn hình, tên dài cắt "..." thay vì đẩy bảng rộng ra. */}
         <TableCell sx={{ width: 1, maxWidth: 0, pr: 1 }}>
           <Stack direction="row" alignItems="center" spacing={1.5}>
@@ -171,9 +200,10 @@ export default function StudyReportTableRow({
   }
 
   return (
-    <TableRow hover>
+    <TableRow hover selected={selected}>
+      {selectCell}
       {/* Tên dài không xuống dòng mà cắt "...": giới hạn bề rộng để bảng vừa màn hình laptop. */}
-      <TableCell sx={{ maxWidth: 230 }}>
+      <TableCell sx={{ maxWidth: 200 }}>
         <Stack direction="row" alignItems="center" spacing={2}>
           <Avatar alt={name} src={avatar} />
           <ListItemText
@@ -190,7 +220,7 @@ export default function StudyReportTableRow({
         </Stack>
       </TableCell>
 
-      <TableCell sx={{ maxWidth: 200 }}>
+      <TableCell sx={{ maxWidth: 185 }}>
         <ListItemText
           primary={company || '—'}
           secondary={tradeUnion}
