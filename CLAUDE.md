@@ -322,6 +322,17 @@ Báo cáo `isPublic: true` là thứ nghiệp đoàn / công ty đã thấy nên
 - **FE** chỉ gửi `unlockPublished` sau khi người dùng bấm "Mở khóa để sửa" và xác nhận: form Nhập điểm (`intern-point-form.tsx` — khóa theo trạng thái **đã lưu**, bật công tắc Công khai mà chưa lưu thì chưa khóa), trang Nhập điểm hàng loạt (mở khóa từng dòng, chỉ trong phiên — tải lại trang là khóa lại; dán từ Excel bỏ qua dòng đang khóa), nút Xóa ở hồ sơ TTS (`study-post-item.tsx`, hộp thoại cảnh báo riêng cho báo cáo đã công khai).
 - **Công khai hàng loạt** ở trang Báo cáo học tập: ô chọn đầu dòng (chỉ dòng đã có báo cáo, chọn trong trang hiện tại) → "Công khai (n)" / "Thu hồi (n)"; hoặc "Công khai tất cả (n)" cho mọi báo cáo chưa công khai trong danh sách đang lọc (mọi trang). Gọi `PUT /api/study/updatePublicBulk { ids: [id báo cáo], isPublic }` (admin) — `updateMany` chỉ `$set` đúng `isPublic`.
 
+### Nhận xét báo cáo học tập: câu mẫu
+
+Nhận xét **luôn viết bằng tiếng Nhật** (100% báo cáo trong CSDL), dạng HTML của trình soạn thảo, tối đa `COMMENT_MAX` (300) ký tự **tính trên phần chữ** (`commentText` trong [study-bulk-utils.ts](src/sections/user/study-bulk-utils.ts)). Cả form Nhập điểm lẫn trang Nhập hàng loạt và BE (`updateBulk`) đều đếm theo cách này.
+
+- **Kho câu mẫu:** [src/utils/studyComment.ts](src/utils/studyComment.ts) — câu tiếng Nhật kèm nghĩa tiếng Việt, chia nhóm. Lấy từ những câu giáo viên đã dùng nhiều nhất trong báo cáo thật, có sửa lỗi ngữ pháp. `when` = điều kiện điểm để tự gợi ý (vd `listen` ≥ 85). Ngưỡng theo phân bố thật: các mục chung có trung vị 100, bốn kỹ năng tiếng Nhật có trung vị 70. **Sửa / thêm câu chỉ sửa ở file này.**
+- **Giao diện:** [study-comment-helper.tsx](src/sections/user/study-comment-helper.tsx), dùng ở form Nhập điểm (`intern-point-form.tsx`) và ngăn kéo Nhập hàng loạt (`study-bulk-detail-drawer.tsx`). Thứ tự hiển thị là thanh nút → ô soạn thảo (truyền qua `children`) → bảng câu mẫu, để bấm câu nào là thấy ngay câu đó trong ô phía trên.
+  - Nút "Chép nhận xét tháng trước": ô đang có chữ thì phải xác nhận trước khi thay.
+  - "Ghép đoạn nháp": mỗi mục điểm thêm một câu, dừng khi chạm giới hạn ký tự.
+  - Nghĩa tiếng Việt chỉ hiện khi giao diện đang ở tiếng Việt.
+- Form Nhập điểm lấy nhận xét / tổng điểm của báo cáo gần nhất **trước** tháng đang chọn qua `study/listByInternId`. Câu "so với tháng trước" chỉ gợi ý khi báo cáo đó đúng là tháng liền trước.
+
 ### Bundle
 
 Bundle khởi động (`main.js`) là thứ **mọi người tải mỗi lần vào app** — giữ nó nhỏ. Hai quy tắc:

@@ -17,6 +17,7 @@ import { useLocales } from 'src/locales';
 // utils
 import { learningProcess as LESSONS } from 'src/utils/learningProcess';
 import { characteristicList } from 'src/utils/characteristic';
+import { StudyCommentInput } from 'src/utils/studyComment';
 // types
 import { IStudyBulkRow } from 'src/types/user';
 // components
@@ -28,6 +29,7 @@ import {
   COMMENT_MAX,
   JLPT_KEYS,
   LEVELS,
+  SCORE_KEYS,
   BulkEntry,
   BulkFieldKey,
   BulkTextKey,
@@ -35,6 +37,7 @@ import {
   parseScore,
   rowState,
 } from './study-bulk-utils';
+import StudyCommentHelper from './study-comment-helper';
 
 // ----------------------------------------------------------------------
 
@@ -125,6 +128,18 @@ export default function StudyBulkDetailDrawer({
   );
 
   const open = !!row && !!entry && !!state;
+
+  // Điểm đang nhập của dòng này → câu nhận xét gợi ý.
+  const commentInput = useMemo<StudyCommentInput | null>(() => {
+    if (!row || !entry || !state) return null;
+    const prevTotal = row.prev?.total ?? null;
+    const { total } = state.check;
+    return {
+      scores: Object.fromEntries(SCORE_KEYS.map((key) => [key, entry.values[key]])),
+      delta: total !== null && prevTotal !== null ? total - prevTotal : null,
+      characteristic: entry.values.characteristic,
+    };
+  }, [row, entry, state]);
 
   const renderBody = () => {
     if (!row || !entry || !state) return null;
@@ -322,29 +337,29 @@ export default function StudyBulkDetailDrawer({
                   {commentLength}/{COMMENT_MAX}
                 </Typography>
               </Stack>
-              {!!row.prev?.comment && (
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={<Iconify icon="solar:copy-bold" />}
-                  onClick={() => set('comment')(row.prev?.comment || '')}
-                  sx={{ alignSelf: 'flex-start', minHeight: 36 }}
+              {commentInput && (
+                <StudyCommentHelper
+                  comment={values.comment}
+                  input={commentInput}
+                  prevComment={row.prev?.comment}
+                  prevLabel={t('study_comment_last_month')}
+                  disabled={locked}
+                  onChange={set('comment')}
                 >
-                  {t('study_bulk_copy_prev_comment')}
-                </Button>
+                  <Editor
+                    simple
+                    id="study-bulk-comment"
+                    key={row._id}
+                    value={values.comment}
+                    onChange={(html: string) => set('comment')(html)}
+                    error={
+                      !!check.errors.comment ||
+                      (state.dirty && check.missingText.includes('comment'))
+                    }
+                    helperText={check.errors.comment ? t(check.errors.comment) : undefined}
+                  />
+                </StudyCommentHelper>
               )}
-              <Editor
-                simple
-                id="study-bulk-comment"
-                key={row._id}
-                value={values.comment}
-                onChange={(html: string) => set('comment')(html)}
-                error={
-                  !!check.errors.comment || (state.dirty && check.missingText.includes('comment'))
-                }
-                helperText={check.errors.comment ? t(check.errors.comment) : undefined}
-              />
             </Stack>
           </Box>
         </Stack>

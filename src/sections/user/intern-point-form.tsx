@@ -55,8 +55,23 @@ import { characteristicList } from 'src/utils/characteristic';
 import { teacherList } from 'src/utils/teacher';
 import { useAuthContext } from 'src/auth/hooks';
 import { learningProcess } from 'src/utils/learningProcess';
+import { StudyCommentInput } from 'src/utils/studyComment';
+import { COMMENT_MAX, SCORE_KEYS, commentText } from './study-bulk-utils';
+import StudyCommentHelper from './study-comment-helper';
 
 // import { current } from '@reduxjs/toolkit';
+
+// "YYYY-MM" của báo cáo: monthAndYear lưu 00:00 giờ VN (= 17:00 UTC hôm trước).
+const reportMonthKey = (value: string | Date) => {
+  const date = new Date(new Date(value).getTime() + 7 * 3600 * 1000);
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+};
+
+// "YYYY-MM" của tháng chọn trên ô chọn tháng (giờ máy).
+const pickedMonthKey = (date: Date, offset = 0) => {
+  const month = new Date(date.getFullYear(), date.getMonth() + offset, 1);
+  return `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`;
+};
 
 // ----------------------------------------------------------------------
 
@@ -128,6 +143,25 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
   unlockedRef.current = unlocked;
   const unlockConfirm = useBoolean();
   const locked = savedPublic && !unlocked;
+
+  // Mọi báo cáo của TTS — để lấy nhận xét / tổng điểm của báo cáo gần nhất trước tháng đang chọn.
+  // Tải lại sau mỗi lần lưu (reportsVersion) để chuyển sang tháng sau là thấy ngay bản vừa lưu.
+  const [reports, setReports] = useState<any[]>([]);
+  const [reportsVersion, setReportsVersion] = useState(0);
+
+  useEffect(() => {
+    if (!internId) return undefined;
+    let active = true;
+    axios
+      .post(`${process.env.REACT_APP_HOST_API}/api/study/listByInternId`, { internId })
+      .then(({ data }) => {
+        if (active) setReports(data?.studies || []);
+      })
+      .catch((error) => console.error(error));
+    return () => {
+      active = false;
+    };
+  }, [internId, reportsVersion]);
   const [learning, setLearning] = useState<any>('');
   const getNumber = (str: string) => {
     const match = str.match(/\d+/);
@@ -196,9 +230,15 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
     time: Yup.string().required('Thời gian học không được để trống'),
     learningProcess: Yup.string().required('Tiến trình học tập không được để trống'),
     characteristic: Yup.string().required('Tính cách không được để trống'),
+    // Đếm trên phần chữ, không tính thẻ HTML của trình soạn thảo — cùng cách đếm với bộ đếm bên
+    // dưới ô nhận xét, trang Nhập điểm hàng loạt và BE (updateBulk).
     comment: Yup.string()
       .required('Nhận xét không được để trống')
-      .max(300, 'Nhận xét không được vượt quá 300 ký tự'),
+      .test(
+        'comment-length',
+        `Nhận xét không được vượt quá ${COMMENT_MAX} ký tự`,
+        (value) => commentText(value || '').length <= COMMENT_MAX
+      ),
   });
 
   const defaultValues = useMemo(
@@ -251,6 +291,54 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
   } = methods;
 
   const values = watch();
+
+  // Báo cáo gần nhất TRƯỚC tháng đang chọn (có thể cách vài tháng nếu có tháng bỏ trống).
+  const prevReport = useMemo(() => {
+    if (!monthSelect) return null;
+    const selectedKey = pickedMonthKey(monthSelect);
+    return reports
+      .filter((report) => report.monthAndYear && reportMonthKey(report.monthAndYear) < selectedKey)
+      .reduce<any>(
+        (latest, report) =>
+          !latest || new Date(report.monthAndYear) > new Date(latest.monthAndYear)
+            ? report
+            : latest,
+        null
+      );
+  }, [reports, monthSelect]);
+
+  const prevIsLastMonth =
+    !!prevReport &&
+    !!monthSelect &&
+    reportMonthKey(prevReport.monthAndYear) === pickedMonthKey(monthSelect, -1);
+
+  const prevLabel = prevIsLastMonth
+    ? t('study_comment_last_month')
+    : t('study_comment_month', {
+        month: prevReport
+          ? reportMonthKey(prevReport.monthAndYear).split('-').reverse().join('/')
+          : '',
+      });
+
+  // Điểm đang nhập → câu nhận xét gợi ý. "So với tháng trước" chỉ tính khi báo cáo trước đúng là
+  // tháng liền trước.
+  const scoreSignature = SCORE_KEYS.map((key) => values[key] ?? '').join(',');
+
+  const commentInput = useMemo<StudyCommentInput>(() => {
+    const scores = Object.fromEntries(
+      SCORE_KEYS.map((key) => [key, typeof values[key] === 'number' ? values[key] : null])
+    );
+    const filled = SCORE_KEYS.every((key) => typeof values[key] === 'number');
+    const total = filled ? SCORE_KEYS.reduce((sum, key) => sum + Number(values[key]), 0) : null;
+    const prevTotal = prevIsLastMonth ? prevReport?.total ?? null : null;
+    return {
+      scores,
+      delta: total !== null && prevTotal !== null ? total - prevTotal : null,
+      characteristic: values.characteristic || '',
+    };
+  }, [scoreSignature, values.characteristic, prevReport, prevIsLastMonth]);
+
+  const commentLength = commentText(values.comment || '').length;
 
   const learningProcessValue = watch('learningProcess');
 
@@ -344,6 +432,7 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
         setMonthSelect(null);
         setSavedPublic(false);
         setUnlocked(false);
+        setReportsVersion((version) => version + 1);
 
         onSavedRef.current?.();
       } catch (error) {
@@ -979,9 +1068,30 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
                 />
                 {/* <RHFTextField name="weak" label={t('weak')} /> */}
               </Box>
-              <Box sx={{ pt: 3 }}>
-                <RHFEditor simple name="comment" />
-              </Box>
+              <Stack spacing={1.5} sx={{ pt: 3 }}>
+                <Stack direction="row" alignItems="baseline" justifyContent="space-between">
+                  <Typography variant="subtitle2">{t('study_bulk_comment')}</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: commentLength > COMMENT_MAX ? 'error.main' : 'text.secondary' }}
+                  >
+                    {commentLength}/{COMMENT_MAX}
+                  </Typography>
+                </Stack>
+                {/* Chép nhận xét báo cáo trước + câu mẫu theo điểm (src/utils/studyComment.ts) */}
+                <StudyCommentHelper
+                  comment={values.comment || ''}
+                  input={commentInput}
+                  prevComment={prevReport?.comment}
+                  prevLabel={prevLabel}
+                  disabled={locked}
+                  onChange={(html) =>
+                    setValue('comment', html, { shouldDirty: true, shouldValidate: true })
+                  }
+                >
+                  <RHFEditor simple name="comment" />
+                </StudyCommentHelper>
+              </Stack>
               <Stack alignItems="flex-end" spacing={1.5}>
                 {/* <Button
                 size="small"
