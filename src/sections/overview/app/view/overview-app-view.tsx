@@ -1,19 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { m } from 'framer-motion';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 // hooks
 // _mock
-import { _appFeatured, _appAuthors, _appInstalled, _appRelated, _appInvoices } from 'src/_mock';
+import { _appAuthors, _appInstalled, _appRelated, _appInvoices } from 'src/_mock';
 // components
 import { useSettingsContext } from 'src/components/settings';
-// assets
-import { SeoIllustration } from 'src/assets/illustrations';
-import { useAuthContext } from 'src/auth/hooks';
 import { useLocales } from 'src/locales';
 import { useSnackbar } from 'src/components/snackbar';
 import { MotionViewport, varFade } from 'src/components/animate';
@@ -22,13 +17,10 @@ import { Box } from '@mui/material';
 
 //
 import AppWidget from '../app-widget';
-import AppWelcome from '../app-welcome';
-import AppFeatured from '../app-featured';
 import AppNewInvoice from '../app-new-invoice';
 import AppTopAuthors from '../app-top-authors';
 import AppTopRelated from '../app-top-related';
 import AppAreaInstalled from '../app-area-installed';
-import AppWidgetSummary from '../app-widget-summary';
 import AppCurrentDownload from '../app-current-download';
 import AppTopInstalledCountries from '../app-top-installed-countries';
 import AppOverallStats from '../app-overall-stats';
@@ -131,8 +123,6 @@ function toItems<T>(data: T | null, fields: [string, keyof T][]): StatItem[] {
 }
 
 export default function OverviewAppView() {
-  // const { user } = useMockedUser();
-  const { user } = useAuthContext();
   const { t } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -148,8 +138,6 @@ export default function OverviewAppView() {
   const [totalEngineer, setTotalEngineer] = useState<TotalEngineer | null>(null);
   const [totalTokuteiKS, setTotalTokuteiKS] = useState<TotalTokuteiKS | null>(null);
   const [totalTokutei, setTotalTokutei] = useState<TotalTokutei | null>(null);
-
-  const theme = useTheme();
 
   const settings = useSettingsContext();
 
@@ -262,22 +250,8 @@ export default function OverviewAppView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
-          <AppWelcome
-            title={`${t('welcome_back')} 👋 \n ${user?.name}`}
-            description={t('content') || ''}
-            img={<SeoIllustration />}
-            action={
-              <Button variant="contained" color="primary">
-                {t('go_now')}
-              </Button>
-            }
-          />
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <AppFeatured list={_appFeatured} />
-        </Grid>
+        {/* Khung chào mừng, khung tin tức và 3 thẻ "Đang học / Đã xuất cảnh / Hoàn thành hoặc về
+            sớm" đã gỡ theo yêu cầu chủ dự án — số liệu đó đã có ở phần thống kê ngay dưới. */}
 
         {/* Số liệu theo trạng thái và theo chương trình. Lưới: thẻ 3 năm rộng 8/12 cạnh thẻ
             1 năm trên màn hình lớn; từ tablet các thẻ nhỏ 2 thẻ/hàng; điện thoại 1 thẻ/hàng. */}
@@ -312,41 +286,6 @@ export default function OverviewAppView() {
         <Grid xs={12} md={4}>
         <div></div>
         </Grid> */}
-
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Thực Tập Sinh Đang Học"
-            percent={2.6}
-            total={(count as any)?.study?.total || 0}
-            chart={{
-              series: (count as any)?.study?.chart?.series || [],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Thực Tập Sinh Đã Xuất Cảnh"
-            percent={0.2}
-            total={(count as any)?.pass?.total || 0}
-            chart={{
-              colors: [theme.palette.info.light, theme.palette.info.main],
-              series: (count as any)?.pass?.chart?.series || [],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Thực Tập Sinh Hoàn Thành Hoặc Về Sớm"
-            percent={-0.1}
-            total={(count as any)?.completeOrSoon?.total || 0}
-            chart={{
-              colors: [theme.palette.warning.light, theme.palette.warning.main],
-              series: (count as any)?.completeOrSoon?.chart?.series || [],
-            }}
-          />
-        </Grid>
 
         <Grid xs={12} md={6} lg={4}>
           <AppCurrentDownload
