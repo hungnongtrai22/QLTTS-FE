@@ -451,6 +451,24 @@ export type IStudyAttentionReason = 'drop' | 'attend' | 'missing2';
 
 export type IStudyReportFilterValue = string | string[] | boolean;
 
+// Gói báo cáo gửi đối tác (trang Báo cáo học tập → "Xuất báo cáo"): báo cáo đầy đủ lấy qua
+// POST /api/study/listByIds, cộng tổng điểm tháng trước từ study/tracker.
+export type IStudyPackageItem = {
+  // Document Study đầy đủ (10 điểm, trình độ, tiến độ, nhận xét...)
+  report: Record<string, any>;
+  // Hồ sơ TTS cho mẫu PDF: tên, ảnh, ngày sinh, tradeUnion.name, companySelect.name...
+  intern: Record<string, any>;
+  prevTotal: number | null;
+};
+
+export type IStudyPackageMeta = {
+  // YYYY-MM
+  month: string;
+  // Rỗng = gói gồm nhiều nghiệp đoàn / công ty
+  tradeUnion: string;
+  company: string;
+};
+
 // ----------------------------------------------------------------------
 // Trang "Nhập điểm hàng loạt" — mỗi dòng trả về từ GET /api/study/bulk?month=YYYY-MM.
 

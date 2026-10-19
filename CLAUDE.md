@@ -178,9 +178,9 @@ export default withAuth(handler, { roles: ['admin'] });  // phải là admin
 
 Account đã xác thực được gắn vào `req.account`. Ngoài ra còn `requireAccount(req)` / `requireRole(req, roles)` / `sendAuthError(error, res)` để dùng bên trong handler khi cần logic phức tạp hơn (nhóm `/api/account/*` dùng cách này).
 
-**Toàn bộ 141 endpoint đã được bọc**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
+**Toàn bộ 154 endpoint đã được bảo vệ**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
 
-30 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `study/tracker|bulk|updateBulk|updatePublicBulk`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
+31 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `study/tracker|bulk|updateBulk|updatePublicBulk|listByIds`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
 
 **Endpoint mới viết ra phải bọc `withAuth` ngay từ đầu.**
 
@@ -332,6 +332,23 @@ Nhận xét **luôn viết bằng tiếng Nhật** (100% báo cáo trong CSDL), 
   - "Ghép đoạn nháp": mỗi mục điểm thêm một câu, dừng khi chạm giới hạn ký tự.
   - Nghĩa tiếng Việt chỉ hiện khi giao diện đang ở tiếng Việt.
 - Form Nhập điểm lấy nhận xét / tổng điểm của báo cáo gần nhất **trước** tháng đang chọn qua `study/listByInternId`. Câu "so với tháng trước" chỉ gợi ý khi báo cáo đó đúng là tháng liền trước.
+
+### Gói báo cáo gửi đối tác (PDF / Excel)
+
+Nút "Xuất báo cáo" ở trang Báo cáo học tập ([study-export-dialog.tsx](src/sections/user/study-export-dialog.tsx)).
+
+- **Phạm vi:** các dòng theo bộ lọc đang chọn trên trang (nghiệp đoàn, công ty, nguồn, giáo viên, tên, "Cần chú ý"), **bỏ qua tab trạng thái**. Hộp thoại tự tách đã công khai / chưa công khai / chưa nhập.
+  - Mặc định **chỉ gồm báo cáo đã công khai**; muốn kèm báo cáo chưa công khai phải tick, có cảnh báo.
+  - Thứ tự trong file: nghiệp đoàn → công ty → tên.
+- **Dữ liệu:** `POST /api/study/listByIds { ids }` (admin, chỉ đọc, tối đa 500 id báo cáo). Endpoint trả báo cáo đầy đủ kèm `intern` (đúng các trường mẫu PDF cần, đã qua `withAge`). Tên bắt đầu bằng `list` nên READ_ONLY không chặn.
+- **PDF** ([StudyPackagePDF.tsx](src/sections/order/StudyPackagePDF.tsx)):
+  - Trang đầu là bảng tổng hợp (tổng điểm, so tháng trước, 総合評価, trình độ, tiến độ).
+  - Sau đó mỗi TTS một trang theo **đúng mẫu báo cáo lẻ** `InternPDFStudy`. Sửa mẫu đó là sửa cả gói.
+  - Viền bảng tổng hợp đặt trên từng dòng (không đặt ở khung ngoài), để sang trang không để lại viền thừa.
+  - 108 báo cáo mất khoảng 22 giây.
+- **Excel** ([ExportStudyPackage.ts](src/utils/ExportStudyPackage.ts)): một sheet, mỗi TTS một dòng, đủ 10 mục điểm và nhận xét. Nhãn cột tiếng Nhật, cùng cách gọi với mẫu PDF.
+- Tên file: `学習報告_YYYY-MM_<công ty | nghiệp đoàn | 全体>`.
+- `normalizeName` / `evaluateStudent` nằm ở [src/utils/studyGrade.ts](src/utils/studyGrade.ts), dùng chung cho mẫu PDF và Excel. Để ở file riêng vì file Excel không được import từ file PDF: import như vậy sẽ kéo `@react-pdf/renderer` vào trang.
 
 ### Bundle
 

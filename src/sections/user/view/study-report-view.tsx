@@ -53,6 +53,7 @@ import {
 } from 'src/components/table';
 //
 import StudyReportDialog from '../study-report-dialog';
+import StudyExportDialog from '../study-export-dialog';
 import StudyMonthPicker from '../study-month-picker';
 import {
   addMonths,
@@ -202,6 +203,8 @@ export default function StudyReportView() {
   );
 
   const [publishing, setPublishing] = useState(false);
+
+  const [exportOpen, setExportOpen] = useState(false);
 
   const monthLabel = t('study_report_month_label', {
     month: month.getMonth() + 1,
@@ -492,15 +495,28 @@ export default function StudyReportView() {
           { name: t('study_report') || '' },
         ]}
         action={
-          <Button
-            component={RouterLink}
-            href={`${paths.dashboard.intern.studyBulk}?month=${monthKey(month)}`}
-            variant="contained"
-            startIcon={<Iconify icon="solar:pen-new-square-bold" />}
-            sx={{ minHeight: 44 }}
-          >
-            {t('study_bulk_open')}
-          </Button>
+          // Điện thoại: hai nút xếp dọc để không chèn mất chỗ của tiêu đề.
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="stretch">
+            <Button
+              variant="outlined"
+              color="inherit"
+              disabled={loading}
+              startIcon={<Iconify icon="solar:download-minimalistic-bold" />}
+              onClick={() => setExportOpen(true)}
+              sx={{ minHeight: 44 }}
+            >
+              {t('study_export_open')}
+            </Button>
+            <Button
+              component={RouterLink}
+              href={`${paths.dashboard.intern.studyBulk}?month=${monthKey(month)}`}
+              variant="contained"
+              startIcon={<Iconify icon="solar:pen-new-square-bold" />}
+              sx={{ minHeight: 44 }}
+            >
+              {t('study_bulk_open')}
+            </Button>
+          </Stack>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
       />
@@ -745,6 +761,16 @@ export default function StudyReportView() {
         monthLabel={monthLabel}
         onClose={() => setEditing(null)}
         onSaved={handleSaved}
+      />
+
+      {/* Gói báo cáo gửi đối tác: theo bộ lọc đang chọn (bỏ qua tab trạng thái — hộp thoại tự
+          tách đã công khai / chưa công khai / chưa nhập). */}
+      <StudyExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        rows={tabRows}
+        month={month}
+        monthLabel={monthLabel}
       />
     </Container>
   );

@@ -5,6 +5,7 @@
 import { useMemo } from 'react';
 import { View, Text, Image, Document, Font, StyleSheet } from '@react-pdf/renderer';
 import { htmlToText } from 'html-to-text';
+import { evaluateStudent, normalizeName } from 'src/utils/studyGrade';
 
 Font.registerHyphenationCallback((word) => {
   // Trả về toàn bộ từ như một đơn vị duy nhất
@@ -635,18 +636,6 @@ const changMonthYearJP = (date: any) => {
   return customFormat;
 };
 
-function normalizeName(name: string): string {
-  return name
-    .normalize('NFD') // Tách dấu
-    .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
-    .replace(/đ/g, 'd') // đ -> d
-    .replace(/Đ/g, 'D') // Đ -> D
-    .replace(/[^A-Za-z\s]/g, '') // Loại bỏ ký tự không phải chữ cái hoặc khoảng trắng
-    .toUpperCase() // In hoa
-    .trim() // Bỏ khoảng trắng đầu cuối
-    .replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng giữa các từ
-}
-
 const transPointToSharp = (point: number): string => {
   if (point < 50) return '×';
   if (point < 70) return '△';
@@ -662,28 +651,6 @@ const transPointToGrade = (point: number): string => {
   if (point < 80) return 'B+';
   if (point < 90) return 'A';
   return 'A+';
-};
-
-const evaluateStudent = (
-  discipline: number,
-  attitude: number,
-  health: number,
-  cooperation: number,
-  attend: number,
-  total: number
-): string => {
-  const hasCriticalFail =
-    (discipline < 50 && attitude < 50) ||
-    health < 50 ||
-    cooperation < 50 ||
-    attend < 50 ||
-    total < 500;
-
-  if (hasCriticalFail) return '不可';
-  if (total < 700) return '可';
-  if (total < 800) return '良';
-  if (total < 900) return '優';
-  return '秀';
 };
 
 const judgeJLPTResult = (
