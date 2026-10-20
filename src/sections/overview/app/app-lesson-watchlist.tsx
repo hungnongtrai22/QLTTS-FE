@@ -133,10 +133,12 @@ export default function AppLessonWatchlist({ interns }: { interns?: LessonProgre
             variant="caption"
             component="div"
             noWrap
-            title={`${labels.company(intern.company)} · ${labels.union(intern.tradeUnion)}`}
+            title={`${labels.company(intern.company)} · ${labels.union(
+              intern.tradeUnion
+            )} · ${labels.source(intern.source)}`}
             sx={{ color: 'text.secondary' }}
           >
-            {labels.company(intern.company)}
+            {labels.company(intern.company)} · {labels.source(intern.source)}
           </Typography>
         </Box>
       </Stack>

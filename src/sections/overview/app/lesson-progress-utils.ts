@@ -11,6 +11,8 @@ export type LessonProgressIntern = {
   avatar: string;
   tradeUnion: string;
   company: string;
+  // Rỗng = chưa có nguồn (hiển thị là "Nhật Tân" — DEFAULT_SOURCE_NAME)
+  source: string;
   // Bài đang học theo báo cáo mới nhất (0 = nhập môn); null = chưa có báo cáo / không đọc được
   lesson: number | null;
   // Báo cáo mới nhất ghi "ôn tập" — lesson là bài của báo cáo trước đó
@@ -165,11 +167,22 @@ export const lessonStats = (interns: LessonProgressIntern[]): LessonStats => {
   };
 };
 
+// Nhóm nguồn trong một công ty. TTS cùng công ty + cùng nguồn thường học cùng lớp: trên dữ liệu
+// thật chênh lệch trung vị 3 bài, cả công ty là 6 bài. (Cùng nguồn khác công ty thì lệch nhiều —
+// vd Trà Vinh 23 TTS chênh 26 bài, vì nhập học nhiều đợt — nên chỉ gom nguồn bên trong công ty.)
+export type LessonSourceGroup = {
+  key: string;
+  name: string;
+  stats: LessonStats;
+  interns: LessonProgressIntern[];
+};
+
 export type LessonCompanyGroup = {
   key: string;
   name: string;
   stats: LessonStats;
   interns: LessonProgressIntern[];
+  sources: LessonSourceGroup[];
 };
 
 export type LessonUnionGroup = {
@@ -183,7 +196,23 @@ export type LessonUnionGroup = {
 const byLessonDesc = (a: LessonProgressIntern, b: LessonProgressIntern) =>
   (b.lesson ?? -1) - (a.lesson ?? -1) || a.name.localeCompare(b.name, 'vi');
 
-// Nghiệp đoàn → công ty → TTS; nhóm đông người lên trước. Tên trống giữ là '' để giao diện tự
+// TTS của một công ty, gom theo nguồn.
+const groupBySource = (parentKey: string, interns: LessonProgressIntern[]): LessonSourceGroup[] => {
+  const sources = new Map<string, LessonProgressIntern[]>();
+  interns.forEach((intern) => {
+    const list = sources.get(intern.source) || [];
+    list.push(intern);
+    sources.set(intern.source, list);
+  });
+  return Array.from(sources.entries()).map(([sourceName, list]) => ({
+    key: `${parentKey}||${sourceName}`,
+    name: sourceName,
+    stats: lessonStats(list),
+    interns: [...list].sort(byLessonDesc),
+  }));
+};
+
+// Nghiệp đoàn → công ty → nguồn → TTS; nhóm đông người lên trước. Tên trống giữ là '' để giao diện tự
 // hiện "Chưa có nghiệp đoàn / công ty".
 export function groupLessonProgress(interns: LessonProgressIntern[]): LessonUnionGroup[] {
   const unions = new Map<string, Map<string, LessonProgressIntern[]>>();
@@ -208,6 +237,7 @@ export function groupLessonProgress(interns: LessonProgressIntern[]): LessonUnio
           name: companyName,
           stats: lessonStats(list),
           interns: [...list].sort(byLessonDesc),
+          sources: groupBySource(`${unionName}||${companyName}`, list).sort(bySize),
         }))
         .sort(bySize);
       return {

@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 // locales
 import { useLocales } from 'src/locales';
+// utils
+import { DEFAULT_SOURCE_NAME } from 'src/utils/source';
 //
 import { LessonStage } from './lesson-progress-utils';
 
@@ -69,6 +71,8 @@ export function useLessonLabels() {
       months: (keys: string[]) => keys.map(month).join(' – '),
       union: (name: string) => name || text('dashboard_lesson_no_union'),
       company: (name: string) => name || text('dashboard_lesson_no_company'),
+      // TTS chưa có nguồn thuộc "Nhật Tân" — cùng quy ước với danh sách TTS.
+      source: (name: string) => name || DEFAULT_SOURCE_NAME,
       stage: (stage: LessonStage) => text(`dashboard_lesson_stage_${stage}`),
     };
   }, [t, lang]);

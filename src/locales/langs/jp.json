@@ -414,6 +414,7 @@
   "dashboard_lesson_review": "復習中",
   "dashboard_lesson_reported": "{{month}}の報告",
   "dashboard_lesson_no_union": "組合未設定",
+  "dashboard_lesson_source": "人材の源",
   "dashboard_lesson_no_company": "企業未設定",
   "dashboard_lesson_empty": "在学中の実習生はいません。",
   "dashboard_lesson_stages_title": "教材の進度別分布",

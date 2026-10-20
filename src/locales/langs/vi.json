@@ -466,6 +466,7 @@
   "dashboard_lesson_review": "Đang ôn tập",
   "dashboard_lesson_reported": "Báo cáo {{month}}",
   "dashboard_lesson_no_union": "Chưa có nghiệp đoàn",
+  "dashboard_lesson_source": "Nguồn",
   "dashboard_lesson_no_company": "Chưa có công ty",
   "dashboard_lesson_empty": "Chưa có TTS đang học.",
   "dashboard_lesson_stages_title": "Phân bố theo mốc giáo trình",

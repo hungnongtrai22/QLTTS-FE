@@ -392,7 +392,7 @@ Trang tổng quan gọi **một** endpoint `/api/user/dashboardStats`, không ph
 Logic của từng phép thống kê nằm trong chính file endpoint lẻ, được export ra hàm `computeXxx()` — ví dụ `count.ts` export `computeCount()`. **Sửa công thức thì sửa trong hàm đó**, cả endpoint lẻ lẫn endpoint gộp đều dùng chung, không có chỗ nào chép lại pipeline. 12 endpoint lẻ vẫn giữ nguyên đường dẫn và kết quả để không phá code cũ.
 
 **Tiến độ bài học** (`lessonProgress.ts` → `computeLessonProgress()`, phép thống kê thứ 13): ba thẻ đặt **sau các thẻ chương trình** (Kỹ sư / Tokutei KS / Đặc định) — chủ dự án chọn vị trí.
-- [app-lesson-progress.tsx](src/sections/overview/app/app-lesson-progress.tsx): nghiệp đoàn → công ty → TTS, thanh thang bài 0–50.
+- [app-lesson-progress.tsx](src/sections/overview/app/app-lesson-progress.tsx): nghiệp đoàn → công ty → nguồn → TTS, thanh thang bài 0–50. Nguồn là dải tiêu đề trong công ty, không cần bấm. TTS cùng công ty + cùng nguồn thường học cùng lớp: chênh lệch trung vị 3 bài, cả công ty là 6 bài. Cùng nguồn khác công ty thì lệch nhiều (nhập học nhiều đợt), nên **chỉ gom nguồn bên trong công ty**.
 - [app-lesson-stages.tsx](src/sections/overview/app/app-lesson-stages.tsx): phân bố theo mốc nhập môn / 1–10 / 11–25 (N5) / 26–50 (N4).
 - [app-lesson-watchlist.tsx](src/sections/overview/app/app-lesson-watchlist.tsx) "Cần theo dõi trước ngày bay": TTS học chậm hoặc dự kiến chưa hết bài 25 lúc bay, ngày bay gần nhất lên đầu.
 - Logic gom nhóm và ước tính nằm ở [lesson-progress-utils.ts](src/sections/overview/app/lesson-progress-utils.ts) (`lessonForecast`, `lessonWatchlist`).

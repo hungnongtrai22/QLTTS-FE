@@ -25,6 +25,7 @@ import {
   LESSON_N5,
   LessonStats,
   LessonProgressIntern,
+  LessonSourceGroup,
   groupLessonProgress,
   lessonForecast,
   reportMonthRange,
@@ -367,6 +368,65 @@ export default function AppLessonProgress({ interns }: Props) {
     );
   };
 
+  // Nhóm nguồn trong một công ty: dải tiêu đề nhạt (không cần bấm) + các TTS của nguồn đó.
+  const renderSource = (source: LessonSourceGroup) => {
+    const name = labels.source(source.name);
+    const count = labels.text('dashboard_lesson_count', { count: source.stats.count });
+    return (
+      <Box key={source.key}>
+        <Box
+          sx={{
+            ...ROW_GRID,
+            px: 1,
+            py: 0.75,
+            mt: 0.5,
+            borderRadius: 1,
+            bgcolor: 'background.neutral',
+          }}
+        >
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ minWidth: 0, pl: { xs: 3.5, md: 6.5 } }}
+          >
+            <Iconify
+              icon="solar:users-group-rounded-bold"
+              width={16}
+              sx={{ flexShrink: 0, color: 'text.secondary' }}
+            />
+            <Typography
+              variant="subtitle2"
+              noWrap
+              title={`${labels.text('dashboard_lesson_source')}: ${name}`}
+              sx={{ minWidth: 0, color: 'text.secondary' }}
+            >
+              {name}
+            </Typography>
+            <Label
+              variant="soft"
+              sx={{ flexShrink: 0, display: { xs: 'none', md: 'inline-flex' } }}
+            >
+              {count}
+            </Label>
+          </Stack>
+          <LessonRangeBar
+            min={source.stats.min}
+            max={source.stats.max}
+            median={source.stats.median}
+          />
+          {renderSummary({
+            ...summary(source.stats),
+            muted: source.stats.min === null,
+            strong: false,
+            mobileExtra: [{ text: count }],
+          })}
+        </Box>
+        {source.interns.map(renderIntern)}
+      </Box>
+    );
+  };
+
   const renderBody = () => {
     if (loading) {
       return [...Array(5)].map((_, index) => (
@@ -391,7 +451,7 @@ export default function AppLessonProgress({ interns }: Props) {
             <Box key={company.key}>
               {renderToggleRow(company.key, labels.company(company.name), company.stats, 1)}
               <Collapse in={open.has(company.key)} unmountOnExit>
-                {company.interns.map(renderIntern)}
+                {company.sources.map(renderSource)}
               </Collapse>
             </Box>
           ))}
