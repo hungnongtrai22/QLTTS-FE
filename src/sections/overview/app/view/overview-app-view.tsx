@@ -25,6 +25,9 @@ import AppCurrentDownload from '../app-current-download';
 import AppTopInstalledCountries from '../app-top-installed-countries';
 import AppOverallStats from '../app-overall-stats';
 import AppProgramStats, { StatItem } from '../app-program-stats';
+import AppLessonStages from '../app-lesson-stages';
+import AppLessonProgress from '../app-lesson-progress';
+import { LessonProgressIntern } from '../lesson-progress-utils';
 import BankingBalanceStatistics from '../../banking/banking-balance-statistics';
 import AnalyticsConversionRates from '../../analytics/analytics-conversion-rates';
 
@@ -138,6 +141,8 @@ export default function OverviewAppView() {
   const [totalEngineer, setTotalEngineer] = useState<TotalEngineer | null>(null);
   const [totalTokuteiKS, setTotalTokuteiKS] = useState<TotalTokuteiKS | null>(null);
   const [totalTokutei, setTotalTokutei] = useState<TotalTokutei | null>(null);
+  // undefined = đang tải
+  const [lessonProgress, setLessonProgress] = useState<LessonProgressIntern[]>();
 
   const settings = useSettingsContext();
 
@@ -160,6 +165,7 @@ export default function OverviewAppView() {
       setTotalEngineer(data.totalEngineer);
       setTotalTokuteiKS(data.totalTokuteiKS);
       setTotalTokutei(data.totalTokutei);
+      setLessonProgress(data.lessonProgress?.interns || []);
     } catch (error) {
       console.error('[Dashboard stats]', error);
       enqueueSnackbar(t('dashboard_load_failed'), { variant: 'error' });
@@ -262,6 +268,18 @@ export default function OverviewAppView() {
                 <m.div variants={varFade({ distance: 24 }).inUp}>
                   <AppOverallStats data={total} />
                 </m.div>
+              </Grid>
+
+              {/* Tiến độ bài học của TTS đang học, theo báo cáo học tập mới nhất. */}
+              <Grid xs={12} lg={8}>
+                <Box component={m.div} variants={varFade({ distance: 24 }).inUp} sx={{ height: 1 }}>
+                  <AppLessonProgress interns={lessonProgress} />
+                </Box>
+              </Grid>
+              <Grid xs={12} lg={4}>
+                <Box component={m.div} variants={varFade({ distance: 24 }).inUp} sx={{ height: 1 }}>
+                  <AppLessonStages interns={lessonProgress} />
+                </Box>
               </Grid>
 
               {programs.map(({ key, ...program }) => (

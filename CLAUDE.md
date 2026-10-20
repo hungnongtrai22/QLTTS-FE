@@ -387,9 +387,16 @@ Các component dòng còn lại (company, source, tradeUnion, diary, account) **
 
 #### Thống kê trang tổng quan
 
-Trang tổng quan gọi **một** endpoint `/api/user/dashboardStats`, không phải 12 endpoint lẻ như trước. Endpoint đó chạy song song 12 phép thống kê rồi cache 3 phút trong bộ nhớ tiến trình (`?fresh=1` để bỏ qua cache khi cần kiểm chứng).
+Trang tổng quan gọi **một** endpoint `/api/user/dashboardStats`, không phải 12 endpoint lẻ như trước. Endpoint đó chạy song song 13 phép thống kê rồi cache 3 phút trong bộ nhớ tiến trình (`?fresh=1` để bỏ qua cache khi cần kiểm chứng).
 
 Logic của từng phép thống kê nằm trong chính file endpoint lẻ, được export ra hàm `computeXxx()` — ví dụ `count.ts` export `computeCount()`. **Sửa công thức thì sửa trong hàm đó**, cả endpoint lẻ lẫn endpoint gộp đều dùng chung, không có chỗ nào chép lại pipeline. 12 endpoint lẻ vẫn giữ nguyên đường dẫn và kết quả để không phá code cũ.
+
+**Tiến độ bài học** (`lessonProgress.ts` → `computeLessonProgress()`, phép thống kê thứ 13): hai thẻ ngay dưới "Tổng quan thực tập sinh".
+- [app-lesson-progress.tsx](src/sections/overview/app/app-lesson-progress.tsx): nghiệp đoàn → công ty → TTS, thanh thang bài 0–50.
+- [app-lesson-stages.tsx](src/sections/overview/app/app-lesson-stages.tsx): phân bố theo mốc nhập môn / 1–10 / 11–25 (N5) / 26–50 (N4).
+- Logic gom nhóm nằm ở [lesson-progress-utils.ts](src/sections/overview/app/lesson-progress-utils.ts).
+
+Hồ sơ TTS **không** lưu "đang học bài nào". Số bài đọc từ ô `learningProcess` của báo cáo học tập **mới nhất** (`入門` = 0, `第N課` = N), nên số liệu chậm khoảng một tháng; giao diện hiện kèm tháng của báo cáo. Báo cáo mới nhất ghi 「復習」 (ôn tập) thì lấy số bài của báo cáo trước đó và đánh dấu "Đang ôn tập". TTS chưa có báo cáo, hoặc chỉ có báo cáo ôn tập, tính là "Chưa rõ bài".
 
 ⚠️ `countSource` trả về mảng **không có thứ tự ổn định** (pipeline `$group` thiếu `$sort`) — cùng nội dung nhưng thứ tự phần tử đổi giữa các lần gọi. Đây là hành vi có sẵn từ trước; nếu giao diện cần thứ tự cố định thì phải thêm `$sort` vào pipeline.
 
