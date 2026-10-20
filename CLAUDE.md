@@ -319,7 +319,7 @@ Trang `paths.dashboard.intern.studyBulk?month=YYYY-MM` (chỉ admin, mở từ n
 Báo cáo `isPublic: true` là thứ nghiệp đoàn / công ty đã thấy nên **bị khóa sửa và xóa** ở mọi nơi. Mở khóa **không đổi dữ liệu** — báo cáo vẫn công khai, đối tác thấy bản mới ngay khi lưu (chủ dự án chọn cách này, thay vì thu hồi công khai rồi mới sửa).
 
 - **BE** ([QLTTS-BE/src/utils/studyLock.ts](../QLTTS-BE/src/utils/studyLock.ts)): `study/edit`, `study/delete`, `study/updateBulk` từ chối báo cáo đang công khai (409 `STUDY_LOCKED`, hoặc lỗi riêng dòng với updateBulk) trừ khi request kèm `unlockPublished: true` (đúng kiểu boolean). Công khai / thu hồi (`study/updatePublic`, `study/updatePublicBulk`) không phải sửa nội dung nên không cần cờ. **Thêm endpoint sửa/xóa nội dung báo cáo mới thì phải đi qua cùng kiểm tra này.**
-- **FE** chỉ gửi `unlockPublished` sau khi người dùng bấm "Mở khóa để sửa" và xác nhận: form Nhập điểm (`intern-point-form.tsx` — khóa theo trạng thái **đã lưu**, bật công tắc Công khai mà chưa lưu thì chưa khóa), trang Nhập điểm hàng loạt (mở khóa từng dòng, chỉ trong phiên — tải lại trang là khóa lại; dán từ Excel bỏ qua dòng đang khóa), nút Xóa ở hồ sơ TTS (`study-post-item.tsx`, hộp thoại cảnh báo riêng cho báo cáo đã công khai).
+- **FE** chỉ gửi `unlockPublished` sau khi người dùng bấm "Mở khóa để sửa" và xác nhận: form Nhập điểm (`intern-point-form.tsx` — khóa theo trạng thái **đã lưu**, bật công tắc Công khai mà chưa lưu thì chưa khóa), trang Nhập điểm hàng loạt (mở khóa từng dòng, chỉ trong phiên — tải lại trang là khóa lại; dán từ Excel bỏ qua dòng đang khóa), nút Xóa ở tab Học tập của hồ sơ TTS (`study-overview.tsx`, hộp thoại cảnh báo riêng cho báo cáo đã công khai).
 - **Công khai hàng loạt** ở trang Báo cáo học tập: ô chọn đầu dòng (chỉ dòng đã có báo cáo, chọn trong trang hiện tại) → "Công khai (n)" / "Thu hồi (n)"; hoặc "Công khai tất cả (n)" cho mọi báo cáo chưa công khai trong danh sách đang lọc (mọi trang). Gọi `PUT /api/study/updatePublicBulk { ids: [id báo cáo], isPublic }` (admin) — `updateMany` chỉ `$set` đúng `isPublic`.
 
 ### Nhận xét báo cáo học tập: câu mẫu
@@ -349,6 +349,22 @@ Nút "Xuất báo cáo" ở trang Báo cáo học tập ([study-export-dialog.ts
 - **Excel** ([ExportStudyPackage.ts](src/utils/ExportStudyPackage.ts)): một sheet, mỗi TTS một dòng, đủ 10 mục điểm và nhận xét. Nhãn cột tiếng Nhật, cùng cách gọi với mẫu PDF.
 - Tên file: `学習報告_YYYY-MM_<công ty | nghiệp đoàn | 全体>`.
 - `normalizeName` / `evaluateStudent` nằm ở [src/utils/studyGrade.ts](src/utils/studyGrade.ts), dùng chung cho mẫu PDF và Excel. Để ở file riêng vì file Excel không được import từ file PDF: import như vậy sẽ kéo `@react-pdf/renderer` vào trang.
+
+### Tab Học tập trong hồ sơ TTS
+
+Trang `intern/:id/profile` là nơi nghiệp đoàn / công ty theo dõi từng TTS. Tab đầu tiên ([profile-home.tsx](src/sections/user/profile-home.tsx)) render [study-overview.tsx](src/sections/user/study-overview.tsx); dữ liệu và phép tính ở [study-overview-utils.ts](src/sections/user/study-overview-utils.ts).
+
+- **Dữ liệu:** admin / nguồn gọi `study/listByInternId` (thấy cả báo cáo chưa công khai), các role khác gọi `study/listByInternIdPublic`. Không có endpoint mới.
+- **Bố cục:** dải chọn tháng → 4 ô tóm tắt (tổng điểm kèm so sánh, 総合評価, tiến độ bài trên thang 50 bài có mốc N5 = bài 25, trung bình 4 kỹ năng kèm học lực) → biểu đồ diễn biến (tổng điểm / 4 kỹ năng) + 4 kỹ năng so với lần trước → bảng đánh giá của tháng đang chọn (nhóm (B)/(C), ký hiệu ●◎○△×, thi thử JLPT nếu có, tính cách, nhận xét) → tiêu chí đánh giá (thu gọn).
+- Chọn tháng ở dải chip **hoặc bấm vào chấm trên biểu đồ**; cả trang đổi theo tháng đó.
+- "So với tháng trước" chỉ khi báo cáo liền trước đúng là tháng trước (`prevIsLastMonth`); không thì ghi "so với lần trước".
+- Ký hiệu từng mục (`scoreSymbol`) và học lực (`averageGrade`) nằm ở [studyGrade.ts](src/utils/studyGrade.ts), cùng ngưỡng với mẫu PDF.
+- **Đối tác thấy cả điểm số lẫn ô "kỹ năng thấp nhất"** — chủ dự án đã duyệt theo bản demo.
+- Chỉ admin thấy nhãn "Chưa công khai", nút Công khai (`study/updatePublic`) và Xóa (`study/delete`, gửi `unlockPublished` khi báo cáo đã công khai — xem mục khóa ở trên). Thẻ Thông tin liên lạc bên dưới cũng chỉ admin thấy.
+- PDF tháng này / cả kỳ dùng `AllStudyPDF`, nạp động cùng `@react-pdf/renderer` lúc bấm.
+- **Biểu đồ bấm được nhờ `tooltip: { shared: false, intersect: true }`.** Tooltip dùng chung (mặc định của `useChart`) gắn `no-pointer-events` lên các chấm nên `markerClick` không bao giờ chạy.
+- Animation dùng `MotionContainer`, **không** dùng `MotionViewport`: khối cao ~1600px, `MotionViewport` đòi 30% lọt màn hình mới chạy nên lúc mở trang khối bị trắng.
+- `study-post-item.tsx` (thẻ báo cáo cũ) vẫn còn vì `profile-compare.tsx` dùng.
 
 ### Bundle
 

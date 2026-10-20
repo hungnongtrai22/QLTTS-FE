@@ -39,3 +39,22 @@ export const evaluateStudent = (
   if (total < 900) return '優';
   return '秀';
 };
+
+// Ký hiệu của từng mục điểm (thang 100) — như trên mẫu báo cáo PDF.
+export const scoreSymbol = (point: number): string => {
+  if (point < 50) return '×';
+  if (point < 70) return '△';
+  if (point < 80) return '○';
+  if (point < 90) return '◎';
+  return '●';
+};
+
+// Học lực theo điểm trung bình 4 kỹ năng tiếng Nhật — như trên mẫu báo cáo PDF.
+export const averageGrade = (point: number): string => {
+  if (point < 50) return 'C';
+  if (point < 60) return 'B-';
+  if (point < 70) return 'B';
+  if (point < 80) return 'B+';
+  if (point < 90) return 'A';
+  return 'A+';
+};
