@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Fab from '@mui/material/Fab';
-import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -18,13 +17,7 @@ import { _bookingNew, _socials } from 'src/_mock';
 // utils
 import { fNumber } from 'src/utils/format-number';
 // types
-import {
-  IContactItem,
-  IInternItem,
-  IStudyItem,
-  IUserProfile,
-  IUserProfilePost,
-} from 'src/types/user';
+import { IInternItem, IStudyItem, IUserProfile, IUserProfilePost } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
@@ -46,7 +39,6 @@ type Props = {
 export default function ProfileHome({ info, posts, currentIntern }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [contact, setContact] = useState<IContactItem>();
   // undefined = đang tải
   const [study, setStudy] = useState<IStudyItem[]>();
   const { user } = useAuthContext();
@@ -57,14 +49,6 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
       fileRef.current.click();
     }
   };
-
-  const handleGetContactByInternId = useCallback(async () => {
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_HOST_API}/api/contact/getByInternId`,
-      { internId: currentIntern?._id }
-    );
-    setContact(data.contact);
-  }, [currentIntern]);
 
   // Admin / nguồn thấy cả báo cáo chưa công khai; nghiệp đoàn, công ty chỉ thấy bản đã công khai.
   const handleGetByInternId = useCallback(async () => {
@@ -89,108 +73,8 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
   }, []);
 
   useEffect(() => {
-    handleGetContactByInternId();
     handleGetByInternId();
-  }, [handleGetContactByInternId, handleGetByInternId]);
-
-  const renderAbout = (
-    <Card>
-      <CardHeader title="Thông tin liên lạc" />
-
-      <Stack spacing={2} sx={{ p: 3 }}>
-        <Box sx={{ typography: 'body2' }}>Thông tin cá nhân</Box>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="mingcute:location-fill" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            <Link variant="subtitle2" color="inherit">
-              {contact?.address}
-            </Link>
-          </Box>
-        </Stack>
-
-        <Stack direction="row" sx={{ typography: 'body2' }}>
-          <Iconify icon="fluent:mail-24-filled" width={24} sx={{ mr: 2 }} />
-          <Link variant="subtitle2" color="inherit">
-            {contact?.email}
-          </Link>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="tabler:phone-filled" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            <Link variant="subtitle2" color="inherit">
-              {contact?.phone}
-            </Link>
-          </Box>
-        </Stack>
-      </Stack>
-
-      <Stack spacing={2} sx={{ p: 3 }}>
-        <Box sx={{ typography: 'body2' }}>Thông tin bố</Box>
-
-        <Stack direction="row" sx={{ typography: 'body2' }}>
-          <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
-          <Link variant="subtitle2" color="inherit">
-            {currentIntern?.family?.find((item: any) => item.relationship === '父')?.name}
-          </Link>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="mingcute:location-fill" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            <Link variant="subtitle2" color="inherit">
-              {contact?.addressDadAndMom}
-            </Link>
-          </Box>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="tabler:phone-filled" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            <Link variant="subtitle2" color="inherit">
-              {contact?.phoneDad}
-            </Link>
-          </Box>
-        </Stack>
-      </Stack>
-
-      <Stack spacing={2} sx={{ p: 3 }}>
-        <Box sx={{ typography: 'body2' }}>Thông tin mẹ</Box>
-
-        <Stack direction="row" sx={{ typography: 'body2' }}>
-          <Iconify icon="iconamoon:profile-fill" width={24} sx={{ mr: 2 }} />
-          <Link variant="subtitle2" color="inherit">
-            {currentIntern?.family?.find((item: any) => item.relationship === '母')?.name}
-          </Link>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="mingcute:location-fill" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            <Link variant="subtitle2" color="inherit">
-              {contact?.addressDadAndMom}
-            </Link>
-          </Box>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="tabler:phone-filled" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            <Link variant="subtitle2" color="inherit">
-              {contact?.phoneMom}
-            </Link>
-          </Box>
-        </Stack>
-      </Stack>
-    </Card>
-  );
+  }, [handleGetByInternId]);
 
   const renderPostInput = (
     <Card sx={{ p: 3 }}>
@@ -280,12 +164,6 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
             )}`}
             list={currentIntern?.certificate}
           />
-        </Grid>
-      )}
-
-      {user?.role === 'admin' && (
-        <Grid xs={12} md={6}>
-          {renderAbout}
         </Grid>
       )}
     </Grid>
