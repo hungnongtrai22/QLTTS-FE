@@ -27,6 +27,7 @@ import AppOverallStats from '../app-overall-stats';
 import AppProgramStats, { StatItem } from '../app-program-stats';
 import AppLessonStages from '../app-lesson-stages';
 import AppLessonProgress from '../app-lesson-progress';
+import AppLessonWatchlist from '../app-lesson-watchlist';
 import { LessonProgressIntern } from '../lesson-progress-utils';
 import BankingBalanceStatistics from '../../banking/banking-balance-statistics';
 import AnalyticsConversionRates from '../../analytics/analytics-conversion-rates';
@@ -270,18 +271,6 @@ export default function OverviewAppView() {
                 </m.div>
               </Grid>
 
-              {/* Tiến độ bài học của TTS đang học, theo báo cáo học tập mới nhất. */}
-              <Grid xs={12} lg={8}>
-                <Box component={m.div} variants={varFade({ distance: 24 }).inUp} sx={{ height: 1 }}>
-                  <AppLessonProgress interns={lessonProgress} />
-                </Box>
-              </Grid>
-              <Grid xs={12} lg={4}>
-                <Box component={m.div} variants={varFade({ distance: 24 }).inUp} sx={{ height: 1 }}>
-                  <AppLessonStages interns={lessonProgress} />
-                </Box>
-              </Grid>
-
               {programs.map(({ key, ...program }) => (
                 <Grid key={key} xs={12} sm={program.wide ? 12 : 6} lg={program.wide ? 8 : 4}>
                   <Box
@@ -293,6 +282,25 @@ export default function OverviewAppView() {
                   </Box>
                 </Grid>
               ))}
+
+              {/* Tiến độ bài học của TTS đang học, theo báo cáo học tập mới nhất — đặt sau các thẻ
+                  chương trình (chủ dự án chọn vị trí). */}
+              <Grid xs={12} lg={8}>
+                <Box component={m.div} variants={varFade({ distance: 24 }).inUp} sx={{ height: 1 }}>
+                  <AppLessonProgress interns={lessonProgress} />
+                </Box>
+              </Grid>
+              <Grid xs={12} lg={4}>
+                <Box component={m.div} variants={varFade({ distance: 24 }).inUp} sx={{ height: 1 }}>
+                  <AppLessonStages interns={lessonProgress} />
+                </Box>
+              </Grid>
+              {/* Học chậm / dự kiến chưa hết N5 lúc bay — ước tính, xem lessonForecast. */}
+              <Grid xs={12}>
+                <m.div variants={varFade({ distance: 24 }).inUp}>
+                  <AppLessonWatchlist interns={lessonProgress} />
+                </m.div>
+              </Grid>
             </Grid>
           </Box>
         </Grid>

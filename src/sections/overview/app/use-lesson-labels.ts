@@ -9,7 +9,9 @@ import { LessonStage } from './lesson-progress-utils';
 // ----------------------------------------------------------------------
 
 export function useLessonLabels() {
-  const { t } = useLocales();
+  const { t, currentLang } = useLocales();
+
+  const lang = currentLang.value;
 
   return useMemo(() => {
     const text = (key: string, options?: Record<string, unknown>) => t(key, { ...options }) || '';
@@ -37,8 +39,29 @@ export function useLessonLabels() {
       return text('dashboard_lesson_month', { month: Number(monthNo), year });
     };
 
+    // 3,5 (vi) / 3.5 (jp)
+    const decimal = new Intl.NumberFormat(lang === 'vi' ? 'vi-VN' : 'ja-JP', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+
+    const pace = (value: number) => text('dashboard_lesson_pace', { pace: decimal.format(value) });
+
+    const paceSlow = (value: number) =>
+      text('dashboard_lesson_pace_slow', { pace: decimal.format(value) });
+
+    // Thời gian tới ngày bay tính từ hôm nay: "còn 3 tháng", "còn dưới 1 tháng", "đã quá ngày dự kiến"
+    const untilDeparture = (months: number) => {
+      if (months < 0) return text('dashboard_lesson_departure_passed');
+      if (months < 1) return text('dashboard_lesson_departure_soon');
+      return text('dashboard_lesson_months_left', { months: Math.round(months) });
+    };
+
     return {
       text,
+      pace,
+      paceSlow,
+      untilDeparture,
       lesson,
       range,
       median,
@@ -48,5 +71,5 @@ export function useLessonLabels() {
       company: (name: string) => name || text('dashboard_lesson_no_company'),
       stage: (stage: LessonStage) => text(`dashboard_lesson_stage_${stage}`),
     };
-  }, [t]);
+  }, [t, lang]);
 }

@@ -391,10 +391,17 @@ Trang tổng quan gọi **một** endpoint `/api/user/dashboardStats`, không ph
 
 Logic của từng phép thống kê nằm trong chính file endpoint lẻ, được export ra hàm `computeXxx()` — ví dụ `count.ts` export `computeCount()`. **Sửa công thức thì sửa trong hàm đó**, cả endpoint lẻ lẫn endpoint gộp đều dùng chung, không có chỗ nào chép lại pipeline. 12 endpoint lẻ vẫn giữ nguyên đường dẫn và kết quả để không phá code cũ.
 
-**Tiến độ bài học** (`lessonProgress.ts` → `computeLessonProgress()`, phép thống kê thứ 13): hai thẻ ngay dưới "Tổng quan thực tập sinh".
+**Tiến độ bài học** (`lessonProgress.ts` → `computeLessonProgress()`, phép thống kê thứ 13): ba thẻ đặt **sau các thẻ chương trình** (Kỹ sư / Tokutei KS / Đặc định) — chủ dự án chọn vị trí.
 - [app-lesson-progress.tsx](src/sections/overview/app/app-lesson-progress.tsx): nghiệp đoàn → công ty → TTS, thanh thang bài 0–50.
 - [app-lesson-stages.tsx](src/sections/overview/app/app-lesson-stages.tsx): phân bố theo mốc nhập môn / 1–10 / 11–25 (N5) / 26–50 (N4).
-- Logic gom nhóm nằm ở [lesson-progress-utils.ts](src/sections/overview/app/lesson-progress-utils.ts).
+- [app-lesson-watchlist.tsx](src/sections/overview/app/app-lesson-watchlist.tsx) "Cần theo dõi trước ngày bay": TTS học chậm hoặc dự kiến chưa hết bài 25 lúc bay, ngày bay gần nhất lên đầu.
+- Logic gom nhóm và ước tính nằm ở [lesson-progress-utils.ts](src/sections/overview/app/lesson-progress-utils.ts) (`lessonForecast`, `lessonWatchlist`).
+
+Cách ước tính. Đây là **số ước tính**, giao diện ghi rõ; các ngưỡng chọn theo dữ liệu thật:
+- **Tốc độ** = số bài ÷ số tháng từ `studyDate` tới cuối tháng báo cáo. Chỉ tính khi đã học từ `PACE_MIN_MONTHS` (2) tháng, vì tháng đầu học nhập môn (trung vị bài 3).
+- **Học chậm:** dưới `PACE_SLOW` (4) bài/tháng. Trung vị thật là 5,7.
+- **Dự kiến lúc bay** = bài hiện tại + tốc độ riêng × số tháng từ cuối tháng báo cáo tới `startDate` (出国予定日), tối đa bài 50.
+- **Mốc cần đạt lúc bay:** `DEPARTURE_TARGET` = bài 25 (hết N5) — chủ dự án chọn. Với mốc bài 50 thì chỉ 6/88 TTS kịp, cảnh báo sẽ mất tác dụng.
 
 Hồ sơ TTS **không** lưu "đang học bài nào". Số bài đọc từ ô `learningProcess` của báo cáo học tập **mới nhất** (`入門` = 0, `第N課` = N), nên số liệu chậm khoảng một tháng; giao diện hiện kèm tháng của báo cáo. Báo cáo mới nhất ghi 「復習」 (ôn tập) thì lấy số bài của báo cáo trước đó và đánh dấu "Đang ôn tập". TTS chưa có báo cáo, hoặc chỉ có báo cáo ôn tập, tính là "Chưa rõ bài".
 

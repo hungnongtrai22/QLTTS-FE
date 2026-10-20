@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 // @mui
-import { alpha, useTheme } from '@mui/material/styles';
+import { alpha, Theme, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Link from '@mui/material/Link';
@@ -26,9 +26,17 @@ import {
   LessonStats,
   LessonProgressIntern,
   groupLessonProgress,
+  lessonForecast,
   reportMonthRange,
 } from './lesson-progress-utils';
 import { useLessonLabels } from './use-lesson-labels';
+
+// Một dòng phụ ở cột số bài; warn = chữ màu cảnh báo (học chậm, dự kiến chưa tới mốc lúc bay).
+type SummaryLine = { text: string; warn?: boolean };
+
+// Chữ cảnh báo: đậm trên nền sáng, nhạt trên nền tối để vẫn đọc được.
+const warningText = (theme: Theme) =>
+  theme.palette.mode === 'light' ? theme.palette.warning.dark : theme.palette.warning.light;
 
 // ----------------------------------------------------------------------
 // Thẻ "Tiến độ học theo nghiệp đoàn / công ty" trên trang tổng quan.
@@ -43,7 +51,7 @@ const ROW_GRID = {
   display: 'grid',
   gridTemplateColumns: {
     xs: 'minmax(0, 1fr) auto',
-    md: 'minmax(0, 6fr) minmax(0, 5fr) minmax(0, 3fr)',
+    md: 'minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr)',
   },
   columnGap: 2,
   rowGap: 0.75,
@@ -156,17 +164,23 @@ export default function AppLessonProgress({ interns }: Props) {
     setOpen(allUnionsOpen ? new Set() : new Set(groups.map((union) => union.key)));
 
   // Dòng chính: khoảng bài. Dòng phụ (mỗi ý một dòng, không ngắt giữa chừng): trung vị, số TTS
-  // chưa rõ bài.
+  // chưa rõ bài, số TTS cần theo dõi (màu cảnh báo).
   const summary = (stats: LessonStats) => {
+    const watch: SummaryLine[] = stats.watch
+      ? [{ text: labels.text('dashboard_lesson_watch_count', { count: stats.watch }), warn: true }]
+      : [];
     if (stats.min === null || stats.max === null || stats.median === null) {
-      return { primary: labels.text('dashboard_lesson_no_report'), secondary: [] };
+      return { primary: labels.text('dashboard_lesson_no_report'), secondary: watch };
     }
     return {
       primary: labels.range(stats.min, stats.max),
       secondary: [
-        stats.count - stats.missing > 1 ? labels.median(stats.median) : '',
-        stats.missing ? labels.text('dashboard_lesson_missing', { count: stats.missing }) : '',
-      ].filter(Boolean),
+        ...(stats.count - stats.missing > 1 ? [{ text: labels.median(stats.median) }] : []),
+        ...(stats.missing
+          ? [{ text: labels.text('dashboard_lesson_missing', { count: stats.missing }) }]
+          : []),
+        ...watch,
+      ],
     };
   };
 
@@ -180,10 +194,10 @@ export default function AppLessonProgress({ interns }: Props) {
     mobileExtra = [],
   }: {
     primary: string;
-    secondary: string[];
+    secondary: SummaryLine[];
     muted: boolean;
     strong: boolean;
-    mobileExtra?: string[];
+    mobileExtra?: SummaryLine[];
   }) => {
     const mobileLines = [...mobileExtra, ...secondary];
     return (
@@ -198,13 +212,17 @@ export default function AppLessonProgress({ interns }: Props) {
           </Typography>
           {secondary.map((line) => (
             <Typography
-              key={line}
+              key={line.text}
               variant="caption"
               noWrap
-              title={line}
-              sx={{ color: 'text.secondary', display: { xs: 'none', md: 'block' } }}
+              title={line.text}
+              sx={{
+                color: line.warn ? warningText : 'text.secondary',
+                fontWeight: line.warn ? 600 : undefined,
+                display: { xs: 'none', md: 'block' },
+              }}
             >
-              {line}
+              {line.text}
             </Typography>
           ))}
         </Box>
@@ -218,7 +236,16 @@ export default function AppLessonProgress({ interns }: Props) {
               order: 4,
             }}
           >
-            {mobileLines.join(' · ')}
+            {mobileLines.map((line, index) => (
+              <Box
+                key={line.text}
+                component="span"
+                sx={line.warn ? { color: warningText, fontWeight: 600 } : undefined}
+              >
+                {index > 0 && ' · '}
+                {line.text}
+              </Box>
+            ))}
           </Typography>
         )}
       </>
@@ -273,7 +300,7 @@ export default function AppLessonProgress({ interns }: Props) {
           ...summary(stats),
           muted: stats.min === null,
           strong: true,
-          mobileExtra: [count],
+          mobileExtra: [{ text: count }],
         })}
       </ButtonBase>
     );
@@ -284,12 +311,33 @@ export default function AppLessonProgress({ interns }: Props) {
     let primary = labels.text('dashboard_lesson_no_report');
     if (intern.lesson !== null) primary = labels.lesson(intern.lesson);
     else if (intern.review) primary = labels.text('dashboard_lesson_review');
-    const secondary = [
-      intern.review && intern.lesson !== null ? labels.text('dashboard_lesson_review') : '',
-      intern.month
-        ? labels.text('dashboard_lesson_reported', { month: labels.month(intern.month) })
-        : '',
-    ].filter(Boolean);
+    const forecast = lessonForecast(intern);
+    const secondary: SummaryLine[] = [
+      ...(intern.review && intern.lesson !== null
+        ? [{ text: labels.text('dashboard_lesson_review') }]
+        : []),
+      ...(intern.month
+        ? [
+            {
+              text: labels.text('dashboard_lesson_reported', { month: labels.month(intern.month) }),
+            },
+          ]
+        : []),
+      // Ý 3: học chậm — dòng chữ cảnh báo ở cột phải (đặt nhãn cạnh tên thì tên bị cắt cụt).
+      ...(forecast.slow && forecast.pace !== null
+        ? [{ text: labels.paceSlow(forecast.pace), warn: true }]
+        : []),
+      // Ý 4: số bài dự kiến lúc bay — hiện cho mọi TTS ước tính được, cảnh báo khi chưa tới mốc.
+      // Tháng bay xem ở thẻ "Cần theo dõi trước ngày bay"; ở đây rút gọn cho vừa cột.
+      ...(forecast.projected !== null
+        ? [
+            {
+              text: labels.text('dashboard_lesson_forecast', { lesson: forecast.projected }),
+              warn: forecast.behind,
+            },
+          ]
+        : []),
+    ];
 
     return (
       <Box key={intern._id} sx={{ ...ROW_GRID, px: 1, py: 0.75 }}>

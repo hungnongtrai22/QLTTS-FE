@@ -17,6 +17,11 @@ export type LessonProgressIntern = {
   review: boolean;
   // YYYY-MM của báo cáo mới nhất; null = chưa có báo cáo nào
   month: string | null;
+  // YYYY-MM của báo cáo cho ra `lesson` (khác `month` khi báo cáo mới nhất là "ôn tập")
+  lessonMonth: string | null;
+  // Ngày nhập học / ngày xuất cảnh dự kiến (ISO)
+  studyDate: string | null;
+  startDate: string | null;
 };
 
 // Thang bài: hết bài 25 là xong N5, hết bài 50 là xong N4 (cùng mốc với form nhập điểm).
@@ -36,6 +41,96 @@ export const lessonStage = (lesson: number | null): LessonStage => {
   return 'n4';
 };
 
+// ----------------------------------------------------------------------
+// Ước tính tốc độ học và số bài lúc bay. Ngưỡng chọn theo dữ liệu thật:
+// - Tốc độ = số bài ÷ số tháng từ ngày nhập học tới cuối tháng báo cáo. Trung vị 5,7 bài/tháng;
+//   lịch sử các khóa: tháng 1 trung vị bài 3 (nhập môn), tháng 2 bài 10, tháng 6 bài 33.
+// - Chỉ tính khi đã học từ PACE_MIN_MONTHS tháng: tháng đầu học nhập môn nên chậm hơn hẳn.
+// - Học chậm: dưới PACE_SLOW bài/tháng (≈ 70% trung vị).
+// - Dự kiến lúc bay = bài hiện tại + tốc độ riêng × số tháng còn lại tới ngày xuất cảnh dự kiến.
+//   Mốc cần đạt lúc bay: hết bài 25 / N5 (chủ dự án chọn — mốc bài 50 thì chỉ 6/88 TTS kịp).
+// ----------------------------------------------------------------------
+
+export const PACE_SLOW = 4;
+export const PACE_MIN_MONTHS = 2;
+export const DEPARTURE_TARGET = LESSON_N5;
+
+const MONTH_MS = 30.44 * 24 * 60 * 60 * 1000;
+const VN_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+// Thời điểm cuối tháng "YYYY-MM" (= 00:00 giờ VN ngày 1 tháng sau).
+const monthEndVN = (key: string) => {
+  const [year, month] = key.split('-').map(Number);
+  return Date.UTC(year, month, 1) - VN_OFFSET_MS;
+};
+
+// "YYYY-MM" theo giờ VN của một ngày ISO.
+const monthKeyVN = (iso: string) => {
+  const date = new Date(new Date(iso).getTime() + VN_OFFSET_MS);
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+};
+
+export type LessonForecast = {
+  // Bài/tháng; null = chưa rõ bài hoặc chưa học đủ PACE_MIN_MONTHS tháng
+  pace: number | null;
+  slow: boolean;
+  // YYYY-MM xuất cảnh dự kiến (giờ VN)
+  departure: string | null;
+  // Số tháng từ hôm nay tới ngày xuất cảnh dự kiến (âm = đã quá ngày)
+  monthsToDeparture: number | null;
+  // Bài dự kiến lúc bay (làm tròn, tối đa LESSON_MAX); null = chưa ước tính được
+  projected: number | null;
+  // Dự kiến chưa tới DEPARTURE_TARGET lúc bay
+  behind: boolean;
+};
+
+export function lessonForecast(intern: LessonProgressIntern, now = Date.now()): LessonForecast {
+  const departureTime = intern.startDate ? new Date(intern.startDate).getTime() : null;
+  const base = {
+    departure: intern.startDate ? monthKeyVN(intern.startDate) : null,
+    monthsToDeparture: departureTime === null ? null : (departureTime - now) / MONTH_MS,
+  };
+
+  if (intern.lesson === null || !intern.lessonMonth || !intern.studyDate) {
+    return { ...base, pace: null, slow: false, projected: null, behind: false };
+  }
+
+  const asOf = monthEndVN(intern.lessonMonth);
+  const monthsStudied = (asOf - new Date(intern.studyDate).getTime()) / MONTH_MS;
+  const pace = monthsStudied >= PACE_MIN_MONTHS ? intern.lesson / monthsStudied : null;
+  // Tính từ cuối tháng báo cáo (lúc có số bài), không phải từ hôm nay.
+  const monthsLeft = departureTime === null ? null : Math.max(0, (departureTime - asOf) / MONTH_MS);
+  const projected =
+    pace !== null && monthsLeft !== null
+      ? Math.min(LESSON_MAX, Math.round(intern.lesson + pace * monthsLeft))
+      : null;
+
+  return {
+    ...base,
+    pace,
+    slow: pace !== null && pace < PACE_SLOW,
+    projected,
+    behind: projected !== null && projected < DEPARTURE_TARGET,
+  };
+}
+
+// Cần theo dõi: học chậm, hoặc dự kiến chưa tới mốc lúc bay.
+export const needsWatch = (forecast: LessonForecast) => forecast.slow || forecast.behind;
+
+export type LessonWatchItem = { intern: LessonProgressIntern; forecast: LessonForecast };
+
+// Danh sách cần theo dõi: ngày bay gần nhất lên đầu, cùng tháng thì dự kiến thấp hơn lên trước.
+export function lessonWatchlist(interns: LessonProgressIntern[]): LessonWatchItem[] {
+  return interns
+    .map((intern) => ({ intern, forecast: lessonForecast(intern) }))
+    .filter(({ forecast }) => needsWatch(forecast))
+    .sort(
+      (a, b) =>
+        (a.forecast.monthsToDeparture ?? Infinity) - (b.forecast.monthsToDeparture ?? Infinity) ||
+        (a.forecast.projected ?? Infinity) - (b.forecast.projected ?? Infinity)
+    );
+}
+
 export type LessonStats = {
   count: number;
   // TTS chưa rõ bài: chưa có báo cáo nào, hoặc chỉ có báo cáo "ôn tập" không kèm số bài
@@ -44,6 +139,8 @@ export type LessonStats = {
   max: number | null;
   median: number | null;
   stages: Record<LessonStage, number>;
+  // Số TTS cần theo dõi (học chậm hoặc dự kiến chưa tới mốc lúc bay)
+  watch: number;
 };
 
 export const lessonStats = (interns: LessonProgressIntern[]): LessonStats => {
@@ -64,6 +161,7 @@ export const lessonStats = (interns: LessonProgressIntern[]): LessonStats => {
     max: lessons.length ? lessons[lessons.length - 1] : null,
     median,
     stages,
+    watch: interns.filter((intern) => needsWatch(lessonForecast(intern))).length,
   };
 };
 
