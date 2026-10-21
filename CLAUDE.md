@@ -172,17 +172,39 @@ Upload ảnh: qua `${REACT_APP_HOST_API}/api/cloudinary` (form intern), hoặc g
 ```ts
 async function handler(req: NextApiRequest, res: NextApiResponse) { ... }
 
-export default withAuth(handler);                        // chỉ cần đăng nhập
-export default withAuth(handler, { roles: ['admin'] });  // phải là admin
+export default withAuth(handler);                                  // CHỈ ADMIN (mặc định)
+export default withAuth(handler, { roles: ALL_ROLES });            // mọi role — handler tự lọc
+export default withAuth(handler, { roles: ['admin', 'source'] });
 ```
 
 Account đã xác thực được gắn vào `req.account`. Ngoài ra còn `requireAccount(req)` / `requireRole(req, roles)` / `sendAuthError(error, res)` để dùng bên trong handler khi cần logic phức tạp hơn (nhóm `/api/account/*` dùng cách này).
 
-**Toàn bộ 154 endpoint đã được bảo vệ**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
-
-31 endpoint bọc `withAuth` yêu cầu role `admin` — các thao tác quản trị mà giao diện vốn đã chỉ cho admin dùng (`user/create|edit|delete|importExcel|updateAllType|updateSource|updateLaborInfo|cancelOrder`, `company|tradeUnion|source /create|edit|delete`, `company/deleteByTradeUnion`, `order/create|edit|updateListInternPass|removeInternPass`, `pass/create|edit|delete`, `study/tracker|bulk|updateBulk|updatePublicBulk|listByIds`, `account/checkRole`), cộng nhóm `/api/account/*` tự gọi `requireRole`. Số còn lại chỉ yêu cầu đăng nhập.
+**Toàn bộ endpoint đã được bảo vệ**, trừ 5 endpoint cố ý để công khai: `account/login`, `account/me` (tự xác thực), và `auth/login` + `auth/me` + `auth/register` (mã mẫu của template, chạy trên dữ liệu `_mock` với secret riêng, không đụng MongoDB).
 
 **Endpoint mới viết ra phải bọc `withAuth` ngay từ đầu.**
+
+#### Phân quyền theo dữ liệu (đối tác chỉ thấy TTS của mình)
+
+Trước đây `withAuth` mặc định là "đăng nhập là đủ": mọi tài khoản đối tác gọi được mọi endpoint, và các endpoint lấy mã nghiệp đoàn / nguồn / id TTS từ chính request. Giao diện chỉ *ẩn* dữ liệu, còn backend trả cho bất kỳ ai. Ví dụ: tài khoản nghiệp đoàn gọi thẳng `user/list` là có hồ sơ đầy đủ (CCCD, hộ chiếu) của mọi TTS. Giờ:
+
+- **`withAuth` mặc định chỉ admin.** Endpoint mở cho role khác phải ghi `roles` rõ ràng **và** tự giới hạn dữ liệu bằng helper ở `QLTTS-BE/src/utils/internScope.ts`:
+  - `internScope(account)` → bộ lọc Intern của tài khoản (`null` = admin): nghiệp đoàn = cùng `tradeUnion` (+ `companySelect` nếu tài khoản có), nguồn = cùng `source`, demo = `internsDemo`, Đồng Tháp = địa chỉ ở Đồng Tháp.
+  - `assertInternAccess(account, internId)` → 400 / 403; handler bắt bằng `sendAuthError`.
+  - Danh sách theo nghiệp đoàn / nguồn / demo **bỏ qua** mã gửi lên, luôn dùng của tài khoản đang đăng nhập.
+- **Endpoint mở cho role khác admin** (mọi thứ khác chỉ admin):
+
+  | Role | Endpoint |
+  |---|---|
+  | mọi role (lọc theo phạm vi) | `user/[id]`, `study/listByInternIdPublic`, `attendance/getAllAttendByInternId\|listByInternId\|statistics`, `gallery/listByInternId`, `gallery/[id]`, `compare/getByAccountId\|updateListIntern\|removeInternFromAll` (luôn danh sách của chính tài khoản), `event/getAllEventByInternId\|listAll` (lịch chung, không gắn TTS) |
+  | `tradeunion` | `user/listByTradeUnion\|listByTradeUnionAndCompany`, `company/listByTradeUnionAndCompany` |
+  | `source` | `user/listBySource`; nhập điểm / điểm danh cho TTS của mình: `study/listByInternId\|getByInternId\|getInternByMonth\|create\|edit`, `attendance/create\|updateAttendItem\|deleteAttendItem`, `event/create\|updateEventItem\|deleteEventItem`; `company/listByTradeUnion`, `tradeUnion/list` (tên) |
+  | `demo` | `user/listByDemo`, `user/dashboardStats`, `company/listByTradeUnion`, `tradeUnion/list`, `source/list` (tên) |
+  | `dongthap` | `user/listByDongThap`, `tradeUnion/list` (tên) |
+
+- **Bớt trường gửi cho đối tác:** hồ sơ / danh sách so sánh / album bỏ giấy tờ, liên lạc, hợp đồng (`PARTNER_HIDDEN_FIELDS`: CCCD, hộ chiếu, địa chỉ chi tiết, điện thoại, email, hợp đồng, người liên hệ khẩn cấp). CV và mọi file PDF đối tác tải không dùng tới các trường này. Danh sách TTS của nghiệp đoàn / nguồn / Đồng Tháp chỉ gửi trường của bảng (`PARTNER_LIST_SELECT`). Nghiệp đoàn / công ty / nguồn khi populate chỉ còn `name` (Company có giám đốc, lương, thuế của hợp đồng).
+- **Thêm trang hay nút mới cho đối tác** → kiểm tra endpoint nó gọi đã mở cho role đó chưa. Cách bắt nhanh: đăng nhập bằng role đó trên BE `READ_ONLY`, bấm qua các trang và xem request nào trả 403.
+- Component tự tải dữ liệu ngay khi dựng (form sửa nhanh trong dòng bảng…) phải **chỉ dựng khi mở** (`{open && <Form />}`). Dựng sẵn cho mọi dòng từng làm trang đối tác âm thầm tải danh sách mọi nghiệp đoàn / công ty và thông tin liên lạc của TTS.
+- ⚠️ **Thứ tự deploy cho thay đổi này: FE trước, BE sau.** FE mới (trang so sánh dùng `listByInternIdPublic`, demo không gọi `order/list`) chạy được với cả BE cũ; BE mới với FE cũ thì trang so sánh của đối tác hỏng.
 
 **Secret và biến môi trường (BE):** `getJwtSecret()` trong `src/utils/auth.ts` là **nguồn duy nhất** của JWT secret — không có giá trị dự phòng cố định, thiếu biến thì ném lỗi 500 ngay. Tương tự `db.ts` chỉ đọc `MONGODB_URL`. **Tuyệt đối không đặt tên biến bí mật với tiền tố `NEXT_PUBLIC_`** — Next.js nhúng mọi biến `NEXT_PUBLIC_*` vào bundle phía trình duyệt.
 
@@ -215,7 +237,7 @@ Lý do phải đổi (1) và (2): cả hai từng được khai báo với tiề
 
 Ngoài ra `QLTTS-BE/.env` còn một dòng `MONGODB_URL` đã comment trỏ tới cluster khác — hỏi trước khi xoá.
 
-⚠️ Khi siết thêm role, phải kiểm tra route nào render form gọi endpoint đó. Một số trang **không có `RoleBasedGuard`** — đáng chú ý là `intern/:id/profile` và `diary/:id/profile` — nên mọi role đăng nhập đều vào được. Vì thế `user/updateTradeUnion`, `gallery/create|edit|delete`, `diary/create|edit` cố ý chỉ để mức "đăng nhập", đặt admin sẽ khoá nhầm người dùng hợp lệ.
+⚠️ Khi siết thêm role, phải kiểm tra route nào render form gọi endpoint đó. Một số trang **không có `RoleBasedGuard`** — đáng chú ý là `intern/:id/profile` và `diary/:id/profile` — nên mọi role đăng nhập đều vào được. Các form ghi trên những trang đó (`user/updateTradeUnion`, `gallery/create|edit|delete`, `diary/create|edit`) chỉ hiện cho admin (tab "Thông tin bổ sung", menu album), nên giờ BE cũng chỉ cho admin — xem mục phân quyền theo dữ liệu ở trên.
 
 **Phía frontend:** khi gọi endpoint đã được bảo vệ, phải dùng instance trong [src/utils/axios.ts](src/utils/axios.ts) (`import axios, { API_ENDPOINTS } from 'src/utils/axios'`) chứ không phải `axios` trần — chỉ instance đó mới mang header `Authorization`.
 

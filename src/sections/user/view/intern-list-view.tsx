@@ -361,20 +361,24 @@ export default function InternListView() {
    * Gọi không kèm tham số `page` nên server trả về đủ trường, chỉ những hồ sơ khớp bộ lọc.
    */
   const fetchAllInterns = useCallback(async () => {
+    // Tài khoản demo chỉ được xem danh sách gán sẵn (user/list chỉ dành cho admin).
+    if (userRole?.role === 'demo') {
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`);
+      return data.interns as IInternItem[];
+    }
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`, {
       params: filterParams,
     });
     return data.interns as IInternItem[];
-  }, [filterParams]);
+  }, [filterParams, userRole]);
 
   // Tài khoản demo chỉ xem một danh sách đã gán sẵn, thường rất ngắn nên chưa cần
   // phân trang phía server. Vẫn cập nhật total/statusCounts để giao diện thống nhất.
   const handleGetAllInternDemo = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`, {
-        internsDemo: userRole?.internsDemo,
-      });
+      // BE tự lấy danh sách gán cho tài khoản demo đang đăng nhập.
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`);
 
       setTableData(data.interns);
       setTotal(data.interns.length);
@@ -395,7 +399,7 @@ export default function InternListView() {
     } finally {
       setLoading(false);
     }
-  }, [userRole, enqueueSnackbar]);
+  }, [enqueueSnackbar]);
 
   const handleGetTradeUnion = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
@@ -420,8 +424,9 @@ export default function InternListView() {
   useEffect(() => {
     handleGetTradeUnion();
     handleGetSource();
-    handleGetOrder();
-  }, [handleGetTradeUnion, handleGetSource, handleGetOrder]);
+    // Bộ lọc đơn hàng chỉ dành cho admin: order/list trả cả hồ sơ ứng viên của mọi đơn.
+    if (isAdmin) handleGetOrder();
+  }, [handleGetTradeUnion, handleGetSource, handleGetOrder, isAdmin]);
 
   // Bảng nạp lại khi đổi trang, đổi sắp xếp, đổi bộ lọc, hoặc sau khi xoá.
   useEffect(() => {

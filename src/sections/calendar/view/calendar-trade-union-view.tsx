@@ -17,8 +17,6 @@ import Dialog from '@mui/material/Dialog';
 import Container from '@mui/material/Container';
 import DialogTitle from '@mui/material/DialogTitle';
 // redux
-import { useDispatch } from 'src/redux/store';
-import { getEvents } from 'src/redux/slices/calendar';
 // types
 import { ICalendarFilters, ICalendarFilterValue } from 'src/types/calendar';
 // utils
@@ -33,7 +31,6 @@ import { useSettingsContext } from 'src/components/settings';
 import { isDateError } from 'src/components/custom-date-range-picker';
 import { useLocales } from 'src/locales';
 import { IInternItem } from 'src/types/user';
-
 
 //
 import { useCalendar } from '../hooks';
@@ -53,28 +50,14 @@ const defaultFilters = {
   endDate: null,
 };
 
-function useInitial() {
-  const dispatch = useDispatch();
-
-  const getEventsCallback = useCallback(() => {
-    dispatch(getEvents());
-  }, [dispatch]);
-
-  useEffect(() => {
-    getEventsCallback();
-  }, [getEventsCallback]);
-
-  return null;
-}
-
 // ----------------------------------------------------------------------
 type Props = {
   intern?: IInternItem;
 };
 
+// Lịch điểm danh chỉ xem (nghiệp đoàn / công ty / demo). Sự kiện lấy từ useCalendar; không gọi
+// /api/calendar của template (dữ liệu mẫu, và giờ chỉ admin gọi được).
 export default function CalendarTradeUnionView({ intern }: Props) {
-  useInitial();
-
   const { t, currentLang } = useLocales();
 
   const theme = useTheme();
@@ -163,8 +146,6 @@ export default function CalendarTradeUnionView({ intern }: Props) {
       sx={{ mb: { xs: 3, md: 5 } }}
     />
   );
-
- 
 
   return (
     <>

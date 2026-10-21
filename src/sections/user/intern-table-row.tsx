@@ -167,19 +167,32 @@ function InternTableRow({
         </TableCell>
       </TableRow>
 
-      <InternQuickEditForm currentIntern={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      {/* Chỉ dựng form khi mở: mỗi form tự tải dữ liệu ngay khi dựng (liên hệ, danh sách nghiệp
+          đoàn / công ty…). Dựng sẵn cho mọi dòng là mỗi trang bảng gọi hàng chục request, và tài
+          khoản demo nhận cả thông tin liên lạc của từng TTS. */}
+      {quickEdit.value && (
+        <InternQuickEditForm
+          currentIntern={row}
+          open={quickEdit.value}
+          onClose={quickEdit.onFalse}
+        />
+      )}
 
-      <StudyQuickEditForm
-        currentIntern={row}
-        open={quickStudy.value}
-        onClose={quickStudy.onFalse}
-      />
+      {quickStudy.value && (
+        <StudyQuickEditForm
+          currentIntern={row}
+          open={quickStudy.value}
+          onClose={quickStudy.onFalse}
+        />
+      )}
 
-      <ContactQuickEditForm
-        currentIntern={row}
-        open={quickContact.value}
-        onClose={quickContact.onFalse}
-      />
+      {quickContact.value && (
+        <ContactQuickEditForm
+          currentIntern={row}
+          open={quickContact.value}
+          onClose={quickContact.onFalse}
+        />
+      )}
 
       <CustomPopover
         open={popover.open}

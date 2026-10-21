@@ -86,20 +86,32 @@ export default function ProfileCompare({ info, posts, currentIntern }: Props) {
       { accountId: user?._id }
     );
     setCompare(data.compare);
-    // console.log('Compare', data.compare);
+    // Admin / nguồn thấy cả báo cáo chưa công khai; nghiệp đoàn, công ty, demo chỉ thấy bản đã
+    // công khai — cùng quy tắc với tab Học tập (profile-home.tsx).
+    const studyApi =
+      user?.role === 'admin' || user?.role === 'source'
+        ? 'study/listByInternId'
+        : 'study/listByInternIdPublic';
     const tempStudies = [];
-    for (const intern of data.compare.listIntern) {
-      const { data: tempData } = await axios.post(
-        `${process.env.REACT_APP_HOST_API}/api/study/listByInternId`,
-        { internId: intern._id }
-      );
-          console.log('Compare', intern);
-      tempStudies.push({
-        name: intern.namejp,
-        
-        studies: tempData.studies.map((it: any) => ({ ...it, name: intern.namejp, avatar: intern.avatar })),
-      });
-      // console.log('Study', tempData.studies);
+    for (const intern of data.compare?.listIntern || []) {
+      try {
+        const { data: tempData } = await axios.post(
+          `${process.env.REACT_APP_HOST_API}/api/${studyApi}`,
+          { internId: intern._id }
+        );
+        tempStudies.push({
+          name: intern.namejp,
+
+          studies: tempData.studies.map((it: any) => ({
+            ...it,
+            name: intern.namejp,
+            avatar: intern.avatar,
+          })),
+        });
+      } catch (error) {
+        // Một TTS lỗi (vd đã ra khỏi phạm vi tài khoản) không làm hỏng cả trang so sánh.
+        console.error(error);
+      }
     }
     setStudies(tempStudies);
     // console.log('NEW', tempStudies);

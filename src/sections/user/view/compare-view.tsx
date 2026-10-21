@@ -40,8 +40,6 @@ export default function CompareView() {
   const params = useParams();
   const { user } = useAuthContext();
 
-
-
   const { id } = params;
 
   const [intern, setIntern] = useState<IInternItem>();
@@ -59,13 +57,19 @@ export default function CompareView() {
     setSearchFriends(event.target.value);
   }, []);
 
+  // Trang so sánh không có :id trên đường dẫn — chỉ tải hồ sơ / album khi có id
+  // (trước đây gọi user/undefined, và gallery/listByInternId không id trả về mọi album).
   const handleGetInternById = useCallback(async () => {
+    if (!id) return;
     const { data } = await axios(`${process.env.REACT_APP_HOST_API}/api/user/${id}`);
     setIntern(data.intern);
   }, [id]);
 
   const handleGetGalleryByInternId = useCallback(async () => {
-    const { data } = await axios(`${process.env.REACT_APP_HOST_API}/api/gallery/listByInternId?internId=${id}`);
+    if (!id) return;
+    const { data } = await axios(
+      `${process.env.REACT_APP_HOST_API}/api/gallery/listByInternId?internId=${id}`
+    );
     setGalleries(data.galleries);
   }, [id]);
 
@@ -104,13 +108,7 @@ export default function CompareView() {
      
       </Card> */}
 
-     
-        <ProfileCompare currentIntern={intern} info={_userAbout} posts={_userFeeds} />
-  
-       
-      
-
-    
+      <ProfileCompare currentIntern={intern} info={_userAbout} posts={_userFeeds} />
     </Container>
   );
 }

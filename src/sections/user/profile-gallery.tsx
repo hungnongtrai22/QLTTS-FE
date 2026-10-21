@@ -6,23 +6,25 @@ import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { MenuItem } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { t } from 'i18next';
 
-// types
-import { IUserProfileGallery } from 'src/types/user';
-// utils
-import { fDate } from 'src/utils/format-time';
+// auth
+import { useAuthContext } from 'src/auth/hooks';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { paths } from 'src/routes/paths';
 import axios from 'axios';
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
+// Tab Album của hồ sơ TTS. Mọi role xem được; chỉ admin sửa / xóa (BE gallery/edit|delete
+// cũng chỉ cho admin). Xóa phải qua hộp xác nhận.
 
 type Props = {
   gallery: any[];
@@ -39,27 +41,38 @@ const changDateJP = (date: any) => {
 
 export default function ProfileGallery({ gallery, onRefresh }: Props) {
   const theme = useTheme();
+  const { user } = useAuthContext();
+  const isAdmin = user?.role === 'admin';
 
-  const [indexSelect, setIndexSelect] = useState(0);
   const [slides, setSlides] = useState<any[]>([]);
   const lightbox = useLightBox(slides);
-  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const popover = usePopover();
-  const [idSelect, setIdSelect] = useState<string | null>(null);
+  // Album đang mở menu, và album chờ xác nhận xóa.
+  const [selected, setSelected] = useState<any>(null);
+  const [toDelete, setToDelete] = useState<any>(null);
 
-  const handleDeleteGallery = useCallback(async (id : any) => {
-      // const seletedRows = tableData.filter((row) => table.selected.includes(row._id));
-  setLoading(true);
-      await axios.put(`${process.env.REACT_APP_HOST_API}/api/gallery/delete`,{
-        _id: id
+  const handleDeleteGallery = useCallback(async () => {
+    if (!toDelete) return;
+    setDeleting(true);
+    try {
+      await axios.put(`${process.env.REACT_APP_HOST_API}/api/gallery/delete`, {
+        _id: toDelete._id,
       });
-      // console.log('TEST', user, listIntern);
       await onRefresh();
-      enqueueSnackbar('Xóa ảnh thành công thành công!');
-      setLoading(false);
-    }, [enqueueSnackbar, onRefresh]);
+      enqueueSnackbar(t('gallery_deleted'));
+      setToDelete(null);
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(error?.response?.data?.message || t('gallery_delete_failed'), {
+        variant: 'error',
+      });
+    } finally {
+      setDeleting(false);
+    }
+  }, [enqueueSnackbar, onRefresh, toDelete]);
 
   return (
     <>
@@ -76,19 +89,20 @@ export default function ProfileGallery({ gallery, onRefresh }: Props) {
           md: 'repeat(3, 1fr)',
         }}
       >
-        {gallery.map((image, index) => (
-          <Card key={image.id} sx={{ cursor: 'pointer', color: 'common.white' }}>
+        {gallery.map((image) => (
+          <Card key={image._id} sx={{ cursor: 'pointer', color: 'common.white' }}>
             <IconButton
+              aria-label={t('gallery_menu') || ''}
               color={popover.open ? 'inherit' : 'default'}
-              onClick={popover.onOpen}
+              onClick={(event) => {
+                // Ghi nhận album ngay khi bấm nút (trước đây chỉ khi bấm trúng biểu tượng,
+                // bấm lệch vào viền nút thì menu thao tác trên album cũ).
+                setSelected(image);
+                popover.onOpen(event);
+              }}
               sx={{ position: 'absolute', top: 8, right: 8, zIndex: 9 }}
             >
-              <Iconify
-                icon="eva:more-vertical-fill"
-                onClick={() => {
-                  setIdSelect(image?._id);
-                }}
-              />
+              <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
 
             <ListItemText
@@ -135,7 +149,6 @@ export default function ProfileGallery({ gallery, onRefresh }: Props) {
                 );
 
                 setSlides(newSlides); // cập nhật slides
-                setIndexSelect(index); // lưu index
                 lightbox.onOpen(newSlides[0].src); // mở lightbox ngay
               }}
               overlay={`linear-gradient(to bottom, ${alpha(theme.palette.grey[900], 0)} 0%, ${
@@ -150,43 +163,64 @@ export default function ProfileGallery({ gallery, onRefresh }: Props) {
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
-        sx={{ width: 140 }}
+        sx={{ width: 160 }}
       >
         <MenuItem
-          onClick={async () => {
-            if (idSelect) {
-              const url = paths.dashboard.gallery.profile(idSelect);
-              window.open(url, '_blank');
+          onClick={() => {
+            if (selected) {
+              window.open(paths.dashboard.gallery.profile(selected._id), '_blank');
             }
             popover.onClose();
           }}
         >
           <Iconify icon="lsicon:view-filled" />
-          Xem chi tiết
+          {t('gallery_view_detail')}
         </MenuItem>
 
-        <MenuItem
-          onClick={async () => {
-            if (idSelect) {
-              const url = paths.dashboard.gallery.edit(idSelect);
-              window.open(url);
-            }
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="fa7-solid:edit" />
-          Chỉnh Sửa
-        </MenuItem>
+        {isAdmin && (
+          <MenuItem
+            onClick={() => {
+              if (selected) {
+                window.open(paths.dashboard.gallery.edit(selected._id));
+              }
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="fa7-solid:edit" />
+            {t('edit')}
+          </MenuItem>
+        )}
 
-        <MenuItem onClick={() => {
-          console.log("IdSelect", idSelect);
-          handleDeleteGallery(idSelect);
-          setIdSelect(null);
-        }}>
-          <Iconify icon="material-symbols:delete" />
-          {loading ? "Đang xóa..." : "Xóa"}
-        </MenuItem>
+        {isAdmin && (
+          <MenuItem
+            sx={{ color: 'error.main' }}
+            onClick={() => {
+              setToDelete(selected);
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="material-symbols:delete" />
+            {t('delete')}
+          </MenuItem>
+        )}
       </CustomPopover>
+
+      <ConfirmDialog
+        open={!!toDelete}
+        onClose={() => !deleting && setToDelete(null)}
+        title={t('gallery_delete_title')}
+        content={t('gallery_delete_confirm', { title: toDelete?.title || '' })}
+        action={
+          <LoadingButton
+            variant="contained"
+            color="error"
+            loading={deleting}
+            onClick={handleDeleteGallery}
+          >
+            {t('delete')}
+          </LoadingButton>
+        }
+      />
 
       <Lightbox
         index={lightbox.selected}

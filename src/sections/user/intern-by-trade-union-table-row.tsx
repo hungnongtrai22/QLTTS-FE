@@ -34,27 +34,27 @@ type Props = {
 };
 
 const changDateJP = (date: any) => {
-  if (!date) return "";
+  if (!date) return '';
 
   const jsDate = new Date(date);
-  if (isNaN(jsDate.getTime())) return "";
+  if (isNaN(jsDate.getTime())) return '';
 
-  const formatted = jsDate.toLocaleDateString("ja-JP");
-  const parts = formatted.split("/");
-  if (parts.length < 3) return "";
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
+  if (parts.length < 3) return '';
 
   return `${parts[0]}年${parts[1]}月${parts[2]}日`;
 };
 
 const changMonthJP = (date: any) => {
-  if (!date) return "";
+  if (!date) return '';
 
   const jsDate = new Date(date);
-  if (isNaN(jsDate.getTime())) return "";
+  if (isNaN(jsDate.getTime())) return '';
 
-  const formatted = jsDate.toLocaleDateString("ja-JP");
-  const parts = formatted.split("/");
-  if (parts.length < 2) return "";
+  const formatted = jsDate.toLocaleDateString('ja-JP');
+  const parts = formatted.split('/');
+  if (parts.length < 2) return '';
 
   return `${parts[0]}年${parts[1]}月`;
 };
@@ -67,7 +67,8 @@ function InternByTradeUnionTableRow({
   onDeleteRow,
   onViewRow,
 }: Props) {
-  const { name, namejp, avatar, birthday, interviewDate, studyDate, startDate, companySelect } = row;
+  const { name, namejp, avatar, birthday, interviewDate, studyDate, startDate, companySelect } =
+    row;
 
   const confirm = useBoolean();
 
@@ -141,7 +142,15 @@ function InternByTradeUnionTableRow({
         </TableCell>
       </TableRow>
 
-      <InternQuickEditForm currentIntern={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      {/* Chỉ dựng form khi mở: form tự tải danh sách nghiệp đoàn / công ty ngay khi dựng, trước đây
+          mỗi dòng của trang nghiệp đoàn / nguồn / Đồng Tháp đều gọi (nút mở đã tắt). */}
+      {quickEdit.value && (
+        <InternQuickEditForm
+          currentIntern={row}
+          open={quickEdit.value}
+          onClose={quickEdit.onFalse}
+        />
+      )}
 
       <CustomPopover
         open={popover.open}
@@ -170,7 +179,7 @@ function InternByTradeUnionTableRow({
           Edit
         </MenuItem>
 
-         <MenuItem
+        <MenuItem
           onClick={() => {
             onEditRow(row._id);
             popover.onClose();
