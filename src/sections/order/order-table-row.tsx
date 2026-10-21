@@ -29,6 +29,7 @@ import { useLocales } from 'src/locales';
 // utils
 import ExportInternsPass from 'src/utils/ExportInternsPass';
 import ExportInternsWithAvatar from 'src/utils/ExportInternsWithAvatar';
+import { sourceIdOf } from 'src/utils/source';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -37,6 +38,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 //
 import SwapForm from '../user/swap-form';
+import OrderInternSourceButton from './order-intern-source-button';
 
 // ----------------------------------------------------------------------
 // Một dòng đơn hàng + danh sách TTS khi mở rộng + menu In CV / xuất file.
@@ -68,6 +70,8 @@ type Props = {
   onEditRow: VoidFunction;
   onHandleGetOrder: VoidFunction;
   onTogglePass: (orderId: string, internId: string, pass: boolean) => Promise<void>;
+  sources: { _id: string; name: string }[];
+  onChangeSource: (internId: string, sourceId: string) => Promise<boolean>;
   // null = không lọc nguồn
   matchesSource: ((intern: any) => boolean) | null;
   getSourceName: (intern: any) => string;
@@ -95,6 +99,8 @@ export default function OrderTableRow({
   onEditRow,
   onHandleGetOrder,
   onTogglePass,
+  sources,
+  onChangeSource,
   matchesSource,
   getSourceName,
   colSpan,
@@ -334,6 +340,17 @@ export default function OrderTableRow({
         </Stack>
 
         <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={0.5}>
+          {/* Điện thoại: nút nguồn dạt sang trái, các nút còn lại giữ bên phải như cũ */}
+          <Box sx={{ mr: { xs: 'auto !important', sm: 0.5 } }}>
+            <OrderInternSourceButton
+              internId={intern._id}
+              internName={intern.name}
+              sourceId={sourceIdOf(intern)}
+              sources={sources}
+              onChange={onChangeSource}
+            />
+          </Box>
+
           <Tooltip title={passed ? t('order_unmark_pass_tip') : t('order_mark_pass_tip')}>
             <LoadingButton
               variant={passed ? 'soft' : 'outlined'}

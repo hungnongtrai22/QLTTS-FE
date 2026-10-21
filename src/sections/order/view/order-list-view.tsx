@@ -35,7 +35,7 @@ import { useSnackbar } from 'src/components/snackbar';
 // locales
 import { useLocales } from 'src/locales';
 // utils
-import { DEFAULT_SOURCE_NAME } from 'src/utils/source';
+import { DEFAULT_SOURCE_NAME, sourceIdOf } from 'src/utils/source';
 
 import {
   useTable,
@@ -78,12 +78,6 @@ const withPassCount = (order: IOrderItem): IOrderItem => {
     ...order,
     passCount: (order.listInternPass || []).filter((id) => candidates.has(String(id))).length,
   };
-};
-
-const sourceIdOf = (intern: any) => {
-  const source = intern?.source;
-  if (!source) return '';
-  return String(typeof source === 'object' ? source._id : source);
 };
 
 // ----------------------------------------------------------------------
@@ -310,6 +304,44 @@ export default function OrderListView() {
     [enqueueSnackbar, t]
   );
 
+  // Gán nguồn nhanh: một TTS có thể là ứng viên của nhiều đơn, nên sửa tại chỗ ở mọi đơn có
+  // TTS đó (không tải lại cả danh sách đơn). sourceId '' = về "Nhật Tân" (BE $unset).
+  const handleChangeSource = useCallback(
+    async (internId: string, sourceId: string) => {
+      try {
+        await axios.put(`${process.env.REACT_APP_HOST_API}/api/user/updateSource`, {
+          _id: internId,
+          source: sourceId || null,
+        });
+        setTableData((prev) =>
+          prev.map((order) => {
+            const list = order.listIntern || [];
+            if (!list.some((intern: any) => String(intern._id) === internId)) return order;
+            return {
+              ...order,
+              listIntern: list.map((intern: any) =>
+                String(intern._id) === internId
+                  ? { ...intern, source: sourceId || undefined }
+                  : intern
+              ),
+            };
+          })
+        );
+        enqueueSnackbar(
+          t('order_source_saved', { name: sourceNameById.get(sourceId) || DEFAULT_SOURCE_NAME })
+        );
+        return true;
+      } catch (error) {
+        console.error(error);
+        enqueueSnackbar(error?.response?.data?.message || t('order_source_failed'), {
+          variant: 'error',
+        });
+        return false;
+      }
+    },
+    [enqueueSnackbar, sourceNameById, t]
+  );
+
   const handleRemoveInternInOrder = useCallback(
     async (orderId: any, internId: any) => {
       await axios.put(`${process.env.REACT_APP_HOST_API}/api/order/removeIntern`, {
@@ -468,6 +500,8 @@ export default function OrderListView() {
                         onRemoveIntern={handleRemoveInternInOrder}
                         onHandleGetOrder={handleGetAllOrder}
                         onTogglePass={handleTogglePass}
+                        sources={sources}
+                        onChangeSource={handleChangeSource}
                         matchesSource={matchesSource}
                         getSourceName={getSourceName}
                         colSpan={tableHead.length + 1}
