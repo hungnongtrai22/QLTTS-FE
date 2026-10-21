@@ -196,7 +196,7 @@ Trước đây `withAuth` mặc định là "đăng nhập là đủ": mọi tà
   | Role | Endpoint |
   |---|---|
   | mọi role (lọc theo phạm vi) | `user/[id]`, `study/listByInternIdPublic`, `attendance/getAllAttendByInternId\|listByInternId\|statistics`, `gallery/listByInternId`, `gallery/[id]`, `compare/getByAccountId\|updateListIntern\|removeInternFromAll` (luôn danh sách của chính tài khoản), `event/getAllEventByInternId\|listAll` (lịch chung, không gắn TTS) |
-  | `tradeunion` | `user/listByTradeUnion\|listByTradeUnionAndCompany`, `company/listByTradeUnionAndCompany` |
+  | `tradeunion` | `user/listByTradeUnion\|listByTradeUnionAndCompany`, `company/listByTradeUnionAndCompany`, `study/listPartnerSummary` |
   | `source` | `user/listBySource`; nhập điểm / điểm danh cho TTS của mình: `study/listByInternId\|getByInternId\|getInternByMonth\|create\|edit`, `attendance/create\|updateAttendItem\|deleteAttendItem`, `event/create\|updateEventItem\|deleteEventItem`; `company/listByTradeUnion`, `tradeUnion/list` (tên) |
   | `demo` | `user/listByDemo`, `user/dashboardStats`, `company/listByTradeUnion`, `tradeUnion/list`, `source/list` (tên) |
   | `dongthap` | `user/listByDongThap`, `tradeUnion/list` (tên) |
@@ -376,6 +376,20 @@ Nút "Xuất báo cáo" ở trang Báo cáo học tập ([study-export-dialog.ts
 - **Excel** ([ExportStudyPackage.ts](src/utils/ExportStudyPackage.ts)): một sheet, mỗi TTS một dòng, đủ 10 mục điểm và nhận xét. Nhãn cột tiếng Nhật, cùng cách gọi với mẫu PDF.
 - Tên file: `学習報告_YYYY-MM_<công ty | nghiệp đoàn | 全体>`.
 - `normalizeName` / `evaluateStudent` nằm ở [src/utils/studyGrade.ts](src/utils/studyGrade.ts), dùng chung cho mẫu PDF và Excel. Để ở file riêng vì file Excel không được import từ file PDF: import như vậy sẽ kéo `@react-pdf/renderer` vào trang.
+
+### Danh sách TTS của nghiệp đoàn: cột học tập
+
+Trang đối tác vào đầu tiên (`paths.dashboard.intern.listByTradeUnion`, [intern-list-by-trade-union-view.tsx](src/sections/user/view/intern-list-by-trade-union-view.tsx)). Ngoài hồ sơ, mỗi TTS có tình hình học tập lấy từ `POST /api/study/listPartnerSummary` (nghiệp đoàn + admin, chỉ đọc). Endpoint này **chỉ dùng báo cáo đã công khai**, đúng những gì đối tác được xem ở hồ sơ.
+
+- **Cột:** tên (kèm katakana・tuổi), công ty, tổng điểm tháng mới nhất (総合評価 + so với báo cáo liền trước), tiến độ bài (thanh 0–50, vạch N5, tốc độ, ngày nhập học), ngày nhập cảnh + dự kiến bài lúc sang. Bỏ cột ngày sinh và ngày phỏng vấn so với bản cũ.
+- **Tháng mới nhất** = tháng mới nhất có báo cáo công khai trong phạm vi tài khoản. TTS đang học mà tháng đó chưa công khai → "X月分は準備中" kèm điểm tháng gần nhất. TTS không còn học → "最終報告 …".
+- "So với tháng trước" chỉ khi báo cáo liền trước đúng là tháng trước, không thì "so với lần trước". Giảm từ `PARTNER_BIG_DROP` (50, cùng ngưỡng "Cần chú ý") hiện đỏ "大きく下降".
+- **Tốc độ / dự kiến lúc sang** dùng chung `lessonForecast` với trang tổng quan (mốc N5 = bài 25, học chậm < 4 bài/tháng, cần ≥ 2 tháng học). Chỉ TTS đang học mới có dự kiến.
+- **"新着"** = báo cáo tháng mới nhất cập nhật trong `PARTNER_NEW_DAYS` (14) ngày. Hệ thống chưa ghi ai đã xem báo cáo, và model `Study` không có ngày công khai riêng, nên tạm tính theo `updatedAt` (công khai cũng cập nhật trường này).
+- Hai nút lọc nhanh "新着の報告のみ" / "入国時にN5未達の見込み" (đếm trong tab trạng thái đang chọn). Ô tìm kiếm nhận cả katakana.
+- Logic ở [partner-study-utils.ts](src/sections/user/partner-study-utils.ts), chuỗi hiển thị ở [use-partner-study-labels.ts](src/sections/user/use-partner-study-labels.ts), dòng bảng [intern-trade-union-study-row.tsx](src/sections/user/intern-trade-union-study-row.tsx) (memo) và thẻ điện thoại / tablet [intern-trade-union-study-card.tsx](src/sections/user/intern-trade-union-study-card.tsx) (dưới `md`).
+- Tên katakana chỉ được ngắt dòng tại "・" (`word-break: keep-all` + `<wbr>`), vì tự ngắt sẽ cắt giữa tên.
+- Trang nguồn / Đồng Tháp vẫn dùng dòng bảng cũ (`intern-by-trade-union-table-row.tsx`).
 
 ### Tab Học tập trong hồ sơ TTS
 

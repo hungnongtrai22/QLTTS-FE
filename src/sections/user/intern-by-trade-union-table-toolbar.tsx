@@ -22,7 +22,6 @@ import { t } from 'i18next';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 
-
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -98,7 +97,6 @@ export default function InternByTradeUnionTableToolbar({
     },
     [onFilters]
   );
-
 
   return (
     <>
@@ -180,7 +178,7 @@ export default function InternByTradeUnionTableToolbar({
             fullWidth
             value={searchName.value}
             onChange={handleFilterName}
-            placeholder={t('search') || ''}
+            placeholder={t('partner_search') || ''}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -244,7 +242,7 @@ export default function InternByTradeUnionTableToolbar({
               const blob = await pdf(
                 <AllAttendancePDF intern={interns} attendance={result} event={newEvent} />
               ).toBlob();
-              saveAs(blob, `${filters.company || ""}.pdf`);
+              saveAs(blob, `${filters.company || ''}.pdf`);
             } catch (error) {
               console.error('Lỗi khi tạo PDF:', error);
             } finally {
