@@ -363,7 +363,9 @@ export default function InternListView() {
   const fetchAllInterns = useCallback(async () => {
     // Tài khoản demo chỉ được xem danh sách gán sẵn (user/list chỉ dành cho admin).
     if (userRole?.role === 'demo') {
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`);
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`, {
+        internsDemo: userRole?.internsDemo,
+      });
       return data.interns as IInternItem[];
     }
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/user/list`, {
@@ -377,8 +379,11 @@ export default function InternListView() {
   const handleGetAllInternDemo = useCallback(async () => {
     setLoading(true);
     try {
-      // BE tự lấy danh sách gán cho tài khoản demo đang đăng nhập.
-      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`);
+      // BE mới tự lấy danh sách của tài khoản đang đăng nhập và bỏ qua internsDemo gửi lên;
+      // vẫn gửi để FE chạy được với BE cũ trong lúc deploy (FE trước, BE sau).
+      const { data } = await axios.post(`${process.env.REACT_APP_HOST_API}/api/user/listByDemo`, {
+        internsDemo: userRole?.internsDemo,
+      });
 
       setTableData(data.interns);
       setTotal(data.interns.length);
@@ -399,7 +404,7 @@ export default function InternListView() {
     } finally {
       setLoading(false);
     }
-  }, [enqueueSnackbar]);
+  }, [userRole, enqueueSnackbar]);
 
   const handleGetTradeUnion = useCallback(async () => {
     const { data } = await axios.get(`${process.env.REACT_APP_HOST_API}/api/tradeUnion/list`);
