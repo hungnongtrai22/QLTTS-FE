@@ -18,12 +18,12 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { IInternItem } from 'src/types/user';
 import CalendarPage from 'src/pages/dashboard/calendar';
 import { useAuthContext } from 'src/auth/hooks';
-import CalendarViewPage from 'src/pages/dashboard/calendar-view';
 
 import axios from 'axios';
 import { t } from 'i18next';
 
 import ProfileHome from '../profile-home';
+import StudyAttendanceOverview from '../study-attendance-overview';
 import ProfileCover from '../profile-cover';
 import ProfileFriends from '../profile-friends';
 import ProfileGallery from '../profile-gallery';
@@ -144,6 +144,15 @@ export default function InternProfileView() {
     setCurrentTab(newValue);
   }, []);
 
+  // "評価表を見る" ở tab 出席: mở tab 学習成績 đúng tháng đó.
+  const [focusReportId, setFocusReportId] = useState<string | null>(null);
+
+  const handleOpenReport = useCallback((reportId: string) => {
+    setFocusReportId(reportId);
+    setCurrentTab('profile');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const handleSearchFriends = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchFriends(event.target.value);
   }, []);
@@ -226,7 +235,12 @@ export default function InternProfileView() {
       </Card>
 
       {currentTab === 'profile' && (
-        <ProfileHome currentIntern={intern} info={_userAbout} posts={_userFeeds} />
+        <ProfileHome
+          currentIntern={intern}
+          info={_userAbout}
+          posts={_userFeeds}
+          focusReportId={focusReportId}
+        />
       )}
 
       {currentTab === 'followers' && <InternViewForm currentIntern={intern} />}
@@ -262,11 +276,12 @@ export default function InternProfileView() {
         <InternPointForm internId={intern?._id} />
       )}
 
+      {/* Admin / nguồn nhập điểm danh trên lịch; đối tác xem chuyên cần lấy từ báo cáo tháng. */}
       {currentTab === 'attendance' &&
         (user?.role === 'admin' || user?.role === 'source' ? (
           <CalendarPage intern={intern} />
         ) : (
-          <CalendarViewPage intern={intern} />
+          <StudyAttendanceOverview intern={intern} onOpenReport={handleOpenReport} />
         ))}
 
       {currentTab === 'image' && (

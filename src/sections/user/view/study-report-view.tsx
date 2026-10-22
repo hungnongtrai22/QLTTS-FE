@@ -63,6 +63,8 @@ import {
   parseMonthKey,
   uniqueSorted,
 } from '../study-report-utils';
+// Cùng ngưỡng với tab 出席 của đối tác
+import { ATTEND_LOW } from '../attendance-overview-utils';
 import StudyReportTableToolbar from '../study-report-table-toolbar';
 import StudyReportTableRow, { STATUS_COLOR, StudyReportViewRow } from '../study-report-table-row';
 
@@ -74,8 +76,6 @@ import StudyReportTableRow, { STATUS_COLOR, StudyReportViewRow } from '../study-
 // - Điểm chuyên cần (0–100) dưới ATTEND_LOW. Trung vị 100, chỉ ~2% báo cáo dưới 80.
 // - Chưa nhập báo cáo cả tháng trước lẫn tháng này, dù đã nhập học từ trước tháng trước.
 const ATTENTION_DROP = 50;
-
-const ATTEND_LOW = 80;
 
 const STATUS_TABS: Array<'all' | IStudyReportStatus> = ['all', 'missing', 'draft', 'published'];
 

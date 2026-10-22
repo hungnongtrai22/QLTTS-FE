@@ -1,13 +1,10 @@
-/* eslint-disable no-restricted-syntax, no-await-in-loop */
-
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
-import IconButton from '@mui/material/IconButton';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -17,56 +14,26 @@ import { IInternTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
 import Iconify from 'src/components/iconify';
 import { useDebouncedFilter } from 'src/hooks/use-debounced-filter';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { t } from 'i18next';
-import axios from 'axios';
-import { saveAs } from 'file-saver';
 
 // ----------------------------------------------------------------------
+// Thanh lọc ở trang TTS của nghiệp đoàn: công ty + tìm theo tên (cả katakana).
+//
+// Trước đây có menu ⋮ "Tải PDF điểm danh", lấy từ lịch điểm danh nhập tay — gần như không được
+// nhập (mục mới nhất tháng 5/2026) nên file ra trống. Chủ dự án chọn bỏ: chuyên cần của đối tác
+// giờ lấy từ điểm 出席状況 trong báo cáo tháng (tab 出席 của hồ sơ, gói báo cáo tháng).
 
 type Props = {
   filters: IInternTableFilters;
   onFilters: (name: string, value: IUserTableFilterValue) => void;
-  //
-  roleOptions: string[];
   companyOptions: string[];
-  interns: any;
 };
 
 export default function InternByTradeUnionTableToolbar({
   filters,
   onFilters,
-  //
-  roleOptions,
   companyOptions,
-  interns,
 }: Props) {
-  const popover = usePopover();
-
-  const [loadingDownloadAll, setLoadingDownloadAll] = useState(false);
-  const studyDate = interns[0]?.studyDate;
-  const start = studyDate ? new Date(studyDate) : null;
-  const result: { month: number; year: number }[] = [];
-
-  if (start) {
-    const current = new Date();
-    let year = start.getFullYear();
-    let month = start.getMonth() + 1; // getMonth() trả về từ 0 đến 11
-
-    const currentYear = current.getFullYear();
-    const currentMonth = current.getMonth() + 1;
-
-    while (year < currentYear || (year === currentYear && month <= currentMonth)) {
-      result.push({ month, year });
-
-      month += 1;
-      if (month > 12) {
-        month = 1;
-        year += 1;
-      }
-    }
-  }
-
   // Ô nhập cập nhật ngay, nhưng chỉ báo lên view sau khi ngừng gõ —
   // tránh chạy lại applyFilter trên toàn bộ danh sách ở mỗi phím.
   const searchName = useDebouncedFilter(filters.name, (next) => onFilters('name', next));
@@ -77,16 +44,6 @@ export default function InternByTradeUnionTableToolbar({
     },
     [searchName]
   );
-
-  // const handleFilterRole = useCallback(
-  //   (event: SelectChangeEvent<string[]>) => {
-  //     onFilters(
-  //       'tradeUnion',
-  //       typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-  //     );
-  //   },
-  //   [onFilters]
-  // );
 
   const handleFilterCompany = useCallback(
     (event: SelectChangeEvent<string[]>) => {
@@ -99,187 +56,61 @@ export default function InternByTradeUnionTableToolbar({
   );
 
   return (
-    <>
-      <Stack
-        spacing={2}
-        alignItems={{ xs: 'flex-end', md: 'center' }}
-        direction={{
-          xs: 'column',
-          md: 'row',
-        }}
+    <Stack
+      spacing={2}
+      alignItems={{ xs: 'flex-end', md: 'center' }}
+      direction={{
+        xs: 'column',
+        md: 'row',
+      }}
+      sx={{ p: 2.5 }}
+    >
+      <FormControl
         sx={{
-          p: 2.5,
-          pr: { xs: 2.5, md: 1 },
+          flexShrink: 0,
+          width: { xs: 1, md: 200 },
         }}
       >
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
+        <InputLabel>{t('company_new')}</InputLabel>
+
+        <Select
+          multiple
+          value={filters.company}
+          onChange={handleFilterCompany}
+          input={<OutlinedInput label="Company" />}
+          renderValue={(selected) => selected.map((value) => value).join(', ')}
+          MenuProps={{
+            PaperProps: {
+              sx: { maxHeight: 240 },
+            },
           }}
         >
-          <InputLabel>{t('company_new')}</InputLabel>
+          {companyOptions.map((option) => (
+            <MenuItem key={option} value={option}>
+              <Checkbox
+                disableRipple
+                size="small"
+                checked={filters.company?.includes(option) ?? false}
+              />
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-          <Select
-            multiple
-            value={filters.company}
-            onChange={handleFilterCompany}
-            input={<OutlinedInput label="Company" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
-            }}
-          >
-            {companyOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox
-                  disableRipple
-                  size="small"
-                  checked={filters.company?.includes(option) ?? false}
-                />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {/* <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
-          <InputLabel>Nghiệp Đoàn</InputLabel>
-
-          <Select
-            multiple
-            value={filters.tradeUnion}
-            onChange={handleFilterRole}
-            input={<OutlinedInput label="Role" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
-            }}
-          >
-            {roleOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.tradeUnion.includes(option)} />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
-
-        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
-          <TextField
-            fullWidth
-            value={searchName.value}
-            onChange={handleFilterName}
-            placeholder={t('partner_search') || ''}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <IconButton onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </Stack>
-      </Stack>
-
-      <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="right-top"
-        // sx={{ width: 140 }}
-      >
-        <MenuItem
-          // onClick={() => {
-          //   popover.onClose();
-          // }}
-          onClick={async () => {
-            try {
-              setLoadingDownloadAll(true);
-              for (const item of interns) {
-                const { data } = await axios.post(
-                  `${process.env.REACT_APP_HOST_API}/api/attendance/listByInternId`,
-                  {
-                    internId: item._id,
-                  }
-                );
-                item.attendances = data.attendances;
-                item.statistics = [];
-                for (const re of result) {
-                  const { data: newData } = await axios.post(
-                    `${process.env.REACT_APP_HOST_API}/api/attendance/statistics`,
-                    {
-                      internId: item._id,
-                      month: re.month,
-                      year: re.year,
-                    }
-                  );
-                  item.statistics.push(newData);
-                }
-              }
-              const { data: newEvent } = await axios.get(
-                `${process.env.REACT_APP_HOST_API}/api/event/listAll`
-              );
-              // console.log('newEvent', newEvent);
-              // @react-pdf/renderer (~1.3MB) chỉ nạp khi thật sự bấm xuất PDF,
-              // thay vì tải kèm mỗi lần mở trang danh sách.
-              const [{ pdf }, { default: AllAttendancePDF }] = await Promise.all([
-                import('@react-pdf/renderer'),
-                import('../order/AllAttendancePDF'),
-              ]);
-
-              const blob = await pdf(
-                <AllAttendancePDF intern={interns} attendance={result} event={newEvent} />
-              ).toBlob();
-              saveAs(blob, `${filters.company || ''}.pdf`);
-            } catch (error) {
-              console.error('Lỗi khi tạo PDF:', error);
-            } finally {
-              setLoadingDownloadAll(false);
-            }
-          }}
-        >
-          <Iconify icon="solar:printer-minimalistic-bold" />
-          {loadingDownloadAll ? t('loading_attendance') : t('download_attendance')}
-        </MenuItem>
-        {/* <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:printer-minimalistic-bold" />
-          Print
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:import-bold" />
-          Import
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:export-bold" />
-          Export
-        </MenuItem> */}
-      </CustomPopover>
-    </>
+      <TextField
+        fullWidth
+        value={searchName.value}
+        onChange={handleFilterName}
+        placeholder={t('partner_search') || ''}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
+    </Stack>
   );
 }

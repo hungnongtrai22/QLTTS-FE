@@ -34,9 +34,11 @@ type Props = {
   info: IUserProfile;
   posts: IUserProfilePost[];
   currentIntern?: IInternItem;
+  // Báo cáo cần mở sẵn (bấm "評価表を見る" ở tab 出席)
+  focusReportId?: string | null;
 };
 
-export default function ProfileHome({ info, posts, currentIntern }: Props) {
+export default function ProfileHome({ info, posts, currentIntern, focusReportId }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   // undefined = đang tải
@@ -152,6 +154,7 @@ export default function ProfileHome({ info, posts, currentIntern }: Props) {
           intern={currentIntern}
           onChanged={handleGetByInternId}
           onRemoved={handleRemoveStudy}
+          focusReportId={focusReportId}
         />
       </Grid>
 

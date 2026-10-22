@@ -512,9 +512,7 @@ export default function InternListByTradeUnionView() {
                 <InternByTradeUnionTableToolbar
                   filters={filters}
                   onFilters={handleFilters}
-                  roleOptions={[]}
                   companyOptions={company}
-                  interns={dataFiltered}
                 />
 
                 {canReset && (

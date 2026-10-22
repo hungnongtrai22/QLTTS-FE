@@ -390,6 +390,7 @@ Trang đối tác vào đầu tiên (`paths.dashboard.intern.listByTradeUnion`, 
 - Logic ở [partner-study-utils.ts](src/sections/user/partner-study-utils.ts), chuỗi hiển thị ở [use-partner-study-labels.ts](src/sections/user/use-partner-study-labels.ts), dòng bảng [intern-trade-union-study-row.tsx](src/sections/user/intern-trade-union-study-row.tsx) (memo) và thẻ điện thoại / tablet [intern-trade-union-study-card.tsx](src/sections/user/intern-trade-union-study-card.tsx) (dưới `md`).
 - Tên katakana chỉ được ngắt dòng tại "・" (`word-break: keep-all` + `<wbr>`), vì tự ngắt sẽ cắt giữa tên.
 - Trang nguồn / Đồng Tháp vẫn dùng dòng bảng cũ (`intern-by-trade-union-table-row.tsx`).
+- Thanh công cụ ([intern-by-trade-union-table-toolbar.tsx](src/sections/user/intern-by-trade-union-table-toolbar.tsx), chỉ trang này dựng) còn lọc công ty + ô tìm kiếm. Menu ⋮ "In điểm danh" (PDF lịch điểm danh) đã bỏ: lịch gần như không được nhập nên file in ra trống. Đối tác xem chuyên cần ở tab 出席 của hồ sơ (mục bên dưới).
 
 **Đối tác tự tải gói báo cáo tháng** (nút "学習報告をダウンロード", [partner-study-export-dialog.tsx](src/sections/user/partner-study-export-dialog.tsx)):
 
@@ -414,6 +415,38 @@ Trang `intern/:id/profile` là nơi nghiệp đoàn / công ty theo dõi từng 
 - **Biểu đồ bấm được nhờ `tooltip: { shared: false, intersect: true }`.** Tooltip dùng chung (mặc định của `useChart`) gắn `no-pointer-events` lên các chấm nên `markerClick` không bao giờ chạy.
 - Animation dùng `MotionContainer`, **không** dùng `MotionViewport`: khối cao ~1600px, `MotionViewport` đòi 30% lọt màn hình mới chạy nên lúc mở trang khối bị trắng.
 - `study-post-item.tsx` (thẻ báo cáo cũ) vẫn còn vì `profile-compare.tsx` dùng.
+- Mở sẵn một tháng: prop `focusReportId` (view → `ProfileHome` → `StudyOverview`), do nút "評価表を見る" ở tab 出席 đặt.
+
+### Tab 出席 trong hồ sơ TTS (chuyên cần)
+
+- **Admin / nguồn** giữ nguyên lịch điểm danh (`CalendarPage`) để nhập.
+- **Các role khác** (nghiệp đoàn, demo, Đồng Tháp) thấy [study-attendance-overview.tsx](src/sections/user/study-attendance-overview.tsx). Chủ dự án chọn theo bản demo ("cách 1").
+
+Lý do bỏ lịch phía đối tác: lịch điểm danh nhập tay gần như không được dùng (mục mới nhất 5/2026). Lịch trống nhìn như "đi học đủ", dù thật ra là chưa nhập.
+
+**Dữ liệu** (không có endpoint mới):
+
+- Nguồn chính là điểm 出席状況 (`attend`, thang 100) mà giáo viên chấm trong báo cáo học tập **đã công khai**, lấy qua `study/listByInternIdPublic`.
+- Lịch điểm danh (`attendance/getAllAttendByInternId`) chỉ để kèm chi tiết ngày nghỉ cho tháng nào có ghi nhận. Tải lịch lỗi thì bỏ qua, trang vẫn hiện điểm.
+
+**Bố cục:**
+
+- Các ô tóm tắt:
+  - tháng mới nhất, kèm ký hiệu và so sánh;
+  - trung bình `ATTEND_RECENT` (6) báo cáo gần nhất;
+  - số tháng dưới `ATTEND_LOW` (80).
+- Ô "欠席・遅刻の記録" **chỉ hiện khi** 6 báo cáo gần nhất có ghi nhận nghỉ.
+- Biểu đồ cột 12 tháng gần nhất: tháng dưới 80 màu cam, vạch đứt ở 80. Trên điện thoại chỉ ghi số của tháng dưới 80.
+- Bảng theo tháng; dưới `md` chuyển thành thẻ. Cột ghi nhận **chỉ có khi** TTS có ít nhất một ghi nhận.
+- "評価表を見る" chuyển sang tab 学習成績, mở sẵn đúng tháng đó.
+
+**Ghi nhận nghỉ** ([attendance-overview-utils.ts](src/sections/user/attendance-overview-utils.ts)):
+
+- Ngày tính theo giờ VN.
+- Nghỉ cả ngày = 1 ngày, nửa buổi = 0,5. Mục kéo dài nhiều ngày tính theo số ngày thường (thứ 2–6).
+- `groupRecords` gộp các ngày nghỉ cả ngày liền nhau (bỏ qua T7/CN) cùng lý do thành một khoảng, ví dụ "4月13日〜17日（終日）…" thay vì 5 dòng.
+
+`ATTEND_LOW` nằm ở file này, trang Báo cáo học tập import để dùng cho lý do "Cần chú ý" về chuyên cần. Đổi ngưỡng là đổi cả hai nơi.
 
 ### Bundle
 

@@ -58,6 +58,8 @@ type Props = {
   // Sau khi công khai (tải lại danh sách) / sau khi xóa
   onChanged: VoidFunction;
   onRemoved: (id: string) => void;
+  // Báo cáo mở sẵn khi vào tab (bấm "評価表を見る" ở tab 出席); không có thì tháng mới nhất
+  focusReportId?: string | null;
 };
 
 type Tone = 'success' | 'error' | 'default';
@@ -66,7 +68,13 @@ const fadeInUp = varFade({ distance: 24 }).inUp;
 
 const CARD_SX = { p: { xs: 2, md: 3 }, height: 1 };
 
-export default function StudyOverview({ studies, intern, onChanged, onRemoved }: Props) {
+export default function StudyOverview({
+  studies,
+  intern,
+  onChanged,
+  onRemoved,
+  focusReportId,
+}: Props) {
   const theme = useTheme();
 
   const { t } = useLocales();
@@ -93,13 +101,15 @@ export default function StudyOverview({ studies, intern, onChanged, onRemoved }:
 
   const [askDelete, setAskDelete] = useState(false);
 
-  // Mặc định tháng mới nhất; tháng đang chọn bị xóa thì quay về tháng mới nhất.
+  // Mặc định tháng mới nhất (hoặc báo cáo được mở từ tab 出席); tháng đang chọn bị xóa thì quay
+  // về tháng mới nhất.
   useEffect(() => {
     if (!views.length) return;
     if (!selectedId || !views.some((view) => view.report._id === selectedId)) {
-      setSelectedId(views[0].report._id);
+      const focus = focusReportId && views.find((view) => view.report._id === focusReportId);
+      setSelectedId(focus ? focus.report._id : views[0].report._id);
     }
-  }, [views, selectedId]);
+  }, [views, selectedId, focusReportId]);
 
   const selectedIndex = Math.max(
     0,
