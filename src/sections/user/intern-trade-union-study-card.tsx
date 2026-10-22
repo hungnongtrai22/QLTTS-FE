@@ -90,7 +90,7 @@ function InternTradeUnionStudyCard({
             </Typography>
             {note ? (
               <>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', wordBreak: 'keep-all' }}>
                   {note.title}
                 </Typography>
                 {note.sub && (

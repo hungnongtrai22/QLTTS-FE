@@ -52,6 +52,7 @@ import InternByTradeUnionTableToolbar from '../intern-by-trade-union-table-toolb
 import InternTradeUnionStudyRow from '../intern-trade-union-study-row';
 import InternTradeUnionStudyCard from '../intern-trade-union-study-card';
 import usePartnerStudyLabels from '../use-partner-study-labels';
+import PartnerStudyExportDialog from '../partner-study-export-dialog';
 import {
   PartnerInternRow,
   PartnerStudyResponse,
@@ -106,6 +107,8 @@ export default function InternListByTradeUnionView() {
   const mdUp = useResponsive('up', 'md');
 
   const confirm = useBoolean();
+
+  const exportDialog = useBoolean();
 
   const { t, scoreHeader } = usePartnerStudyLabels();
 
@@ -451,6 +454,15 @@ export default function InternListByTradeUnionView() {
                 <Stack direction="row" flexWrap="wrap" sx={{ gap: 1 }}>
                   {renderFlag('new', 'info', flagCounts.new)}
                   {renderFlag('behind', 'warning', flagCounts.behind)}
+                  <Button
+                    variant="contained"
+                    startIcon={<Iconify icon="solar:download-minimalistic-bold" />}
+                    onClick={exportDialog.onTrue}
+                    disabled={!studyData?.months?.length}
+                    sx={{ minHeight: 44, borderRadius: 5, px: 2 }}
+                  >
+                    {t('partner_export_button')}
+                  </Button>
                 </Stack>
               </Stack>
             </m.div>
@@ -534,6 +546,15 @@ export default function InternListByTradeUnionView() {
           </Stack>
         </MotionContainer>
       </Container>
+
+      {/* Chỉ dựng khi mở: hộp thoại tự giữ tháng / định dạng, mở lại là về mặc định. */}
+      {exportDialog.value && (
+        <PartnerStudyExportDialog
+          onClose={exportDialog.onFalse}
+          months={studyData?.months || []}
+          companies={filters.company || []}
+        />
+      )}
 
       <ConfirmDialog
         open={confirm.value}

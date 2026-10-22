@@ -38,6 +38,8 @@ export type PartnerStudyResponse = {
   // Tháng mới nhất có báo cáo công khai trong phạm vi tài khoản, và lần cập nhật gần nhất của tháng đó
   month: string | null;
   updatedAt: string | null;
+  // Các tháng có báo cáo công khai (mới nhất trước) — để chọn tháng khi tải gói báo cáo
+  months: { month: string; count: number }[];
   interns: PartnerStudySummary[];
 };
 

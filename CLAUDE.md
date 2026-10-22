@@ -196,7 +196,7 @@ Trước đây `withAuth` mặc định là "đăng nhập là đủ": mọi tà
   | Role | Endpoint |
   |---|---|
   | mọi role (lọc theo phạm vi) | `user/[id]`, `study/listByInternIdPublic`, `attendance/getAllAttendByInternId\|listByInternId\|statistics`, `gallery/listByInternId`, `gallery/[id]`, `compare/getByAccountId\|updateListIntern\|removeInternFromAll` (luôn danh sách của chính tài khoản), `event/getAllEventByInternId\|listAll` (lịch chung, không gắn TTS) |
-  | `tradeunion` | `user/listByTradeUnion\|listByTradeUnionAndCompany`, `company/listByTradeUnionAndCompany`, `study/listPartnerSummary` |
+  | `tradeunion` | `user/listByTradeUnion\|listByTradeUnionAndCompany`, `company/listByTradeUnionAndCompany`, `study/listPartnerSummary\|listPartnerPackage` |
   | `source` | `user/listBySource`; nhập điểm / điểm danh cho TTS của mình: `study/listByInternId\|getByInternId\|getInternByMonth\|create\|edit`, `attendance/create\|updateAttendItem\|deleteAttendItem`, `event/create\|updateEventItem\|deleteEventItem`; `company/listByTradeUnion`, `tradeUnion/list` (tên) |
   | `demo` | `user/listByDemo`, `user/dashboardStats`, `company/listByTradeUnion`, `tradeUnion/list`, `source/list` (tên) |
   | `dongthap` | `user/listByDongThap`, `tradeUnion/list` (tên) |
@@ -390,6 +390,14 @@ Trang đối tác vào đầu tiên (`paths.dashboard.intern.listByTradeUnion`, 
 - Logic ở [partner-study-utils.ts](src/sections/user/partner-study-utils.ts), chuỗi hiển thị ở [use-partner-study-labels.ts](src/sections/user/use-partner-study-labels.ts), dòng bảng [intern-trade-union-study-row.tsx](src/sections/user/intern-trade-union-study-row.tsx) (memo) và thẻ điện thoại / tablet [intern-trade-union-study-card.tsx](src/sections/user/intern-trade-union-study-card.tsx) (dưới `md`).
 - Tên katakana chỉ được ngắt dòng tại "・" (`word-break: keep-all` + `<wbr>`), vì tự ngắt sẽ cắt giữa tên.
 - Trang nguồn / Đồng Tháp vẫn dùng dòng bảng cũ (`intern-by-trade-union-table-row.tsx`).
+
+**Đối tác tự tải gói báo cáo tháng** (nút "学習報告をダウンロード", [partner-study-export-dialog.tsx](src/sections/user/partner-study-export-dialog.tsx)):
+
+- Dùng **đúng mẫu** của nút "Xuất báo cáo" bên admin (`StudyPackagePDF`, `ExportStudyPackage`). Sửa mẫu là sửa cả hai nơi. Khối chọn PDF / Excel tách ra [study-export-format-picker.tsx](src/sections/user/study-export-format-picker.tsx), dùng chung.
+- Danh sách tháng lấy từ `months` của `study/listPartnerSummary` (tháng có báo cáo công khai, kèm số báo cáo).
+- Dữ liệu: `POST /api/study/listPartnerPackage { month }` (nghiệp đoàn + admin, chỉ đọc). Chỉ báo cáo đã công khai, chỉ TTS trong phạm vi tài khoản. `prevTotal` ("so với tháng trước" trên trang tổng hợp) cũng **chỉ lấy báo cáo đã công khai** của tháng trước: tháng trước còn là bản nháp thì để trống, không để lộ điểm bản nháp qua phép so sánh.
+- Đang lọc "Công ty" ở danh sách thì file chỉ gồm các công ty đó (lọc phía FE). Thứ tự trong file: công ty → tên.
+- PDF tạo trên trình duyệt: khoảng 0,2 giây / báo cáo. Hộp thoại hiện thanh tiến trình kèm thời gian ước lượng.
 
 ### Tab Học tập trong hồ sơ TTS
 

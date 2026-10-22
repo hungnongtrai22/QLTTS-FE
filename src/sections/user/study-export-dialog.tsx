@@ -3,14 +3,11 @@ import { m } from 'framer-motion';
 import { saveAs } from 'file-saver';
 import { useMemo, useState } from 'react';
 // @mui
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Checkbox from '@mui/material/Checkbox';
-import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -33,10 +30,11 @@ import { MotionContainer, varFade } from 'src/components/animate';
 //
 import { monthKey } from './study-report-utils';
 import { StudyReportViewRow } from './study-report-table-row';
+import StudyExportFormatPicker, { StudyExportFormat } from './study-export-format-picker';
 
 // ----------------------------------------------------------------------
 
-type Format = 'pdf' | 'excel';
+type Format = StudyExportFormat;
 
 type Props = {
   open: boolean;
@@ -152,46 +150,6 @@ export default function StudyExportDialog({ open, onClose, rows, month, monthLab
     }
   };
 
-  const formatOption = (value: Format, icon: string, title: string, description: string) => {
-    const active = format === value;
-    return (
-      <ButtonBase
-        key={value}
-        role="radio"
-        aria-checked={active}
-        onClick={() => setFormat(value)}
-        sx={{
-          flex: 1,
-          p: 2,
-          gap: 1.5,
-          minHeight: 44,
-          borderRadius: 1.5,
-          textAlign: 'left',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
-          border: (theme) =>
-            `solid ${active ? 2 : 1}px ${
-              active ? theme.palette.primary.main : alpha(theme.palette.grey[500], 0.24)
-            }`,
-          bgcolor: (theme) => (active ? alpha(theme.palette.primary.main, 0.08) : 'transparent'),
-          transition: (theme) => theme.transitions.create(['border-color', 'background-color']),
-        }}
-      >
-        <Iconify
-          icon={icon}
-          width={28}
-          sx={{ flexShrink: 0, color: active ? 'primary.main' : 'text.secondary' }}
-        />
-        <Box>
-          <Typography variant="subtitle2">{title}</Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            {description}
-          </Typography>
-        </Box>
-      </ButtonBase>
-    );
-  };
-
   return (
     <Dialog
       open={open}
@@ -235,20 +193,7 @@ export default function StudyExportDialog({ open, onClose, rows, month, monthLab
               <Typography variant="overline" sx={{ color: 'text.secondary' }}>
                 {t('study_export_format')}
               </Typography>
-              <Stack role="radiogroup" direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-                {formatOption(
-                  'pdf',
-                  'solar:file-text-bold',
-                  'PDF',
-                  t('study_export_pdf_desc') || ''
-                )}
-                {formatOption(
-                  'excel',
-                  'solar:clipboard-list-bold',
-                  'Excel',
-                  t('study_export_excel_desc') || ''
-                )}
-              </Stack>
+              <StudyExportFormatPicker value={format} onChange={setFormat} />
             </Stack>
 
             <Stack component={m.div} variants={fadeInUp} spacing={1.5}>
