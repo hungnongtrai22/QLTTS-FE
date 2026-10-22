@@ -72,6 +72,10 @@ const CompanyCreatePage = lazy(() => import('src/pages/dashboard/company/new'));
 const CompanyEditPage = lazy(() => import('src/pages/dashboard/company/edit'));
 // Source
 const SourceListPage = lazy(() => import('src/pages/dashboard/source/list'));
+// Lớp học (chỉ admin)
+const StudyClassListPage = lazy(() => import('src/pages/dashboard/studyClass/list'));
+const StudyClassCreatePage = lazy(() => import('src/pages/dashboard/studyClass/new'));
+const StudyClassEditPage = lazy(() => import('src/pages/dashboard/studyClass/edit'));
 // Account (tài khoản đăng nhập — chỉ admin)
 const AccountListPage = lazy(() => import('src/pages/dashboard/account/list'));
 // USER
@@ -360,6 +364,36 @@ export const dashboardRoutes = [
             ),
           },
           // { path: 'account', element: <InternAccountPage /> },
+        ],
+      },
+      {
+        // Lớp học ở trung tâm — paths.dashboard.studyClass
+        path: 'class',
+        children: [
+          {
+            path: 'list',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <StudyClassListPage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: 'new',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <StudyClassCreatePage />
+              </RoleBasedGuard>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <RoleBasedGuard hasContent roles={['admin']}>
+                <StudyClassEditPage />
+              </RoleBasedGuard>
+            ),
+          },
         ],
       },
       {

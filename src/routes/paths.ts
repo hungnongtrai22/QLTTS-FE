@@ -190,6 +190,13 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/source/${MOCK_ID}/edit`,
       },
     },
+    // Lớp học ở trung tâm (chỉ admin) — URL dùng "class", code dùng studyClass
+    studyClass: {
+      root: `${ROOTS.DASHBOARD}/class/list`,
+      list: `${ROOTS.DASHBOARD}/class/list`,
+      new: `${ROOTS.DASHBOARD}/class/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/class/${id}/edit`,
+    },
     diary: {
       root: `${ROOTS.DASHBOARD}/diary/list`,
       new: `${ROOTS.DASHBOARD}/diary/new`,

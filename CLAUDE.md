@@ -122,7 +122,7 @@ Page trong [src/pages/](src/pages/) **luôn** chỉ là wrapper. Logic mới thu
 
 ### Các domain thực tế đang dùng
 
-`intern` (thực tập sinh), `tradeUnion` (nghiệp đoàn), `company` (xí nghiệp), `order` (đơn hàng), `source` (nguồn tuyển), `diary` (nhật ký), `gallery` (album ảnh), `study` (quá trình học), `attendance` (điểm danh), `compare` (danh sách so sánh ứng viên), `pass` (hồ sơ xuất cảnh), `account` (tài khoản đăng nhập).
+`intern` (thực tập sinh), `tradeUnion` (nghiệp đoàn), `company` (xí nghiệp), `order` (đơn hàng), `source` (nguồn tuyển), `studyClass` (lớp học ở trung tâm, URL `/dashboard/class`), `diary` (nhật ký), `gallery` (album ảnh), `study` (quá trình học), `attendance` (điểm danh), `compare` (danh sách so sánh ứng viên), `pass` (hồ sơ xuất cảnh), `account` (tài khoản đăng nhập).
 
 Lưu ý `account` khác `intern`: `account` là bản ghi đăng nhập (collection `Account`, API `/api/account/*`, kiểu `IAccountItem`), còn `intern` là hồ sơ thực tập sinh. Trang quản lý tài khoản nằm ở `src/sections/user/view/account-list-view.tsx` và chỉ admin vào được.
 
@@ -201,7 +201,7 @@ Trước đây `withAuth` mặc định là "đăng nhập là đủ": mọi tà
   | `demo` | `user/listByDemo`, `user/dashboardStats`, `company/listByTradeUnion`, `tradeUnion/list`, `source/list` (tên) |
   | `dongthap` | `user/listByDongThap`, `tradeUnion/list` (tên) |
 
-- **Bớt trường gửi cho đối tác:** hồ sơ / danh sách so sánh / album bỏ giấy tờ, liên lạc, hợp đồng (`PARTNER_HIDDEN_FIELDS`: CCCD, hộ chiếu, địa chỉ chi tiết, điện thoại, email, hợp đồng, người liên hệ khẩn cấp). CV và mọi file PDF đối tác tải không dùng tới các trường này. Danh sách TTS của nghiệp đoàn / nguồn / Đồng Tháp chỉ gửi trường của bảng (`PARTNER_LIST_SELECT`). Nghiệp đoàn / công ty / nguồn khi populate chỉ còn `name` (Company có giám đốc, lương, thuế của hợp đồng).
+- **Bớt trường gửi cho đối tác:** hồ sơ / danh sách so sánh / album bỏ giấy tờ, liên lạc, hợp đồng (`PARTNER_HIDDEN_FIELDS`: CCCD, hộ chiếu, địa chỉ chi tiết, điện thoại, email, hợp đồng, người liên hệ khẩn cấp, lớp ở trung tâm). CV và mọi file PDF đối tác tải không dùng tới các trường này. Danh sách TTS của nghiệp đoàn / nguồn / Đồng Tháp chỉ gửi trường của bảng (`PARTNER_LIST_SELECT`). Nghiệp đoàn / công ty / nguồn khi populate chỉ còn `name` (Company có giám đốc, lương, thuế của hợp đồng).
 - **Thêm trang hay nút mới cho đối tác** → kiểm tra endpoint nó gọi đã mở cho role đó chưa. Cách bắt nhanh: đăng nhập bằng role đó trên BE `READ_ONLY`, bấm qua các trang và xem request nào trả 403.
 - Component tự tải dữ liệu ngay khi dựng (form sửa nhanh trong dòng bảng…) phải **chỉ dựng khi mở** (`{open && <Form />}`). Dựng sẵn cho mọi dòng từng làm trang đối tác âm thầm tải danh sách mọi nghiệp đoàn / công ty và thông tin liên lạc của TTS.
 - ⚠️ **Thứ tự deploy cho thay đổi này: FE trước, BE sau.** FE mới (trang so sánh dùng `listByInternIdPublic`, demo không gọi `order/list`) chạy được với cả BE cũ; BE mới với FE cũ thì trang so sánh của đối tác hỏng.
@@ -298,6 +298,27 @@ In từ nút "In hợp đồng" ([intern-contract-button.tsx](src/sections/user/
 - Trang Đơn hàng: bộ lọc "Nguồn" chỉ lọc TTS **bên trong** từng đơn (danh sách khi mở đơn + file xuất), không lọc đơn. "Nhật Tân" = TTS chưa có nguồn, cùng quy ước với danh sách TTS. Menu In CV có nút chọn in *Ứng viên* hay *Đậu*; mọi mẫu CV/Excel dùng chung lựa chọn đó.
 - **File xuất luôn in số thứ tự gốc trong đơn**, kể cả khi chỉ in danh sách đậu hay đang lọc nguồn (vd chỉ in người số 2 thì file vẫn ghi 2, không đánh lại thành 1). `order-table-row.tsx` gắn `orderNo` (vị trí trong `listIntern`, tính từ 1) vào từng TTS trước khi in; 8 mẫu `AllInternsPDF*`, 5 trang tổng hợp `intern-pdf-home*` và 2 mẫu Excel `ExportInternsWithAvatar`/`ExportInternsPass` đọc `intern.orderNo ?? <số đếm>`. Thêm mẫu mới thì giữ đúng dạng này; nơi không truyền `orderNo` (in từ form TTS) vẫn đánh 1..N như cũ.
 
+### Lớp học (chỉ admin)
+
+Lớp học tiếng Nhật ở trung tâm: model `StudyClass` (collection `studyclasses`, gồm `name` + `teacher`). TTS thuộc lớp qua `Intern.studyClass` (ObjectId, có index; không có trường = chưa xếp lớp). Không có tài khoản đăng nhập theo lớp. Đối tác không thấy lớp (`studyClass` nằm trong `PARTNER_HIDDEN_FIELDS`).
+
+- **Trang** `paths.dashboard.studyClass` (`/dashboard/class/list|new|:id/edit`):
+  - Danh sách: [study-class-list-view.tsx](src/sections/user/view/study-class-list-view.tsx).
+  - Một lớp: [study-class-edit-view.tsx](src/sections/user/view/study-class-edit-view.tsx), gồm form tên / giáo viên và bảng TTS trong lớp (gỡ từng người hoặc chọn nhiều).
+  - Tạo lớp xong thì mở ngay trang của lớp để thêm TTS.
+- **Xếp lớp** ở hai chỗ, đều gọi `PUT /api/user/updateStudyClass { ids, studyClass }` (`studyClass` rỗng / null → `$unset`):
+  - Trang của lớp, nút "Thêm TTS" ([study-class-add-dialog.tsx](src/sections/user/study-class-add-dialog.tsx)): chọn trong các TTS **đang học** (`studyClass/candidates`). Người đang ở lớp khác vẫn chọn được và sẽ bị chuyển sang lớp này (có cảnh báo).
+  - Thanh chọn nhiều dòng ở danh sách TTS, nút "Xếp lớp" ([study-class-assign-dialog.tsx](src/sections/user/study-class-assign-dialog.tsx)): áp cho mọi trạng thái.
+- **Endpoint** (`QLTTS-BE/src/pages/api/studyClass/`, tất cả chỉ admin):
+  - Đọc: `list` (kèm sĩ số tổng / đang học), `[id]` (lớp + TTS), `candidates`.
+  - Ghi: `create`, `edit` (giáo viên rỗng → `$unset`), `delete`.
+  - Tên lớp không được trùng (không phân biệt hoa thường; trả 409 `NAME_TAKEN`), vì bộ lọc ở trang Báo cáo học tập đi theo tên.
+- **Xoá lớp** gỡ trường lớp khỏi mọi TTS của lớp (`$unset`) rồi mới xoá lớp. Không đụng báo cáo hay trường nào khác. FE hỏi xác nhận kèm số TTS.
+- Thông tin TTS cho trang Lớp và báo cáo theo tháng lấy chung qua `findInternBasics` + `internBasics` ở `studyMonth.ts`, gồm `studyClass` (tên), `studyClassId`, `classTeacher`.
+- **Thứ tự deploy: BE trước, FE sau.** BE mới chỉ trả thêm trường, FE cũ vẫn chạy. FE mới với BE cũ thì trang Lớp và nút "Xếp lớp" lỗi (chưa có endpoint), còn trang Báo cáo học tập vẫn chạy, mọi TTS tính là "Chưa xếp lớp".
+- ⚠️ Khi đổi schema Intern, BE dev đang chạy giữ model cũ (`mongoose.models.Intern`), nên populate trường mới báo `StrictPopulateError`. Phải khởi động lại BE dev; production không bị.
+- Không giống trang Nguồn (vẫn là code mẫu chưa dọn): nút "Xóa" ở dòng Nguồn gọi `tradeUnion/delete` + `company/deleteByTradeUnion` với id của nguồn ngay khi bấm menu, trước khi xác nhận. Đừng lấy trang Nguồn làm mẫu.
+
 ### Hủy đơn của TTS
 
 Mục "Hủy đơn" trong menu ⋮ của danh sách TTS (thay cho "Nhập Điểm" cũ, chỉ admin thấy) gọi `/api/user/cancelOrder` (admin):
@@ -326,6 +347,8 @@ Trang `paths.dashboard.intern.studyReport` (chỉ admin, [study-report-view.tsx]
 - Bấm "Nhập điểm/Sửa" mở **đúng form của tab "Nhập điểm"** (`intern-point-form.tsx`) trong hộp thoại, qua hai prop tùy chọn `initialMonth` + `onSaved`. Sửa form đó là sửa cả hai nơi.
 - Tên giáo viên là chữ tự gõ, rất nhiều cách viết cho cùng một người. Trước đây `study/create` gõ nhầm `tearcher` nên báo cáo tạo mới mất tên giáo viên (886/1308 báo cáo cũ để trống) — đã sửa, dữ liệu cũ chưa đụng.
 - Ranh giới tháng + danh sách TTS của tháng dùng chung ở `QLTTS-BE/src/utils/studyMonth.ts` (`parseStudyMonth`, `findMonthInterns`, `internBasics`) cho cả `tracker`, `bulk`, `updateBulk` — sửa quy tắc "TTS nào thuộc tháng" thì sửa ở đó.
+- Bộ lọc **Lớp** đứng đầu hàng lọc (cả trang này và Nhập hàng loạt). "Chưa xếp lớp" lưu bằng mã `NO_CLASS`, không lưu chữ hiển thị (đổi ngôn ngữ không mất lựa chọn). Xem mục "Lớp học".
+- Cột / bộ lọc Giáo viên của dòng chưa nhập = giáo viên của lớp, không có thì giáo viên gần nhất (`expectedTeacher` trong [study-class-utils.ts](src/sections/user/study-class-utils.ts)).
 
 ### Nhập điểm hàng loạt
 
@@ -334,12 +357,30 @@ Trang `paths.dashboard.intern.studyBulk?month=YYYY-MM` (chỉ admin, mở từ n
 - **Quy tắc "đủ mới lưu"** (chủ dự án chọn, giữ nguyên model): một dòng chỉ lưu khi đủ 10 điểm + trình độ + tiến độ + tính cách + nhận xét, đúng như form nhập điểm và các trường `required` của model `Study`. Lưu điểm trước / nhận xét sau là phải bỏ `required` trong model → cần hỏi lại chủ dự án.
 - `GET /api/study/bulk` trả đủ báo cáo tháng này + tháng trước (`prev`), `nextTime` (tháng học cho báo cáo mới = báo cáo gần nhất trước đó + 1) và danh sách giáo viên đã gộp các cách viết chỉ khác dấu cách/dấu chấm.
 - `PUT /api/study/updateBulk` `{ month, publish, reports }`: kiểm tra lại toàn bộ ở server (cùng quy tắc với FE), tháng đó đã có báo cáo thì `$set` đúng báo cáo đó, chưa có thì tạo mới; tổng/trung bình/tháng học do server tính; `publish: true` mới bật công khai, không bao giờ tắt; không xóa gì. Báo cáo lỗi trả về riêng từng dòng. Tên bắt đầu bằng `update` nên READ_ONLY tự chặn.
-- Chưa có báo cáo thì trình độ / tiến độ / tính cách / giáo viên **điền sẵn từ tháng trước** (đánh dấu "gợi ý", chưa tính là thay đổi); nút "Lấy điểm tháng trước làm gốc" điền thêm 10 điểm dạng gợi ý.
+- Chưa có báo cáo thì trình độ / tiến độ / tính cách **điền sẵn từ tháng trước**, giáo viên lấy của lớp rồi mới tới giáo viên gần nhất (đánh dấu "gợi ý", chưa tính là thay đổi); nút "Lấy điểm tháng trước làm gốc" điền thêm 10 điểm dạng gợi ý.
 - Dán khối ô từ Excel (Tab/xuống dòng) vào một ô điểm: rải sang phải/xuống dưới theo thứ tự dòng đang hiện, ô không phải số bỏ qua.
 - Phần nhập dở giữ trong `localStorage` theo tháng (`qltts.studyBulk.draft.v1.<YYYY-MM>`), kèm `updatedAt` của báo cáo lúc bắt đầu sửa: báo cáo đã bị ai lưu lại sau đó thì bỏ bản nháp dòng đó, không ghi đè.
 - Dòng bảng (`study-bulk-table-row.tsx`) bọc `memo`; mọi handler từ view phải ổn định (`useCallback` + `setWork` dạng hàm, danh sách đang hiện đọc qua ref) — đưa state vào deps là mỗi phím gõ vẽ lại cả bảng.
 - Điện thoại/tablet (dưới `md`): dạng thẻ từng TTS (`study-bulk-mobile.tsx`), nút −/+ (Đọc hiểu bước 10, còn lại 5), "Lưu & người sau" lưu ngay dòng đó.
 - `Card` của trang đặt `overflow: visible` — mặc định `hidden` làm thanh Lưu `position: sticky` không dính đáy màn hình.
+
+### Phiếu nhập điểm Excel (giáo viên điền, admin nhập lại)
+
+Nút "Phiếu nhập điểm" ở trang Báo cáo học tập, gồm hai mục: tải phiếu ([study-score-export-dialog.tsx](src/sections/user/study-score-export-dialog.tsx)) và nhập phiếu ([study-score-import-dialog.tsx](src/sections/user/study-score-import-dialog.tsx)).
+
+- **Định dạng file** ([StudyScoreSheet.ts](src/utils/StudyScoreSheet.ts), nạp động cùng ExcelJS):
+  - Sheet `点数入力`: mỗi TTS một dòng. Hàng 3 (ẩn) ghi khoá của từng cột; cột A (ẩn) là id TTS, cột B (ẩn) là `updatedAt` của báo cáo lúc xuất.
+  - Sheet ẩn `meta`: phiên bản mẫu `qltts-score-sheet-v1` và tháng. Sheet ẩn `lists`: gợi ý tiến độ / tính cách / giáo viên cho ô chọn.
+  - Đọc lại theo **khoá**, không theo vị trí cột: giáo viên sắp xếp lại dòng vẫn được.
+  - Kiểm tra ngay trong Excel: điểm 0–100, Đọc hiểu chia hết cho 10, JLPT 0–60, trình độ N5–N1, nhận xét ≤ 300 ký tự. Ô bắt buộc còn trống tô vàng.
+  - Đổi cấu trúc file thì **tăng phiên bản** `SCORE_SHEET_VERSION`; phiếu cũ sẽ bị từ chối là "không phải phiếu".
+- **Xuất:** các TTS theo bộ lọc đang chọn (bỏ qua tab trạng thái), **trừ báo cáo đã công khai** (đang khoá). Điền sẵn bằng `baselineEntry` giống trang Nhập hàng loạt: báo cáo hiện có, hoặc gợi ý tháng trước + giáo viên của lớp.
+- **Nhập** ([study-score-sheet-utils.ts](src/sections/user/study-score-sheet-utils.ts) `planScoreImport`): so từng dòng với `study/bulk` của **tháng ghi trong file**, xem trước rồi mới lưu.
+  - Kết quả từng dòng: tạo mới / cập nhật / không đổi / chưa điền / thiếu-sai / đã công khai (bỏ qua) / đã bị sửa sau khi xuất (bỏ qua, so `updatedAt`) / không thuộc tháng.
+  - Kiểm tra bằng đúng `checkValues` của trang Nhập hàng loạt (quy tắc "đủ mới lưu").
+  - Lưu qua `study/updateBulk` với **`publish: false`**, không bao giờ gửi `unlockPublished`, mỗi lượt tối đa 200 báo cáo.
+  - Nhận xét: chữ không đổi thì giữ nguyên HTML cũ; đổi thì mỗi dòng thành một `<p>`. Ô giáo viên để trống = giữ giáo viên cũ.
+  - Lưu xong, trang chuyển sang tháng của phiếu.
 
 ### Công khai & khóa báo cáo học tập
 

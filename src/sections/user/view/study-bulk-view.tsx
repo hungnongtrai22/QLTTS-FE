@@ -50,6 +50,7 @@ import StudyMonthPicker from '../study-month-picker';
 import StudyBulkDetailDrawer from '../study-bulk-detail-drawer';
 import StudyReportTableToolbar from '../study-report-table-toolbar';
 import { STATUS_COLOR } from '../study-report-table-row';
+import { classFilterValue, classOptions, expectedTeacher } from '../study-class-utils';
 import {
   currentMonth,
   monthKey,
@@ -84,6 +85,7 @@ const defaultFilters: IStudyReportFilters = {
   tradeUnion: [],
   company: [],
   source: [],
+  studyClass: [],
   teacher: [],
   attention: false,
   attentionReason: '',
@@ -99,7 +101,7 @@ const savedStatus = (row: IStudyBulkRow): IStudyReportStatus => {
 
 const sourceName = (row: IStudyBulkRow) => row.source || DEFAULT_SOURCE_NAME;
 
-const teacherName = (row: IStudyBulkRow) => row.report?.teacher || row.lastTeacher;
+const teacherName = (row: IStudyBulkRow) => expectedTeacher(row);
 
 const omit = (record: Record<string, string>, ids: string[]) => {
   if (!ids.some((id) => id in record)) return record;
@@ -281,6 +283,7 @@ export default function StudyBulkView() {
           (name) => name !== DEFAULT_SOURCE_NAME
         ),
       ],
+      studyClass: classOptions(rows.map((row) => row.studyClass)),
       teacher: uniqueSorted(rows.map(teacherName)),
     }),
     [rows]
@@ -291,6 +294,8 @@ export default function StudyBulkView() {
     return rows.filter(
       (row) =>
         !!work[row._id] &&
+        (!filters.studyClass.length ||
+          filters.studyClass.includes(classFilterValue(row.studyClass))) &&
         (!filters.tradeUnion.length || filters.tradeUnion.includes(row.tradeUnion)) &&
         (!filters.company.length || filters.company.includes(row.company)) &&
         (!filters.source.length || filters.source.includes(sourceName(row))) &&
@@ -303,6 +308,7 @@ export default function StudyBulkView() {
     rows,
     work,
     filters.name,
+    filters.studyClass,
     filters.tradeUnion,
     filters.company,
     filters.source,
@@ -356,6 +362,7 @@ export default function StudyBulkView() {
 
   const canReset =
     !!filters.name ||
+    filters.studyClass.length > 0 ||
     filters.tradeUnion.length > 0 ||
     filters.company.length > 0 ||
     filters.source.length > 0 ||

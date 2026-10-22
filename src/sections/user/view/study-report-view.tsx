@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
@@ -40,6 +41,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { MotionContainer, varFade } from 'src/components/animate';
@@ -65,6 +67,9 @@ import {
 } from '../study-report-utils';
 // Cùng ngưỡng với tab 出席 của đối tác
 import { ATTEND_LOW } from '../attendance-overview-utils';
+import { NO_CLASS, classFilterValue, classOptions, expectedTeacher } from '../study-class-utils';
+import StudyScoreExportDialog from '../study-score-export-dialog';
+import StudyScoreImportDialog from '../study-score-import-dialog';
 import StudyReportTableToolbar from '../study-report-table-toolbar';
 import StudyReportTableRow, { STATUS_COLOR, StudyReportViewRow } from '../study-report-table-row';
 
@@ -87,6 +92,7 @@ const defaultFilters: IStudyReportFilters = {
   tradeUnion: [],
   company: [],
   source: [],
+  studyClass: [],
   teacher: [],
   attention: false,
   attentionReason: '',
@@ -121,7 +127,7 @@ const toViewRow = (row: IStudyReportRow, month: Date): StudyReportViewRow => {
     delta,
     reasons,
     attention: reasons.length > 0,
-    teacherName: row.report?.teacher || row.lastTeacher,
+    teacherName: expectedTeacher(row),
     // TTS chưa có nguồn thuộc "Nhật Tân" — cùng quy ước với bộ lọc danh sách TTS.
     sourceName: row.source || DEFAULT_SOURCE_NAME,
     isNew: !!studyDate && studyDate >= month && studyDate < addMonths(month, 1),
@@ -206,6 +212,11 @@ export default function StudyReportView() {
 
   const [exportOpen, setExportOpen] = useState(false);
 
+  const scoreSheetMenu = usePopover();
+
+  // Hộp thoại phiếu nhập điểm đang mở (chỉ dựng khi mở)
+  const [scoreSheet, setScoreSheet] = useState<'export' | 'import' | null>(null);
+
   const monthLabel = t('study_report_month_label', {
     month: month.getMonth() + 1,
     year: month.getFullYear(),
@@ -246,17 +257,20 @@ export default function StudyReportView() {
           (name) => name !== DEFAULT_SOURCE_NAME
         ),
       ],
+      studyClass: classOptions(viewRows.map((row) => row.studyClass)),
       teacher: uniqueSorted(viewRows.map((row) => row.teacherName)),
     }),
     [viewRows]
   );
 
-  // Bộ lọc "phạm vi" (nghiệp đoàn, công ty, nguồn, giáo viên, tên): tiến độ tính trên phạm vi này,
-  // để giáo viên lọc lớp mình là thấy ngay lớp mình đã nhập được bao nhiêu.
+  // Bộ lọc "phạm vi" (lớp, nghiệp đoàn, công ty, nguồn, giáo viên, tên): tiến độ tính trên phạm
+  // vi này, để giáo viên lọc lớp mình là thấy ngay lớp mình đã nhập được bao nhiêu.
   const scopedRows = useMemo(() => {
     const keyword = normalizeSearch(filters.name.trim());
     return viewRows.filter(
       (row) =>
+        (!filters.studyClass.length ||
+          filters.studyClass.includes(classFilterValue(row.studyClass))) &&
         (!filters.tradeUnion.length || filters.tradeUnion.includes(row.tradeUnion)) &&
         (!filters.company.length || filters.company.includes(row.company)) &&
         (!filters.source.length || filters.source.includes(row.sourceName)) &&
@@ -268,6 +282,7 @@ export default function StudyReportView() {
   }, [
     viewRows,
     filters.name,
+    filters.studyClass,
     filters.tradeUnion,
     filters.company,
     filters.source,
@@ -381,6 +396,7 @@ export default function StudyReportView() {
   const canReset =
     !!filters.name ||
     filters.attention ||
+    filters.studyClass.length > 0 ||
     filters.tradeUnion.length > 0 ||
     filters.company.length > 0 ||
     filters.source.length > 0 ||
@@ -485,6 +501,29 @@ export default function StudyReportView() {
     fetchRows();
   }, [fetchRows]);
 
+  // Lưu xong phiếu nhập điểm: mở đúng tháng của phiếu (có thể khác tháng đang xem) và tải lại.
+  const handleSheetSaved = useCallback(
+    (sheetMonth: string) => {
+      const target = parseMonthKey(sheetMonth);
+      if (target && monthKey(target) !== monthKey(month)) handleChangeMonth(target);
+      else fetchRows();
+    },
+    [month, handleChangeMonth, fetchRows]
+  );
+
+  // Phạm vi ghi trên phiếu và tên file: các bộ lọc đang chọn (lớp trước), rỗng = tất cả.
+  const scoreSheetScope = [
+    filters.studyClass.map((value) => (value === NO_CLASS ? t('study_class_none') : value)),
+    filters.teacher,
+    filters.company,
+    filters.tradeUnion,
+    filters.source,
+  ]
+    .map((values) => values.join(', '))
+    .filter(Boolean)
+    .join(' · ')
+    .slice(0, 80);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -497,6 +536,17 @@ export default function StudyReportView() {
         action={
           // Điện thoại: hai nút xếp dọc để không chèn mất chỗ của tiêu đề.
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="stretch">
+            <Button
+              variant="outlined"
+              color="inherit"
+              disabled={loading}
+              startIcon={<Iconify icon="solar:file-text-bold" />}
+              endIcon={<Iconify icon="eva:arrow-ios-downward-fill" width={16} />}
+              onClick={scoreSheetMenu.onOpen}
+              sx={{ minHeight: 44 }}
+            >
+              {t('score_sheet_open')}
+            </Button>
             <Button
               variant="outlined"
               color="inherit"
@@ -772,6 +822,55 @@ export default function StudyReportView() {
         month={month}
         monthLabel={monthLabel}
       />
+
+      {/* Phiếu nhập điểm Excel cho giáo viên: tải theo bộ lọc đang chọn, nhập lại để lưu
+          (không công khai). */}
+      <CustomPopover
+        open={scoreSheetMenu.open}
+        onClose={scoreSheetMenu.onClose}
+        arrow="top-right"
+        sx={{ width: 260 }}
+      >
+        <MenuItem
+          onClick={() => {
+            scoreSheetMenu.onClose();
+            setScoreSheet('export');
+          }}
+          sx={{ minHeight: 44 }}
+        >
+          <Iconify icon="solar:download-minimalistic-bold" />
+          {t('score_sheet_menu_export')}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            scoreSheetMenu.onClose();
+            setScoreSheet('import');
+          }}
+          sx={{ minHeight: 44 }}
+        >
+          <Iconify icon="solar:upload-minimalistic-bold" />
+          {t('score_sheet_menu_import')}
+        </MenuItem>
+      </CustomPopover>
+
+      {scoreSheet === 'export' && (
+        <StudyScoreExportDialog
+          open
+          onClose={() => setScoreSheet(null)}
+          rows={tabRows}
+          month={month}
+          monthLabel={monthLabel}
+          scope={scoreSheetScope}
+        />
+      )}
+
+      {scoreSheet === 'import' && (
+        <StudyScoreImportDialog
+          open
+          onClose={() => setScoreSheet(null)}
+          onSaved={handleSheetSaved}
+        />
+      )}
     </Container>
   );
 }

@@ -402,6 +402,38 @@ export type IUserAccountChangePassword = {
 };
 
 // ----------------------------------------------------------------------
+// Lớp học ở trung tâm (trang Lớp, chỉ admin) — GET /api/studyClass/list.
+
+export type IStudyClassItem = {
+  _id: string;
+  name: string;
+  // Rỗng = chưa gán giáo viên
+  teacher: string;
+  // Sĩ số: mọi TTS gắn lớp / trong đó đang học
+  total: number;
+  studying: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// TTS trong lớp, hoặc TTS có thể thêm vào lớp (studyClass/[id], studyClass/candidates).
+export type IStudyClassMember = {
+  _id: string;
+  name: string;
+  namejp: string;
+  avatar: string;
+  status: string;
+  studyDate: string | null;
+  tradeUnion: string;
+  company: string;
+  source: string;
+  // Lớp hiện tại (rỗng = chưa xếp lớp)
+  studyClass: string;
+  studyClassId: string;
+  classTeacher: string;
+};
+
+// ----------------------------------------------------------------------
 // Trang "Báo cáo học tập" — mỗi dòng trả về từ GET /api/study/tracker?month=YYYY-MM.
 
 export type IStudyReportStatus = 'missing' | 'draft' | 'published';
@@ -417,6 +449,10 @@ export type IStudyReportRow = {
   company: string;
   // Rỗng = chưa có nguồn (hiển thị/lọc là "Nhật Tân")
   source: string;
+  // Lớp ở trung tâm — rỗng = chưa xếp lớp (lọc là "Chưa xếp lớp")
+  studyClass: string;
+  studyClassId: string;
+  classTeacher: string;
   // null = chưa nhập báo cáo tháng này
   report: {
     _id: string;
@@ -440,6 +476,7 @@ export type IStudyReportFilters = {
   tradeUnion: string[];
   company: string[];
   source: string[];
+  studyClass: string[];
   teacher: string[];
   attention: boolean;
   // Thu hẹp "Cần chú ý" theo một lý do; rỗng = mọi lý do
@@ -510,6 +547,10 @@ export type IStudyBulkRow = {
   tradeUnion: string;
   company: string;
   source: string;
+  studyClass: string;
+  studyClassId: string;
+  // Giáo viên của lớp — gợi ý giáo viên cho báo cáo mới (trước giáo viên gần nhất)
+  classTeacher: string;
   // null = chưa có báo cáo tháng này
   report: IStudyBulkReport | null;
   // Báo cáo tháng trước — để lấy điểm làm gốc và điền sẵn tính cách / tiến độ / trình độ

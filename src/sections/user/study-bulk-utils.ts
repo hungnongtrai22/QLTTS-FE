@@ -75,7 +75,8 @@ export const commentText = (html: string) =>
 const NUMBER_KEYS = [...SCORE_KEYS, ...JLPT_KEYS];
 
 // Giá trị ban đầu của một dòng: báo cáo tháng này nếu đã có; chưa có thì để trống điểm và điền
-// sẵn trình độ / tiến độ / tính cách từ tháng trước, giáo viên gần nhất (đánh dấu "gợi ý").
+// sẵn trình độ / tiến độ / tính cách từ tháng trước, giáo viên của lớp (không có thì giáo viên
+// gần nhất) — đánh dấu "gợi ý".
 export function baselineEntry(row: IStudyBulkRow): BulkEntry {
   const { report, prev } = row;
   const origin: BulkEntry['origin'] = {};
@@ -102,7 +103,7 @@ export function baselineEntry(row: IStudyBulkRow): BulkEntry {
       report?.characteristic || '',
       prev?.characteristic || ''
     ),
-    teacher: suggest('teacher', report?.teacher || '', row.lastTeacher || ''),
+    teacher: suggest('teacher', report?.teacher || '', row.classTeacher || row.lastTeacher || ''),
     comment: report?.comment || '',
   };
 

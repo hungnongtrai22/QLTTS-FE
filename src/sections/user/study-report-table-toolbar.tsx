@@ -21,10 +21,12 @@ import { IStudyReportFilters, IStudyReportFilterValue } from 'src/types/user';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+//
+import { NO_CLASS } from './study-class-utils';
 
 // ----------------------------------------------------------------------
 
-type MultiFilterKey = 'tradeUnion' | 'company' | 'source' | 'teacher';
+type MultiFilterKey = 'studyClass' | 'tradeUnion' | 'company' | 'source' | 'teacher';
 
 type Props = {
   filters: IStudyReportFilters;
@@ -48,6 +50,12 @@ export default function StudyReportTableToolbar({
 
   const searchName = useDebouncedFilter(filters.name, (next) => onFilters('name', next));
 
+  // Lựa chọn "Chưa xếp lớp" lưu bằng mã NO_CLASS, hiển thị theo ngôn ngữ đang chọn.
+  const optionLabel = useCallback(
+    (option: string) => (option === NO_CLASS ? t('study_class_none') : option),
+    [t]
+  );
+
   const renderMultiSelect = useCallback(
     (key: MultiFilterKey, label: string) => (
       <FormControl key={key} sx={{ flex: { md: 1 }, minWidth: 0, width: { xs: 1, md: 'auto' } }}>
@@ -60,26 +68,27 @@ export default function StudyReportTableToolbar({
             onFilters(key, typeof value === 'string' ? value.split(',') : value);
           }}
           input={<OutlinedInput label={label} />}
-          renderValue={(selected) => selected.join(', ')}
+          renderValue={(selected) => selected.map(optionLabel).join(', ')}
           MenuProps={{ PaperProps: { sx: { maxHeight: 320 } } }}
         >
           {options[key].map((option) => (
             <MenuItem key={option} value={option}>
               <Checkbox disableRipple size="small" checked={filters[key].includes(option)} />
-              {option}
+              {optionLabel(option)}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
     ),
-    [filters, onFilters, options]
+    [filters, onFilters, options, optionLabel]
   );
 
   return (
-    // Hai hàng trên desktop: 4 bộ lọc chia đều một hàng, ô tìm + "Cần chú ý" hàng dưới
+    // Hai hàng trên desktop: 5 bộ lọc chia đều một hàng, ô tìm + "Cần chú ý" hàng dưới
     // (một hàng không đủ chỗ ở laptop 1440px). Điện thoại: xếp dọc.
     <Stack spacing={2} sx={{ p: 2.5 }}>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+        {renderMultiSelect('studyClass', t('study_class'))}
         {renderMultiSelect('tradeUnion', t('trade_union'))}
         {renderMultiSelect('company', t('company_new'))}
         {renderMultiSelect('source', t('source'))}

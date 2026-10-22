@@ -203,6 +203,17 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.tradeUnion.account },
             ],
           },
+          // Lớp học ở trung tâm
+          {
+            title: t('study_class'),
+            roles: ['admin'],
+            path: paths.dashboard.studyClass.root,
+            icon: ICONS.kanban,
+            children: [
+              { title: t('list'), path: paths.dashboard.studyClass.list, roles: ['admin'] },
+              { title: t('create'), path: paths.dashboard.studyClass.new, roles: ['admin'] },
+            ],
+          },
           // {
           //   title: t('diary'),
           //   // roles: ['admin'],

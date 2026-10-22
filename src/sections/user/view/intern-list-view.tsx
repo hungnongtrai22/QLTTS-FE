@@ -53,6 +53,7 @@ import InternTableToolbar from '../intern-table-toolbar';
 import InternTableFiltersResult from '../intern-table-filters-result';
 import InternTableToolbarWithSource from '../intern-table-toolbar-with-source';
 import InternContractButton from '../intern-contract-button';
+import StudyClassAssignDialog from '../study-class-assign-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -120,6 +121,9 @@ export default function InternListView() {
   const router = useRouter();
 
   const confirm = useBoolean();
+
+  // Hộp thoại "Xếp lớp" cho các dòng đang chọn (chỉ admin)
+  const assignClass = useBoolean();
 
   const [tableData, setTableData] = useState<IInternItem[]>([]);
   const [tradeUnion, setTradeUnion] = useState([]);
@@ -559,6 +563,18 @@ export default function InternListView() {
               }
               action={
                 <Stack direction="row" spacing={1} alignItems="center">
+                  {isAdmin && (
+                    <Button
+                      variant="outlined"
+                      color="inherit"
+                      size={table.dense ? 'small' : 'medium'}
+                      startIcon={<Iconify icon="solar:users-group-rounded-bold" />}
+                      onClick={assignClass.onTrue}
+                      sx={{ minHeight: { xs: 44, md: table.dense ? 30 : 36 } }}
+                    >
+                      {t('study_class_assign_button')}
+                    </Button>
+                  )}
                   <InternContractButton
                     loadInterns={loadSelectedInterns}
                     size={table.dense ? 'small' : 'medium'}
@@ -627,6 +643,15 @@ export default function InternListView() {
           />
         </Card>
       </Container>
+
+      {assignClass.value && (
+        <StudyClassAssignDialog
+          open={assignClass.value}
+          onClose={assignClass.onFalse}
+          ids={table.selected}
+          onDone={() => table.onSelectAllRows(false, [])}
+        />
+      )}
 
       <ConfirmDialog
         open={confirm.value}
