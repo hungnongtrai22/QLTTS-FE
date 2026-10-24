@@ -515,7 +515,7 @@ export default function InternPDF({ invoice }: Props) {
             </View>
           </View>
 
-          {family.length < 8 && <Text style={[styles.subtitle1, styles.mb8]}>学歴</Text>}
+          {family.length < 6 && <Text style={[styles.subtitle1, styles.mb8]}>学歴</Text>}
           <View style={[styles.gridContainer, styles.mb10]}>
             <View style={styles.table1}>
               <View>
@@ -619,7 +619,7 @@ export default function InternPDF({ invoice }: Props) {
             </View>
           </View>
 
-          {family.length < 8 && <Text style={[styles.subtitle1, styles.mb8]}>職歴</Text>}
+          {family.length < 6 && <Text style={[styles.subtitle1, styles.mb8]}>職歴</Text>}
           <View style={[styles.gridContainer, styles.mb10]}>
             <View style={styles.table1}>
               <View>
@@ -678,7 +678,7 @@ export default function InternPDF({ invoice }: Props) {
           </View>
           {/* <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text> */}
           <View>
-            {family.length < 8 && <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text>}
+            {family.length < 6 && <Text style={[styles.subtitle1, styles.mb8]}>家族構成</Text>}
             <View style={[styles.gridContainer, styles.mb10]}>
               <View style={styles.table1}>
                 <View>
