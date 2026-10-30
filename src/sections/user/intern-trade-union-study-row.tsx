@@ -1,6 +1,5 @@
 import { Fragment, memo } from 'react';
 // @mui
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
@@ -13,8 +12,9 @@ import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 //
-import { N5_PCT, PartnerInternRow } from './partner-study-utils';
+import { PartnerInternRow } from './partner-study-utils';
 import usePartnerStudyLabels, { PartnerTone } from './use-partner-study-labels';
+import LessonProgressCell from './lesson-progress-cell';
 
 // ----------------------------------------------------------------------
 // Một dòng ở danh sách TTS của nghiệp đoàn, có cột học tập (điểm tháng mới nhất, tiến độ bài,
@@ -36,40 +36,11 @@ type Props = {
   onViewRow: (id: string) => void;
 };
 
-export function LessonBar({ pct, slow }: { pct: number; slow: boolean }) {
-  return (
-    <Box aria-hidden sx={{ position: 'relative', height: 6, borderRadius: 3, bgcolor: 'grey.300' }}>
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          width: `${pct}%`,
-          borderRadius: 3,
-          bgcolor: slow ? 'warning.main' : 'primary.main',
-        }}
-      />
-      {/* Vạch N5 (hết bài 25) */}
-      <Box
-        sx={{
-          position: 'absolute',
-          left: `${N5_PCT}%`,
-          top: -3,
-          width: 2,
-          height: 12,
-          bgcolor: 'text.secondary',
-        }}
-      />
-    </Box>
-  );
-}
-
 function InternTradeUnionStudyRow({ row, currentMonth, selected, onSelectRow, onViewRow }: Props) {
-  const { t, lessonText, paceText, deltaInfo, scoreNote, forecastText, month } =
-    usePartnerStudyLabels();
+  const { t, deltaInfo, scoreNote, forecastText, month } = usePartnerStudyLabels();
   const { study } = row;
   const delta = deltaInfo(study);
   const note = study.scoreState === 'current' ? null : scoreNote(study, currentMonth);
-  const pace = paceText(study);
   const forecast = forecastText(study);
 
   return (
@@ -151,25 +122,7 @@ function InternTradeUnionStudyRow({ row, currentMonth, selected, onSelectRow, on
       </TableCell>
 
       <TableCell>
-        <Stack spacing={0.75}>
-          <Stack direction="row" alignItems="baseline" justifyContent="space-between" spacing={1}>
-            <Typography variant="subtitle2" sx={{ whiteSpace: 'nowrap' }}>
-              {lessonText(study)}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: study.slow ? 'warning.dark' : 'text.secondary', whiteSpace: 'nowrap' }}
-            >
-              {pace}
-            </Typography>
-          </Stack>
-          {study.lesson !== null && <LessonBar pct={study.lessonPct} slow={study.slow} />}
-          {row.studyDate && (
-            <Typography variant="caption" sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-              {t('partner_study_date', { date: month(row.studyDate) })}
-            </Typography>
-          )}
-        </Stack>
+        <LessonProgressCell study={study} studyDate={row.studyDate} />
       </TableCell>
 
       <TableCell>

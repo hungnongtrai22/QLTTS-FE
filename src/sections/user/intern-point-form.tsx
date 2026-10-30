@@ -56,7 +56,15 @@ import { teacherList } from 'src/utils/teacher';
 import { useAuthContext } from 'src/auth/hooks';
 import { learningProcess } from 'src/utils/learningProcess';
 import { StudyCommentInput } from 'src/utils/studyComment';
-import { COMMENT_MAX, SCORE_KEYS, commentText } from './study-bulk-utils';
+import { jlptMockLock, reportOpenTime, REPORT_OPEN_DAY } from 'src/utils/studyRules';
+import {
+  COMMENT_MAX,
+  SCORE_KEYS,
+  JLPT_KEYS,
+  SOURCE_COMMENT_TEMPLATE,
+  commentBody,
+  commentText,
+} from './study-bulk-utils';
 import StudyCommentHelper from './study-comment-helper';
 
 // import { current } from '@reduxjs/toolkit';
@@ -111,11 +119,18 @@ type Props = {
   initialMonth?: Date | null;
   // Gọi sau khi lưu thành công (để trang theo dõi tải lại và đóng hộp thoại).
   onSaved?: VoidFunction;
+  // TTS thuộc một nguồn (không phải Nhật Tân): báo cáo chưa viết thì tự điền mẫu nhận xét.
+  commentTemplate?: boolean;
 };
 
 dayjs.locale('vi');
 
-export default function InternPointForm({ internId, initialMonth = null, onSaved }: Props) {
+export default function InternPointForm({
+  internId,
+  initialMonth = null,
+  onSaved,
+  commentTemplate = false,
+}: Props) {
   // const router = useRouter();
   // console.log('TEST', currentIntern);
   const { t, currentLang } = useLocales();
@@ -142,7 +157,24 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
   const unlockedRef = useRef(false);
   unlockedRef.current = unlocked;
   const unlockConfirm = useBoolean();
-  const locked = savedPublic && !unlocked;
+
+  // Tài khoản nguồn chỉ viết báo cáo tháng M từ ngày 23 tháng M (giờ VN); admin không giới hạn.
+  // BE kiểm tra lại (studyRules.reportOpenError).
+  const openAt = monthSelect
+    ? reportOpenTime(monthSelect.getFullYear(), monthSelect.getMonth() + 1)
+    : null;
+  const notOpen = user?.role === 'source' && openAt !== null && Date.now() < openAt;
+
+  const publishedLocked = savedPublic && !unlocked;
+
+  // Khóa cả form: báo cáo đã công khai chưa mở khóa, hoặc chưa tới ngày được viết.
+  const locked = publishedLocked || notOpen;
+
+  // Điểm thi thử JLPT của báo cáo đã lưu: đang khóa (chưa tới bài mở) thì giữ nguyên các điểm này.
+  const storedJlptRef = useRef<Record<string, number | undefined> | null>(null);
+
+  const commentTemplateRef = useRef(commentTemplate);
+  commentTemplateRef.current = commentTemplate;
 
   // Mọi báo cáo của TTS — để lấy nhận xét / tổng điểm của báo cáo gần nhất trước tháng đang chọn.
   // Tải lại sau mỗi lần lưu (reportsVersion) để chuyển sang tháng sau là thấy ngay bản vừa lưu.
@@ -162,14 +194,6 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
       active = false;
     };
   }, [internId, reportsVersion]);
-  const [learning, setLearning] = useState<any>('');
-  const getNumber = (str: string) => {
-    const match = str.match(/\d+/);
-    return match ? Number(match[0]) : null;
-  };
-
-  // console.log(getNumber(learning));
-
   const NewUserSchema = Yup.object().shape({
     monthSelect: Yup.date().required('Tháng không được để trống'),
     health: Yup.number()
@@ -234,6 +258,12 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
     // dưới ô nhận xét, trang Nhập điểm hàng loạt và BE (updateBulk).
     comment: Yup.string()
       .required('Nhận xét không được để trống')
+      // Chỉ có mẫu "①態度：②日本語の理解度：" mà chưa viết gì cũng là chưa có nhận xét.
+      .test(
+        'comment-body',
+        t('study_comment_template_empty') || '',
+        (value) => !!commentBody(value || '')
+      )
       .test(
         'comment-length',
         `Nhận xét không được vượt quá ${COMMENT_MAX} ký tự`,
@@ -340,13 +370,26 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
 
   const commentLength = commentText(values.comment || '').length;
 
-  const learningProcessValue = watch('learningProcess');
+  // Thi thử JLPT: đề theo trình độ của báo cáo; chưa tới bài mở (N5 bài 25, N4 bài 45) thì khóa
+  // ô và giữ nguyên điểm đã lưu từ trước (src/utils/studyRules.ts — BE kiểm tra lại).
+  const jlptLock = jlptMockLock(values.level, values.learningProcess);
+  const jlptLabel = (key: string) => `${t(key)} ${values.level || ''}`.trim();
+  const jlptHelper = (message?: string) =>
+    message || (jlptLock ? t('jlpt_mock_locked', jlptLock) : undefined);
 
   useEffect(() => {
-    if (learningProcessValue !== undefined) {
-      setLearning(learningProcessValue);
-    }
-  }, [learningProcessValue]);
+    if (!jlptLock) return;
+    JLPT_KEYS.forEach((key) => {
+      const stored = storedJlptRef.current?.[key];
+      if (values[key] !== stored) setValue(key, stored as number);
+    });
+  }, [
+    jlptLock?.min,
+    jlptLock?.lesson,
+    values.kanji,
+    values.grammarAndReading,
+    values.listeningComprehension,
+  ]);
 
   const normalizeDate = (date: any) => {
     const jsDate = new Date(date);
@@ -470,6 +513,11 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
 
     setUnlocked(false);
     setSavedPublic(!!data?.study?.isPublic);
+    storedJlptRef.current = data?.study
+      ? Object.fromEntries(
+          JLPT_KEYS.map((key) => [key, data.study[key] ? Number(data.study[key]) : undefined])
+        )
+      : null;
 
     if (data === null) {
       // console.log("SET NULL");
@@ -498,7 +546,8 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
         characteristic: newData?.study?.characteristic || '',
         teacher: newData?.study?.teacher || '',
 
-        comment: '',
+        // TTS của nguồn (không phải Nhật Tân): báo cáo chưa viết thì điền sẵn mẫu nhận xét.
+        comment: commentTemplateRef.current ? SOURCE_COMMENT_TEMPLATE : '',
         createdAt: '',
         monthSelect,
         isPublic: false,
@@ -628,7 +677,23 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
               {/* <RHFTextField name="weak" label={t('weak')} /> */}
             </Box>
 
-            {locked && (
+            {notOpen && monthSelect && (
+              <Alert
+                severity="warning"
+                icon={<Iconify icon="solar:calendar-mark-bold" />}
+                sx={{ mt: 3 }}
+              >
+                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  {t('study_not_open_title')}
+                </Typography>
+                {t('study_not_open', {
+                  day: REPORT_OPEN_DAY,
+                  month: monthSelect.getMonth() + 1,
+                  year: monthSelect.getFullYear(),
+                })}
+              </Alert>
+            )}
+            {publishedLocked && !notOpen && (
               <Alert
                 severity="info"
                 icon={<Iconify icon="solar:lock-keyhole-minimalistic-bold" />}
@@ -939,10 +1004,10 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
                         field.onChange(value === '' ? undefined : Number(value));
                       }}
                       error={!!error}
-                      helperText={error?.message}
+                      helperText={jlptHelper(error?.message)}
                       InputLabelProps={{ shrink: true }}
-                      label={t('kanji') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')}
-                      // disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
+                      label={jlptLabel('kanji')}
+                      disabled={!!jlptLock}
                     />
                   )}
                 />
@@ -961,12 +1026,10 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
                         field.onChange(value === '' ? undefined : Number(value));
                       }}
                       error={!!error}
-                      helperText={error?.message}
+                      helperText={jlptHelper(error?.message)}
                       InputLabelProps={{ shrink: true }}
-                      label={
-                        t('grammarAndReading') + ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')
-                      }
-                      // disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
+                      label={jlptLabel('grammarAndReading')}
+                      disabled={!!jlptLock}
                     />
                   )}
                 />
@@ -985,13 +1048,10 @@ export default function InternPointForm({ internId, initialMonth = null, onSaved
                         field.onChange(value === '' ? undefined : Number(value));
                       }}
                       error={!!error}
-                      helperText={error?.message}
+                      helperText={jlptHelper(error?.message)}
                       InputLabelProps={{ shrink: true }}
-                      label={
-                        t('listeningComprehension') +
-                        ((getNumber(learning) ?? 0) > 25 ? ' N4' : ' N5')
-                      }
-                      // disabled={((getNumber(learning) ?? 0) < 25 ? true : false)}
+                      label={jlptLabel('listeningComprehension')}
+                      disabled={!!jlptLock}
                     />
                   )}
                 />

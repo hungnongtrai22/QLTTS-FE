@@ -30,7 +30,7 @@ import Iconify from 'src/components/iconify';
 import { varFade } from 'src/components/animate';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
-import { COMMENT_MAX, commentText } from './study-bulk-utils';
+import { COMMENT_MAX, commentBody, commentText } from './study-bulk-utils';
 
 // ----------------------------------------------------------------------
 
@@ -122,7 +122,8 @@ export default function StudyCommentHelper({
     onChange(draft.reduce((html, item) => appendCommentSentence(html, item.jp), comment));
 
   const handleCopyPrev = () => {
-    if (text) setAskReplace(true);
+    // Ô chỉ có mẫu "①態度：②日本語の理解度：" cũng coi là chưa viết: thay luôn, không hỏi.
+    if (commentBody(comment)) setAskReplace(true);
     else onChange(prevComment || '');
   };
 

@@ -11,12 +11,15 @@ import { PartnerStudyView, monthLabel, splitMonth } from './partner-study-utils'
 
 export type PartnerTone = 'up' | 'down' | 'drop' | 'muted';
 
+// Ô tiến độ học chỉ cần chừng này (dùng chung với trang Báo cáo học tập — LessonProgressCell).
+type LessonProgressLabelInput = Pick<PartnerStudyView, 'lesson' | 'review' | 'pace' | 'slow'>;
+
 export default function usePartnerStudyLabels() {
   const { t, currentLang } = useLocales();
   const lang = currentLang.value;
 
   const lessonText = useCallback(
-    (study: PartnerStudyView) => {
+    (study: LessonProgressLabelInput) => {
       if (study.lesson === null) return '—';
       const base =
         study.lesson === 0 ? t('partner_lesson_intro') : t('partner_lesson', { n: study.lesson });
@@ -26,7 +29,7 @@ export default function usePartnerStudyLabels() {
   );
 
   const paceText = useCallback(
-    (study: PartnerStudyView) => {
+    (study: LessonProgressLabelInput) => {
       if (study.pace !== null) {
         const value = t('partner_pace', { value: study.pace.toFixed(1) });
         return study.slow ? `${value}${t('partner_pace_slow')}` : value;

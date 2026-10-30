@@ -337,6 +337,11 @@ Trang `paths.dashboard.intern.studyReport` (chỉ admin, [study-report-view.tsx]
 - Liệt kê TTS `status: 'study'` đã nhập học (`studyDate`) trước cuối tháng, cộng mọi TTS đã có báo cáo trong tháng. Ranh giới tháng tính theo giờ VN. Lọc khoảng tháng dùng index `monthAndYear_1` (explain: IXSCAN, đọc đúng số báo cáo của tháng thay vì quét cả 1308 document).
 - Mỗi dòng kèm báo cáo của tháng (`null` = chưa nhập), `prevTotal` của tháng trước và `lastTeacher` (giáo viên gần nhất, cho dòng chưa nhập).
 - Lọc theo nghiệp đoàn / công ty / nguồn / giáo viên (lựa chọn lấy từ chính các dòng của tháng). Nguồn trống = "Nhật Tân" (`DEFAULT_SOURCE_NAME`), đứng đầu danh sách — cùng quy ước với danh sách TTS.
+  - Đang chọn nghiệp đoàn thì danh sách **công ty chỉ còn công ty của nghiệp đoàn đó**. Công ty đang chọn mà không còn thuộc nghiệp đoàn mới chọn thì tự bỏ (cả trang Nhập hàng loạt).
+- **Cột "Tiến độ học"** dùng chung ô [lesson-progress-cell.tsx](src/sections/user/lesson-progress-cell.tsx) với danh sách TTS của nghiệp đoàn: bài, tốc độ, thanh 0–50 có vạch N5, ngày nhập học.
+  - `tracker` trả `lesson` / `review` / `lessonMonth`, tính tới hết tháng đang xem bằng `parseLesson` của trang tổng quan. Bài lấy từ báo cáo mới nhất có số bài.
+  - Tốc độ tính bằng `lessonProgressView` (partner-study-utils, dựa trên `lessonForecast`).
+  - "Tổng điểm" và "Tăng/giảm" gộp một cột (tăng/giảm nằm dưới tổng điểm) để bảng vẫn vừa màn hình 1440px.
 - Trạng thái: Chưa nhập / Chưa công khai / Đã công khai.
 - **"Cần chú ý"** có ba lý do, tính ở FE trong `toViewRow` (ngưỡng chọn theo dữ liệu thật):
   - `drop`: tổng điểm giảm ≥ `ATTENTION_DROP` (50) so với tháng trước. Trung vị thay đổi là −6; khoảng 12% lượt giảm từ 50 trở lên.
@@ -377,10 +382,29 @@ Nút "Phiếu nhập điểm" ở trang Báo cáo học tập, gồm hai mục: 
 - **Xuất:** các TTS theo bộ lọc đang chọn (bỏ qua tab trạng thái), **trừ báo cáo đã công khai** (đang khoá). Điền sẵn bằng `baselineEntry` giống trang Nhập hàng loạt: báo cáo hiện có, hoặc gợi ý tháng trước + giáo viên của lớp.
 - **Nhập** ([study-score-sheet-utils.ts](src/sections/user/study-score-sheet-utils.ts) `planScoreImport`): so từng dòng với `study/bulk` của **tháng ghi trong file**, xem trước rồi mới lưu.
   - Kết quả từng dòng: tạo mới / cập nhật / không đổi / chưa điền / thiếu-sai / đã công khai (bỏ qua) / đã bị sửa sau khi xuất (bỏ qua, so `updatedAt`) / không thuộc tháng.
-  - Kiểm tra bằng đúng `checkValues` của trang Nhập hàng loạt (quy tắc "đủ mới lưu").
+  - Kiểm tra bằng đúng `checkValues` của trang Nhập hàng loạt (quy tắc "đủ mới lưu", khoá thi thử JLPT, nhận xét chỉ có mẫu — xem "Quy tắc nhập báo cáo học tập").
   - Lưu qua `study/updateBulk` với **`publish: false`**, không bao giờ gửi `unlockPublished`, mỗi lượt tối đa 200 báo cáo.
   - Nhận xét: chữ không đổi thì giữ nguyên HTML cũ; đổi thì mỗi dòng thành một `<p>`. Ô giáo viên để trống = giữ giáo viên cũ.
   - Lưu xong, trang chuyển sang tháng của phiếu.
+
+### Quy tắc nhập báo cáo học tập
+
+Chủ dự án đặt (10/2026). FE: [src/utils/studyRules.ts](src/utils/studyRules.ts); BE kiểm tra lại y hệt ở `QLTTS-BE/src/utils/studyRules.ts` — sửa thì sửa cả hai.
+
+- **Thi thử JLPT** (3 ô `kanji` / `grammarAndReading` / `listeningComprehension`):
+  - Khoá theo **trình độ** (`level`) của báo cáo: N5 mở từ **bài 25**, N4 mở từ **bài 45**; N3 trở lên không khoá. Áp dụng cho mọi tài khoản, kể cả admin.
+  - Đề thi thử ghi theo trình độ (nhãn ô "Từ vựng N5"…), cùng cách mẫu PDF chấm đỗ (`judgeJLPTResult` theo `level`). Trước đây form ghi nhãn theo số bài (> 25 là N4): đã bỏ.
+  - Số bài đọc bằng `lessonOf`: hiểu cả chữ số toàn độ rộng; 入門 / ひらがな・カタカナ = 0. Không đọc được số bài (復習 tổng hợp, giáo trình khác) thì **không khoá**.
+  - **Điểm đã lưu từ trước giữ nguyên:** chỉ chặn giá trị mới hoặc thay đổi. Lúc làm, có 110 báo cáo N5 dưới bài 25 đã có điểm thi thử.
+  - Nơi áp dụng: form Nhập điểm (ô khoá, kèm dòng "Thi thử N5 mở từ bài 25 (đang ở bài 20)"), ngăn kéo Nhập hàng loạt, phiếu Excel (lỗi `study_bulk_err_jlpt_locked`). BE kiểm tra ở `study/create|edit|updateBulk` (400 `JLPT_LOCKED`).
+- **Mốc ngày 23 (chỉ tài khoản nguồn):**
+  - Báo cáo tháng M chỉ viết / sửa từ 00:00 ngày 23 tháng M (giờ VN), không đóng lại sau khi hết tháng. Admin không bị giới hạn.
+  - Form Nhập điểm khoá cả form và hiện lý do cho nguồn (`study_not_open`).
+  - BE: `study/create|edit` trả 403 `STUDY_NOT_OPEN`. Riêng `edit` xét cả tháng cũ lẫn tháng mới của báo cáo.
+- **Mẫu nhận xét:**
+  - Báo cáo chưa viết của TTS thuộc một nguồn (không phải Nhật Tân) tự điền `SOURCE_COMMENT_TEMPLATE` ("①態度：/②日本語の理解度：", ở study-bulk-utils.ts) trong form Nhập điểm, dù ai viết. Cờ `commentTemplate` do nơi mở form truyền vào (hồ sơ TTS, hộp thoại ở trang Báo cáo học tập).
+  - Nhận xét chỉ có mẫu = chưa viết (`commentBody`): form, Nhập hàng loạt, phiếu Excel và BE (`study/create|edit|updateBulk`) đều từ chối.
+  - Trang Nhập hàng loạt và phiếu Excel **không** tự điền mẫu.
 
 ### Công khai & khóa báo cáo học tập
 
@@ -429,6 +453,7 @@ Trang đối tác vào đầu tiên (`paths.dashboard.intern.listByTradeUnion`, 
 - **"新着"** = báo cáo tháng mới nhất cập nhật trong `PARTNER_NEW_DAYS` (14) ngày. Hệ thống chưa ghi ai đã xem báo cáo, và model `Study` không có ngày công khai riêng, nên tạm tính theo `updatedAt` (công khai cũng cập nhật trường này).
 - Hai nút lọc nhanh "新着の報告のみ" / "入国時にN5未達の見込み" (đếm trong tab trạng thái đang chọn). Ô tìm kiếm nhận cả katakana.
 - Logic ở [partner-study-utils.ts](src/sections/user/partner-study-utils.ts), chuỗi hiển thị ở [use-partner-study-labels.ts](src/sections/user/use-partner-study-labels.ts), dòng bảng [intern-trade-union-study-row.tsx](src/sections/user/intern-trade-union-study-row.tsx) (memo) và thẻ điện thoại / tablet [intern-trade-union-study-card.tsx](src/sections/user/intern-trade-union-study-card.tsx) (dưới `md`).
+- Ô "Tiến độ học" + `LessonBar` nằm ở [lesson-progress-cell.tsx](src/sections/user/lesson-progress-cell.tsx), dùng chung với trang Báo cáo học tập của admin. Sửa ô là sửa cả hai trang.
 - Tên katakana chỉ được ngắt dòng tại "・" (`word-break: keep-all` + `<wbr>`), vì tự ngắt sẽ cắt giữa tên.
 - Trang nguồn / Đồng Tháp vẫn dùng dòng bảng cũ (`intern-by-trade-union-table-row.tsx`).
 - Thanh công cụ ([intern-by-trade-union-table-toolbar.tsx](src/sections/user/intern-by-trade-union-table-toolbar.tsx), chỉ trang này dựng) còn lọc công ty + ô tìm kiếm. Menu ⋮ "In điểm danh" (PDF lịch điểm danh) đã bỏ: lịch gần như không được nhập nên file in ra trống. Đối tác xem chuyên cần ở tab 出席 của hồ sơ (mục bên dưới).

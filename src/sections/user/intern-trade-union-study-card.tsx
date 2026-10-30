@@ -13,7 +13,8 @@ import Iconify from 'src/components/iconify';
 //
 import { PartnerInternRow } from './partner-study-utils';
 import usePartnerStudyLabels from './use-partner-study-labels';
-import { LessonBar, TONE_COLOR } from './intern-trade-union-study-row';
+import { TONE_COLOR } from './intern-trade-union-study-row';
+import { LessonBar } from './lesson-progress-cell';
 
 // ----------------------------------------------------------------------
 // Bản điện thoại / tablet của một dòng: cả thẻ bấm được để mở hồ sơ, ô chọn (so sánh) ở góc.

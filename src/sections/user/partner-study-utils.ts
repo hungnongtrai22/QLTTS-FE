@@ -86,6 +86,54 @@ export type PartnerInternRow = IInternItem & {
 
 export const N5_PCT = (LESSON_N5 / LESSON_MAX) * 100;
 
+// Ô "Tiến độ học" (LessonProgressCell): dùng ở danh sách TTS của nghiệp đoàn và trang Báo cáo học
+// tập của admin.
+export type LessonProgressView = Pick<
+  PartnerStudyView,
+  'lesson' | 'review' | 'lessonPct' | 'pace' | 'slow'
+>;
+
+const lessonPctOf = (lesson: number | null) =>
+  lesson === null ? 0 : Math.max(2, Math.min(100, (lesson / LESSON_MAX) * 100));
+
+// Tiến độ từ số bài của báo cáo mới nhất (lesson / review / lessonMonth như study/tracker trả về)
+// — tốc độ tính cùng cách với trang tổng quan (lessonForecast).
+export function lessonProgressView(
+  input: {
+    lesson: number | null;
+    review: boolean;
+    lessonMonth: string | null;
+    studyDate: string | null;
+  },
+  now = Date.now()
+): LessonProgressView {
+  const forecast = lessonForecast(
+    {
+      _id: '',
+      name: '',
+      namejp: '',
+      avatar: '',
+      tradeUnion: '',
+      company: '',
+      source: '',
+      lesson: input.lesson,
+      review: input.review,
+      month: input.lessonMonth,
+      lessonMonth: input.lessonMonth,
+      studyDate: input.studyDate,
+      startDate: null,
+    },
+    now
+  );
+  return {
+    lesson: input.lesson,
+    review: input.review,
+    lessonPct: lessonPctOf(input.lesson),
+    pace: forecast.pace,
+    slow: forecast.slow,
+  };
+}
+
 const monthIndex = (key: string) => {
   const [year, month] = key.split('-').map(Number);
   return year * 12 + month;
@@ -158,7 +206,7 @@ export function buildStudyView(
       now - new Date(latest.updatedAt).getTime() <= PARTNER_NEW_DAYS * DAY_MS,
     lesson,
     review: !!summary?.review,
-    lessonPct: lesson === null ? 0 : Math.max(2, Math.min(100, (lesson / LESSON_MAX) * 100)),
+    lessonPct: lessonPctOf(lesson),
     pace: forecast.pace,
     slow: forecast.slow,
     forecast: forecastState,

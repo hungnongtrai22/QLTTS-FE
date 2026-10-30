@@ -276,7 +276,14 @@ export default function StudyBulkView() {
   const options = useMemo(
     () => ({
       tradeUnion: uniqueSorted(rows.map((row) => row.tradeUnion)),
-      company: uniqueSorted(rows.map((row) => row.company)),
+      // Đang chọn nghiệp đoàn thì chỉ hiện công ty của các nghiệp đoàn đó.
+      company: uniqueSorted(
+        rows
+          .filter(
+            (row) => !filters.tradeUnion.length || filters.tradeUnion.includes(row.tradeUnion)
+          )
+          .map((row) => row.company)
+      ),
       source: [
         DEFAULT_SOURCE_NAME,
         ...uniqueSorted(rows.map((row) => row.source)).filter(
@@ -286,8 +293,17 @@ export default function StudyBulkView() {
       studyClass: classOptions(rows.map((row) => row.studyClass)),
       teacher: uniqueSorted(rows.map(teacherName)),
     }),
-    [rows]
+    [rows, filters.tradeUnion]
   );
+
+  // Đổi nghiệp đoàn: bỏ các công ty đang chọn không còn thuộc nghiệp đoàn đã chọn.
+  useEffect(() => {
+    if (loading) return;
+    const kept = filters.company.filter((name) => options.company.includes(name));
+    if (kept.length !== filters.company.length) {
+      setFilters((prev) => ({ ...prev, company: kept }));
+    }
+  }, [loading, options.company, filters.company]);
 
   const scopedRows = useMemo(() => {
     const keyword = normalizeSearch(filters.name.trim());

@@ -468,6 +468,11 @@ export type IStudyReportRow = {
   prevTotal: number | null;
   // Giáo viên của báo cáo tháng này, hoặc gần nhất trước đó (cho dòng chưa nhập)
   lastTeacher: string;
+  // Tiến độ bài tính tới hết tháng đang xem (cột "Tiến độ học"): bài của báo cáo mới nhất có số
+  // bài, 0 = nhập môn, null = chưa rõ; review = báo cáo mới nhất ghi 復習.
+  lesson: number | null;
+  review: boolean;
+  lessonMonth: string | null;
 };
 
 export type IStudyReportFilters = {

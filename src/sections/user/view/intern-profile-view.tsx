@@ -18,6 +18,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { IInternItem } from 'src/types/user';
 import CalendarPage from 'src/pages/dashboard/calendar';
 import { useAuthContext } from 'src/auth/hooks';
+import { sourceIdOf } from 'src/utils/source';
 
 import axios from 'axios';
 import { t } from 'i18next';
@@ -273,7 +274,8 @@ export default function InternProfileView() {
       )}
 
       {currentTab === 'gallery' && (user?.role === 'admin' || user?.role === 'source') && (
-        <InternPointForm internId={intern?._id} />
+        // TTS của một nguồn (không phải Nhật Tân): báo cáo chưa viết tự điền mẫu nhận xét.
+        <InternPointForm internId={intern?._id} commentTemplate={!!sourceIdOf(intern)} />
       )}
 
       {/* Admin / nguồn nhập điểm danh trên lịch; đối tác xem chuyên cần lấy từ báo cáo tháng. */}

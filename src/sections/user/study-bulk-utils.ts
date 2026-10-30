@@ -1,4 +1,5 @@
-import { IStudyBulkRow, IStudyJlptKey, IStudyScoreKey } from 'src/types/user';
+import { IStudyBulkReport, IStudyBulkRow, IStudyJlptKey, IStudyScoreKey } from 'src/types/user';
+import { jlptMockLock } from 'src/utils/studyRules';
 
 // ----------------------------------------------------------------------
 // Logic của trang "Nhập điểm hàng loạt" — tách khỏi component để bảng (máy tính), dạng thẻ
@@ -72,6 +73,19 @@ export const commentText = (html: string) =>
     .replace(/&(amp|lt|gt|quot|#39);/g, '_')
     .trim();
 
+// Mẫu nhận xét tự điền cho báo cáo chưa viết của TTS thuộc một nguồn (không phải Nhật Tân) —
+// chủ dự án chọn, ở form Nhập điểm.
+export const SOURCE_COMMENT_TEMPLATE = '<p>①態度：</p><p>②日本語の理解度：</p>';
+
+const COMMENT_TEMPLATE_LABELS = ['①態度：', '②日本語の理解度：'];
+
+// Nội dung thật của nhận xét: bỏ nhãn của mẫu. Rỗng = chưa viết (chỉ có mẫu cũng là chưa viết).
+// BE kiểm tra y hệt (studyRules.commentBody).
+export const commentBody = (html: string) =>
+  COMMENT_TEMPLATE_LABELS.reduce((text, label) => text.split(label).join(''), commentText(html))
+    .replace(/\s+/g, '')
+    .trim();
+
 const NUMBER_KEYS = [...SCORE_KEYS, ...JLPT_KEYS];
 
 // Giá trị ban đầu của một dòng: báo cáo tháng này nếu đã có; chưa có thì để trống điểm và điền
@@ -110,7 +124,9 @@ export function baselineEntry(row: IStudyBulkRow): BulkEntry {
   return { values, origin };
 }
 
-export function checkValues(values: BulkValues): BulkCheck {
+// stored: báo cáo đã lưu của tháng (nếu có) — điểm thi thử đã lưu từ trước thì giữ được dù
+// đang khóa (xem src/utils/studyRules.ts).
+export function checkValues(values: BulkValues, stored: IStudyBulkReport | null = null): BulkCheck {
   const errors: BulkCheck['errors'] = {};
 
   SCORE_KEYS.forEach((key) => {
@@ -120,9 +136,13 @@ export function checkValues(values: BulkValues): BulkCheck {
     else if (key === 'read' && value % 10 !== 0) errors[key] = 'study_bulk_err_read';
   });
 
+  const jlptLock = jlptMockLock(values.level, values.learningProcess);
   JLPT_KEYS.forEach((key) => {
     const value = values[key];
-    if (value !== null && (value < 0 || value > 60)) errors[key] = 'study_bulk_err_jlpt';
+    if (value === null) return;
+    if (value < 0 || value > 60) errors[key] = 'study_bulk_err_jlpt';
+    else if (jlptLock && value !== (stored?.[key] ?? null))
+      errors[key] = 'study_bulk_err_jlpt_locked';
   });
 
   if (commentText(values.comment).length > COMMENT_MAX) errors.comment = 'study_bulk_err_comment';
@@ -133,7 +153,7 @@ export function checkValues(values: BulkValues): BulkCheck {
   if (!LEVELS.includes(values.level)) missingText.push('level');
   if (!values.learningProcess.trim()) missingText.push('learningProcess');
   if (!values.characteristic.trim()) missingText.push('characteristic');
-  if (!commentText(values.comment)) missingText.push('comment');
+  if (!commentBody(values.comment)) missingText.push('comment');
 
   const errorCount = Object.keys(errors).length;
 
@@ -166,7 +186,7 @@ export function rowState(
   saveError?: string,
   locked = false
 ): BulkRowState {
-  const check = checkValues(entry.values);
+  const check = checkValues(entry.values, row.report);
   const dirty = isDirty(row, entry);
   const savable = dirty && check.complete && !locked;
 

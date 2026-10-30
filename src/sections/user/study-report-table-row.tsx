@@ -21,6 +21,10 @@ import { IStudyAttentionReason, IStudyReportRow, IStudyReportStatus } from 'src/
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+//
+import { LessonProgressView } from './partner-study-utils';
+import LessonProgressCell from './lesson-progress-cell';
+import usePartnerStudyLabels from './use-partner-study-labels';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +40,10 @@ export type StudyReportViewRow = IStudyReportRow & {
   sourceName: string;
   // TTS nhập học ngay trong tháng đang xem
   isNew: boolean;
+  // Ô "Tiến độ học" (giống danh sách TTS của nghiệp đoàn)
+  progress: LessonProgressView;
+  // Khóa sắp xếp theo tiến độ: chưa rõ bài = -1
+  lessonSort: number;
 };
 
 export const STATUS_COLOR: Record<IStudyReportStatus, 'error' | 'warning' | 'success'> = {
@@ -70,6 +78,8 @@ export default function StudyReportTableRow({
   onSelectRow,
 }: Props) {
   const { t } = useLocales();
+
+  const { lessonText, paceText } = usePartnerStudyLabels();
 
   const { name, namejp, avatar, company, tradeUnion, report, reportStatus, total, delta } = row;
 
@@ -195,6 +205,10 @@ export default function StudyReportTableRow({
                   {reasonTexts.join('\n')}
                 </Typography>
               )}
+              {/* Tiến độ học (bài · tốc độ) — bản rút gọn của cột trên máy tính */}
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                {[lessonText(row.progress), paceText(row.progress)].filter(Boolean).join(' · ')}
+              </Typography>
             </Stack>
           </Stack>
         </TableCell>
@@ -224,7 +238,7 @@ export default function StudyReportTableRow({
     <TableRow hover selected={selected}>
       {selectCell}
       {/* Tên dài không xuống dòng mà cắt "...": giới hạn bề rộng để bảng vừa màn hình laptop. */}
-      <TableCell sx={{ maxWidth: 200 }}>
+      <TableCell sx={{ maxWidth: 185 }}>
         <Stack direction="row" alignItems="center" spacing={2}>
           <Avatar alt={name} src={avatar} />
           <ListItemText
@@ -246,7 +260,7 @@ export default function StudyReportTableRow({
         </Stack>
       </TableCell>
 
-      <TableCell sx={{ maxWidth: 185 }}>
+      <TableCell sx={{ maxWidth: 160 }}>
         <ListItemText
           primary={company || '—'}
           secondary={tradeUnion}
@@ -256,7 +270,7 @@ export default function StudyReportTableRow({
       </TableCell>
 
       <TableCell
-        sx={{ maxWidth: 150, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        sx={{ maxWidth: 120, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
       >
         {(report?.teacher && <Box component="span">{report.teacher}</Box>) ||
           (row.teacherName && (
@@ -283,17 +297,24 @@ export default function StudyReportTableRow({
         </Stack>
       </TableCell>
 
+      {/* Tổng điểm, tăng / giảm so với tháng trước nằm ngay dưới (gộp một cột để có chỗ cho cột
+          Tiến độ học mà bảng vẫn vừa laptop). */}
       <TableCell sx={{ whiteSpace: 'nowrap' }}>
         {total === null ? (
           <Typography variant="body2" sx={{ color: 'text.disabled' }}>
             —
           </Typography>
         ) : (
-          <Typography variant="subtitle2">{total}</Typography>
+          <Stack spacing={0.25}>
+            <Typography variant="subtitle2">{total}</Typography>
+            {delta !== null && renderChange()}
+          </Stack>
         )}
       </TableCell>
 
-      <TableCell>{renderChange()}</TableCell>
+      <TableCell sx={{ minWidth: 150 }}>
+        <LessonProgressCell study={row.progress} studyDate={row.studyDate} />
+      </TableCell>
 
       <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
         <Button

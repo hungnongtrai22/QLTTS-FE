@@ -18,6 +18,7 @@ import { useLocales } from 'src/locales';
 import { learningProcess as LESSONS } from 'src/utils/learningProcess';
 import { characteristicList } from 'src/utils/characteristic';
 import { StudyCommentInput } from 'src/utils/studyComment';
+import { jlptMockLock } from 'src/utils/studyRules';
 // types
 import { IStudyBulkRow } from 'src/types/user';
 // components
@@ -55,13 +56,6 @@ type Props = {
   // Không truyền = không có người trước / sau trong danh sách đang lọc
   onPrev?: VoidFunction;
   onNext?: VoidFunction;
-};
-
-// Số bài trong "皆の日本語第30課" — từ bài 26 trở đi thi thử theo đề N4 (cùng cách form nhập điểm ghi
-// nhãn ô JLPT).
-const lessonNumber = (value: string) => {
-  const match = value.match(/\d+/);
-  return match ? Number(match[0]) : 0;
 };
 
 // Ô chữ cho phép chọn gợi ý hoặc gõ tự do (giống form nhập điểm).
@@ -149,7 +143,9 @@ export default function StudyBulkDetailDrawer({
     const { total } = check;
     const prevTotal = row.prev?.total ?? null;
     const delta = total !== null && prevTotal !== null ? total - prevTotal : null;
-    const jlptLevel = lessonNumber(values.learningProcess) > 25 ? 'N4' : 'N5';
+    // Đề thi thử theo trình độ của báo cáo; chưa tới bài mở thì khóa (src/utils/studyRules.ts).
+    const jlptLevel = values.level;
+    const jlptLock = jlptMockLock(values.level, values.learningProcess);
     const commentLength = commentText(values.comment).length;
     const fieldLabel: Record<BulkTextKey, string> = {
       level: t('level'),
@@ -315,9 +311,11 @@ export default function StudyBulkDetailDrawer({
                 {JLPT_KEYS.map((key) => (
                   <TextField
                     key={key}
-                    label={`${t(`study_bulk_jlpt_${key}`)} ${jlptLevel}`}
+                    label={`${t(`study_bulk_jlpt_${key}`)} ${jlptLevel}`.trim()}
                     value={values[key] === null ? '' : String(values[key])}
                     onChange={(event) => set(key)(parseScore(event.target.value))}
+                    // Khóa: chỉ còn sửa được ô đang khác điểm đã lưu (để xóa đi).
+                    disabled={!!jlptLock && values[key] === (row.report?.[key] ?? null)}
                     error={!!check.errors[key]}
                     helperText={check.errors[key] ? t(check.errors[key] as string) : ' '}
                     inputProps={{ inputMode: 'numeric', style: { textAlign: 'center' } }}
@@ -325,6 +323,11 @@ export default function StudyBulkDetailDrawer({
                   />
                 ))}
               </Box>
+              {jlptLock && (
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  {t('jlpt_mock_locked', jlptLock)}
+                </Typography>
+              )}
             </Stack>
 
             <Stack spacing={1}>

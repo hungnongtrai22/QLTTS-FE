@@ -56,6 +56,8 @@ export default function StudyReportDialog({ row, month, monthLabel, onClose, onS
               internId={row._id}
               initialMonth={month}
               onSaved={onSaved}
+              // TTS của một nguồn (không phải Nhật Tân): tự điền mẫu nhận xét cho báo cáo mới.
+              commentTemplate={!!row.source}
             />
           </Stack>
         )}

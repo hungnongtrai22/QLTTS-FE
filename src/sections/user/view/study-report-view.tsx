@@ -68,6 +68,7 @@ import {
 // Cùng ngưỡng với tab 出席 của đối tác
 import { ATTEND_LOW } from '../attendance-overview-utils';
 import { NO_CLASS, classFilterValue, classOptions, expectedTeacher } from '../study-class-utils';
+import { lessonProgressView } from '../partner-study-utils';
 import StudyScoreExportDialog from '../study-score-export-dialog';
 import StudyScoreImportDialog from '../study-score-import-dialog';
 import StudyReportTableToolbar from '../study-report-table-toolbar';
@@ -131,8 +132,27 @@ const toViewRow = (row: IStudyReportRow, month: Date): StudyReportViewRow => {
     // TTS chưa có nguồn thuộc "Nhật Tân" — cùng quy ước với bộ lọc danh sách TTS.
     sourceName: row.source || DEFAULT_SOURCE_NAME,
     isNew: !!studyDate && studyDate >= month && studyDate < addMonths(month, 1),
+    progress: lessonProgressView({
+      lesson: row.lesson ?? null,
+      review: !!row.review,
+      lessonMonth: row.lessonMonth ?? null,
+      studyDate: row.studyDate,
+    }),
+    lessonSort: row.lesson ?? -1,
   };
 };
+
+// Tiêu đề cột hai dòng (giống danh sách TTS của nghiệp đoàn)
+function HeadLabel({ title, sub }: { title: string; sub: string }) {
+  return (
+    <Stack component="span" spacing={0.25}>
+      <span>{title}</span>
+      <Typography component="span" variant="caption" sx={{ fontWeight: 400 }}>
+        {sub}
+      </Typography>
+    </Stack>
+  );
+}
 
 const sortValue = (row: StudyReportViewRow, orderBy: string): string | number | null => {
   switch (orderBy) {
@@ -142,6 +162,8 @@ const sortValue = (row: StudyReportViewRow, orderBy: string): string | number | 
       return row.total;
     case 'delta':
       return row.delta;
+    case 'lessonSort':
+      return row.lesson ?? null;
     case 'company':
       return row.company || null;
     case 'teacherName':
@@ -249,7 +271,14 @@ export default function StudyReportView() {
   const options = useMemo(
     () => ({
       tradeUnion: uniqueSorted(viewRows.map((row) => row.tradeUnion)),
-      company: uniqueSorted(viewRows.map((row) => row.company)),
+      // Đang chọn nghiệp đoàn thì chỉ hiện công ty của các nghiệp đoàn đó.
+      company: uniqueSorted(
+        viewRows
+          .filter(
+            (row) => !filters.tradeUnion.length || filters.tradeUnion.includes(row.tradeUnion)
+          )
+          .map((row) => row.company)
+      ),
       // "Nhật Tân" luôn đứng đầu như ở danh sách TTS.
       source: [
         DEFAULT_SOURCE_NAME,
@@ -260,8 +289,17 @@ export default function StudyReportView() {
       studyClass: classOptions(viewRows.map((row) => row.studyClass)),
       teacher: uniqueSorted(viewRows.map((row) => row.teacherName)),
     }),
-    [viewRows]
+    [viewRows, filters.tradeUnion]
   );
+
+  // Đổi nghiệp đoàn: bỏ các công ty đang chọn không còn thuộc nghiệp đoàn đã chọn.
+  useEffect(() => {
+    if (loading) return;
+    const kept = filters.company.filter((name) => options.company.includes(name));
+    if (kept.length !== filters.company.length) {
+      setFilters((prev) => ({ ...prev, company: kept }));
+    }
+  }, [loading, options.company, filters.company]);
 
   // Bộ lọc "phạm vi" (lớp, nghiệp đoàn, công ty, nguồn, giáo viên, tên): tiến độ tính trên phạm
   // vi này, để giáo viên lọc lớp mình là thấy ngay lớp mình đã nhập được bao nhiêu.
@@ -409,13 +447,25 @@ export default function StudyReportView() {
       mdUp
         ? [
             // Có thêm ô chọn ở đầu dòng: thu cột Tên / Công ty cho bảng vẫn vừa laptop.
-            { id: 'name', label: t('study_report_col_intern'), minWidth: 180, width: 200 },
-            { id: 'company', label: t('study_report_col_company'), width: 185 },
-            { id: 'teacherName', label: t('teacher'), width: 150 },
+            { id: 'name', label: t('study_report_col_intern'), minWidth: 170, width: 185 },
+            { id: 'company', label: t('study_report_col_company'), width: 160 },
+            { id: 'teacherName', label: t('teacher'), width: 120 },
             // Ngày cập nhật hiện ngay dưới nhãn trạng thái (bớt một cột cho vừa laptop).
-            { id: 'reportStatus', label: t('status'), width: 150 },
-            { id: 'total', label: t('study_report_col_total'), width: 90 },
-            { id: 'delta', label: t('study_report_col_change'), width: 110 },
+            { id: 'reportStatus', label: t('status'), width: 140 },
+            {
+              id: 'total',
+              label: (
+                <HeadLabel title={t('study_report_col_total')} sub={t('study_report_col_change')} />
+              ),
+              width: 100,
+            },
+            {
+              id: 'lessonSort',
+              label: (
+                <HeadLabel title={t('partner_col_progress')} sub={t('partner_col_progress_sub')} />
+              ),
+              minWidth: 150,
+            },
             { id: '', width: 120 },
           ]
         : // Điện thoại: dòng gộp (xem StudyReportTableRow compact) — không phải cuộn ngang.

@@ -9,7 +9,7 @@ import {
   BulkFieldKey,
   baselineEntry,
   checkValues,
-  commentText,
+  commentBody,
   toPayload,
 } from './study-bulk-utils';
 
@@ -201,7 +201,7 @@ export function planScoreImport(
     const hasInput =
       badFields.length > 0 ||
       NUMBER_KEYS.some((key) => values[key] !== null) ||
-      !!commentText(values.comment);
+      !!commentBody(values.comment);
 
     if (!current && !hasInput) return { ...result, status: 'empty' };
 
@@ -216,7 +216,7 @@ export function planScoreImport(
     }
 
     // ---- Kiểm tra "đủ mới lưu" (cùng quy tắc với trang Nhập hàng loạt và BE)
-    const check = checkValues(values);
+    const check = checkValues(values, current);
     const problems: ScoreImportProblem[] = [];
 
     if (badFields.length)
