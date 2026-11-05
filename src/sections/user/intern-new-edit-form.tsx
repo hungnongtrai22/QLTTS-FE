@@ -141,14 +141,14 @@ const initCompany = [
 
 const initFamily = [
   {
-    relationship: '姉',
+    relationship: '父',
     name: '',
     year: null,
     location: '',
     occupation: '',
   },
   {
-    relationship: '兄',
+    relationship: '母',
     name: '',
     year: null,
     location: '',
@@ -1425,7 +1425,8 @@ export default function InternNewEditForm({ currentIntern }: Props) {
                       '祖母',
                       '祖父',
                       '伯母',
-                      '義姉'
+                      '義姉',
+                      '叔母'
                     ].map((option) => (
                       <MenuItem key={option} value={option}>
                         {option}
