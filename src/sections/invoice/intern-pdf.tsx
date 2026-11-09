@@ -784,7 +784,7 @@ export default function InternPDF({ invoice }: Props) {
              {type !== 'skill' && (
                   <View style={styles.tableRow}>
                     <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                      <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
+                      <Text style={styles.subtitle2}>{type !== 'skill' && '3年間後'}いくら貯金したいですか</Text>
                     </View>
 
                     <View style={[styles.tableCell_10, styles.textLeft]}>

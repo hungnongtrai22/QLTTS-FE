@@ -854,17 +854,19 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                     <Text>{moveForeign ? 'はい' : 'なし'}</Text>
                   </View>
                 </View>
-                {type !== 'skill' && (
-                  <View style={styles.tableRow}>
-                    <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                      <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
-                    </View>
 
-                    <View style={[styles.tableCell_10, styles.textLeft]}>
-                      <Text>{money}</Text>
-                    </View>
+                <View style={styles.tableRow}>
+                  <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
+                    <Text style={styles.subtitle2}>
+                      {type !== 'skill' && '3年間後'}いくら貯金したいですか
+                    </Text>
                   </View>
-                )}
+
+                  <View style={[styles.tableCell_10, styles.textLeft]}>
+                    <Text>{money}</Text>
+                  </View>
+                </View>
+
                 <View style={styles.tableRow}>
                   <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
                     <Text style={styles.subtitle2}>
