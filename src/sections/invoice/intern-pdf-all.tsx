@@ -311,15 +311,15 @@ export default function InternPDFAll({ invoice, stt }: Props) {
     money,
     familyInJapan,
     moveForeign,
-    type
+    type,
   } = invoice;
 
-  let temp123 = "技能実習生履歴書";
+  let temp123 = '技能実習生履歴書';
 
-  if(type === 'skill'){
-    temp123 = "特定技能履歴書"
-  }else if(type === 'engineer'){
-        temp123 = "エンジニア履歴書"
+  if (type === 'skill') {
+    temp123 = '特定技能履歴書';
+  } else if (type === 'engineer') {
+    temp123 = 'エンジニア履歴書';
   }
 
   const styles = useStyles();
@@ -854,15 +854,17 @@ export default function InternPDFAll({ invoice, stt }: Props) {
                     <Text>{moveForeign ? 'はい' : 'なし'}</Text>
                   </View>
                 </View>
-                <View style={styles.tableRow}>
-                  <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
-                    <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
-                  </View>
+                {type !== 'skill' && (
+                  <View style={styles.tableRow}>
+                    <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
+                      <Text style={styles.subtitle2}>3年間後いくら貯金したいですか</Text>
+                    </View>
 
-                  <View style={[styles.tableCell_10, styles.textLeft]}>
-                    <Text>{money}</Text>
+                    <View style={[styles.tableCell_10, styles.textLeft]}>
+                      <Text>{money}</Text>
+                    </View>
                   </View>
-                </View>
+                )}
                 <View style={styles.tableRow}>
                   <View style={[styles.tableCell_10, styles.titleBackgroundFinal]}>
                     <Text style={styles.subtitle2}>
